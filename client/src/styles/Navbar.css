@@ -1,0 +1,25 @@
+#navbar {
+    margin: 0 auto;
+    width: var(--max-width);
+}
+
+#navbar .nav-link {
+    color: var(--color-link);
+}
+
+.bar {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    border-bottom: 0.1px solid var(--color-link);
+}
+
+.set {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+}
+
+.set p {
+    margin: 0;
+}

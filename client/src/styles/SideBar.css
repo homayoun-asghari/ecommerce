@@ -1,0 +1,19 @@
+.category-wrapper {
+    position: relative;
+    width: 250px;
+}
+
+#all {
+    width: 300px;
+}
+
+.accordion-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    z-index: 999;
+    width: 300px;
+    box-shadow: 0 0 1px var(--color-link);
+    border-radius: 4px;
+    padding: 1rem;
+}
