@@ -23,21 +23,21 @@ function App() {
 
   useEffect(() => {
     const body = document.body;
-  
+
     // Disable transitions
     body.classList.add("theme-transition");
-  
+
     // Change theme
     body.setAttribute("data-bs-theme", mode ? "light" : "dark");
-  
+
     // Re-enable transitions after a tick
     const timeout = setTimeout(() => {
       body.classList.remove("theme-transition");
     }, 0);
-  
+
     return () => clearTimeout(timeout);
   }, [mode]);
-  
+
 
   return (
     <div className="app-wrapper">
@@ -50,11 +50,12 @@ function App() {
             </Routes>
           </Container>
         </main>
-        <Footer />
+        <Footer mode={mode} />
+        <div style={{ height: "55px", backgroundColor: mode ? "var(--color-secondary)" : "black", }}></div>
         <div className="d-block d-lg-none">
           <BottomNavbar mode={mode} onSubmit={handleClick} />
         </div>
-      </Router>
+      </Router >
     </div>
   );
 }

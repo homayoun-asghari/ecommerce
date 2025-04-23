@@ -8,6 +8,7 @@ import logoDark from "../assets/logo-dark.png";
 import Searchbar from "./Searchbar";
 import AccordionItems from "./AccordionItems";
 import ModeSwitch from "./ModeSwitch";
+import { Search } from 'react-bootstrap-icons';
 
 function BottomNavbar(props) {
   const [show, setShow] = useState(false);
@@ -57,7 +58,7 @@ function BottomNavbar(props) {
         <Offcanvas.Body className="d-flex flex-column">
           {/* Scrollable Main Content */}
           <div className="flex-grow-1 overflow-auto">
-            <Searchbar />
+          <Searchbar button = {<Search />} placeholder = "Search Products"/>
 
             <Accordion className="mt-3">
               <AccordionItems />

@@ -6,6 +6,7 @@ import { Row, Col, Container } from 'react-bootstrap';
 import { Person, Heart, Cart, PinMapFill } from "react-bootstrap-icons";
 import ModeSwitch from "./ModeSwitch";
 import Searchbar from "./Searchbar";
+import { Search } from 'react-bootstrap-icons';
 
 function SecondBar(props) {
     return (
@@ -25,7 +26,7 @@ function SecondBar(props) {
                 </Col>
 
                 <Col lg={5} className="d-flex justify-content-center align-items-center">
-                    <Searchbar />
+                    <Searchbar button = {<Search />} placeholder = "Search Products"/>
                 </Col>
 
                 <Col lg={4} className="d-flex align-items-center justify-content-lg-end gap-3">

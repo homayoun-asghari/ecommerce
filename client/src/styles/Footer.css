@@ -1,5 +1,19 @@
 .footer{
     position: relative;
     margin-top: var(--space-xl);
-    bottom: 55px;
+    padding-top: var(--space-sm);
+    font-size: x-small;
+    border-top: 0.1px solid var(--color-link);
+}
+
+.footer-light{
+    background-color: var(--color-secondary);
+}
+
+.footer-dark{
+    background-color: black;
+}
+
+.footer h5{
+    text-wrap: nowrap;
 }

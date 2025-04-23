@@ -1,18 +1,17 @@
 import React from "react";
 import { Form, InputGroup, Button} from 'react-bootstrap';
-import { Search } from 'react-bootstrap-icons';
 import "../styles/Searchbar.css"
 
-function Searchbar() {
+function Searchbar(props) {
     const handleSearch = () => {
         console.log('Search triggered');
     };
     return (
-        <Form className="search-bar" onSubmit={e => e.preventDefault()}>
+        <Form className="search-bar" onSubmit={e => e.preventDefault()} style={{width : props.width}}>
             <InputGroup>
                 <Form.Control
                     type="text"
-                    placeholder="Search products..."
+                    placeholder={props.placeholder}
                     className="search-input"
                 />
                 <Button
@@ -20,7 +19,7 @@ function Searchbar() {
                     onClick={handleSearch}
                     type="submit"
                 >
-                    <Search />
+                    {props.button}
                 </Button>
             </InputGroup>
         </Form>
