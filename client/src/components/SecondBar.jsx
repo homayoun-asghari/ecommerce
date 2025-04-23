@@ -1,67 +1,43 @@
 import React from "react";
+import { useLocation } from 'react-router-dom';
 import Nav from 'react-bootstrap/Nav';
-import logo from "../assets/logo.png";
-import PlaceOutlinedIcon from '@mui/icons-material/PlaceOutlined';
-import { Form, InputGroup, Button } from 'react-bootstrap';
-import { Search } from 'react-bootstrap-icons';
-import PermIdentityOutlinedIcon from '@mui/icons-material/PermIdentityOutlined';
-import FavoriteBorderOutlinedIcon from '@mui/icons-material/FavoriteBorderOutlined';
-import ShoppingCartOutlinedIcon from '@mui/icons-material/ShoppingCartOutlined';
-import FormGroup from '@mui/material/FormGroup';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import MaterialUISwitch from '../components/MaterialUISwitch';
-import "../styles/SecondBar.css";
+import NavLink from 'react-bootstrap/NavLink';
+import SideBar from "./SideBar";
 
-function SecondBar(props) {
-    const handleSearch = () => {
-        // replace this with your actual search logic
-        console.log('Search triggered');
-    };
+function ThirdBar() {
+    const location = useLocation();
     return (
-        <div className="bar" style={{ padding: "var(--space-xs) 0", border: "0" }}>
-            <div className="set">
-                <img src={logo} alt="logo"></img>
-                <span>{<PlaceOutlinedIcon />} deliver to</span>
-            </div>
-            <Form className="search-bar" onSubmit={e => e.preventDefault()}>
-                <InputGroup>
-                    <Form.Control
-                        type="text"
-                        placeholder="Search products..."
-                        className="search-input"
-                    />
-                    <Button
-                        id="search-button"
-                        onClick={handleSearch}
-                        type="submit"
-                    >
-                        <Search />
-                    </Button>
-                </InputGroup>
-            </Form>
-            <div className="set" >
-                <Nav as="ul">
-                    <Nav.Item as="li">
-                        <Nav.Link href="/signin"> {<PermIdentityOutlinedIcon />} Sign In</Nav.Link>
+        <div className="bar">
+            <div className="set" style={{ gap: "var(--space-xxl)" }}>
+                <SideBar />
+
+                <Nav variant="underline" activeKey={location.pathname}>
+                    <Nav.Item>
+                        <Nav.Link as={NavLink} to="/" eventKey="/">Home</Nav.Link>
+                    </Nav.Item>
+                    <Nav.Item>
+                        <Nav.Link as={NavLink} to="/blog" eventKey="/blog">Blog</Nav.Link>
+                    </Nav.Item>
+                    <Nav.Item>
+                        <Nav.Link as={NavLink} to="/contact" eventKey="/contact">Contact</Nav.Link>
+                    </Nav.Item>
+                    <Nav.Item>
+                        <Nav.Link as={NavLink} to="/about" eventKey="/about">About</Nav.Link>
                     </Nav.Item>
                 </Nav>
-                <FavoriteBorderOutlinedIcon />
-                <ShoppingCartOutlinedIcon />
-                <FormGroup>
-                    <FormControlLabel
-                        control={
-                            <MaterialUISwitch
-                                sx={{ m: 1 }}
-                                checked={!props.mode}
-                                onChange={(e) => props.onSubmit(e.target.checked)}
-                            />
-                        }
-                    />
-                </FormGroup>
-
             </div>
+
+            <div className="set">
+                <Nav.Item>
+                    <Nav.Link as={NavLink} to="/trendingproducts">Trending Products</Nav.Link>
+                </Nav.Item>
+                <Nav.Item>
+                    <Nav.Link as={NavLink} to="/sale">Almost Finished</Nav.Link>
+                </Nav.Item>
+            </div>
+
         </div>
     );
 }
 
-export default SecondBar;
+export default ThirdBar;

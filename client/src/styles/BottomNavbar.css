@@ -1,0 +1,38 @@
+/* styles/BottomNavBar.css */
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 55px;
+  border-top: 0.1px solid var(--color-link);
+  z-index: 1050;
+}
+
+.bottom-nav-light {
+  background-color: var(--bs-light);
+}
+
+.bottom-nav-dark {
+  background-color: var(--bs-dark);
+}
+
+.nav-link {
+  color: var(--color-link) !important;
+  -webkit-text-fill-color: var(--color-link); /* iOS Safari fix */
+  text-decoration: none; /* optional, removes underline */
+}
+
+
+.offcanvas-footer {
+  border-top: 0.1px solid var(--color-link);
+  padding-top: var(--space-xs);
+  padding-bottom: var(--space-xl); /* 👈 This prevents it from touching or going under */
+}
+
+.offcanvas-body {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding-bottom: 0; /* Optional: if extra padding is coming from somewhere else */
+}

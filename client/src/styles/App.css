@@ -68,3 +68,17 @@ a {
 li {
   list-style: none;
 }
+
+
+.accordion-button:not(.collapsed){
+  background-color: var(--color-primary) !important;
+  color: var(--color-bg) !important;
+}
+
+.accordion-button:focus{
+  box-shadow: none !important;
+}
+
+.theme-transition * {
+  transition: none !important;
+}

@@ -5,6 +5,7 @@ import Container from 'react-bootstrap/Container';
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import Home from "./pages/Home.jsx";
+import BottomNavbar from './components/BottomNavbar.jsx';
 
 function App() {
   const [mode, setMode] = useState(() => {
@@ -21,8 +22,22 @@ function App() {
   }
 
   useEffect(() => {
-    document.body.setAttribute("data-bs-theme", mode ? "light" : "dark");
+    const body = document.body;
+  
+    // Disable transitions
+    body.classList.add("theme-transition");
+  
+    // Change theme
+    body.setAttribute("data-bs-theme", mode ? "light" : "dark");
+  
+    // Re-enable transitions after a tick
+    const timeout = setTimeout(() => {
+      body.classList.remove("theme-transition");
+    }, 0);
+  
+    return () => clearTimeout(timeout);
   }, [mode]);
+  
 
   return (
     <div className="app-wrapper">
@@ -36,6 +51,9 @@ function App() {
           </Container>
         </main>
         <Footer />
+        <div className="d-block d-lg-none">
+          <BottomNavbar mode={mode} onSubmit={handleClick} />
+        </div>
       </Router>
     </div>
   );

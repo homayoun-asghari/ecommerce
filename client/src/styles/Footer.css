@@ -1,0 +1,5 @@
+.footer{
+    position: relative;
+    margin-top: var(--space-xl);
+    bottom: 55px;
+}
