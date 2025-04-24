@@ -16,6 +16,9 @@ function ThirdBar() {
                         <Nav.Link as={NavLink} to="/" eventKey="/">Home</Nav.Link>
                     </Nav.Item>
                     <Nav.Item>
+                        <Nav.Link as={NavLink} to="/shop" eventKey="/shop">Shop</Nav.Link>
+                    </Nav.Item>
+                    <Nav.Item>
                         <Nav.Link as={NavLink} to="/blog" eventKey="/blog">Blog</Nav.Link>
                     </Nav.Item>
                     <Nav.Item>

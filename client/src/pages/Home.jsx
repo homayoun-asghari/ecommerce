@@ -1,13 +1,20 @@
-import React from "react";
-// import Row from 'react-bootstrap/Row';
-// import Col from 'react-bootstrap/Col';
+import Row from 'react-bootstrap/Row';
+import CarouselItems from "../components/CarouselItems.jsx";
+import Featuresbar from '../components/Featuresbar.jsx';
+import HotCards from '../components/HotCards.jsx';
+import Products from '../components/Products.jsx';
 
-function Home(){
-    return(
-        <div>
-            <h1 style={{display: "flex", justifyContent: "end"}}>this is home page</h1>
-            <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptatibus eligendi voluptates ut nobis debitis quidem perspiciatis distinctio nisi quae necessitatibus, harum consequatur reprehenderit, molestiae in rem laborum accusamus, accusantium rerum!</p>
-        </div>
+
+function Home() {
+    return (
+        <Row className='d-flex justify-content-center align-items-center gap-5'>
+            <CarouselItems />
+            <Featuresbar />
+            <HotCards />
+            <Products title = "New Arrivals" content = "Dont miss this opportunity at a special discount just for this week."/>
+            <HotCards />
+            <Products title = "Best Sellers" content = "Some of the new products arriving this weeks"/>
+        </Row>
     );
 }
 

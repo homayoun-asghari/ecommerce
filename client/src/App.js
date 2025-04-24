@@ -6,6 +6,7 @@ import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import Home from "./pages/Home.jsx";
 import BottomNavbar from './components/BottomNavbar.jsx';
+import MyContext from "./components/MyContext";
 
 function App() {
   const [mode, setMode] = useState(() => {
@@ -38,25 +39,28 @@ function App() {
     return () => clearTimeout(timeout);
   }, [mode]);
 
+  const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <div className="app-wrapper">
-      <Router>
-        <Navbar onSubmit={handleClick} mode={mode} />
-        <main className="content-wrapper py-4">
-          <Container>
-            <Routes>
-              <Route path="/" element={<Home />} />
-            </Routes>
-          </Container>
-        </main>
-        <Footer mode={mode} />
-        <div style={{ height: "55px", backgroundColor: mode ? "var(--color-secondary)" : "black", }}></div>
-        <div className="d-block d-lg-none">
-          <BottomNavbar mode={mode} onSubmit={handleClick} />
-        </div>
-      </Router >
-    </div>
+    <MyContext.Provider value={{ isOpen, setIsOpen }}>
+      <div className="app-wrapper">
+        <Router>
+          <Navbar onSubmit={handleClick} mode={mode} />
+          <main className="content-wrapper py-4">
+            <Container fluid>
+              <Routes>
+                <Route path="/" element={<Home />} />
+              </Routes>
+            </Container>
+          </main>
+          <Footer mode={mode} />
+          <div style={{ height: "55px", backgroundColor: mode ? "var(--color-secondary)" : "black", }}></div>
+          <div className="d-block d-lg-none">
+            <BottomNavbar mode={mode} onSubmit={handleClick} />
+          </div>
+        </Router >
+      </div>
+    </MyContext.Provider>
   );
 }
 
