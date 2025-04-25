@@ -1,7 +1,6 @@
 import React from "react";
-import { useLocation } from 'react-router-dom';
+import { NavLink, useLocation } from 'react-router-dom';
 import Nav from 'react-bootstrap/Nav';
-import NavLink from 'react-bootstrap/NavLink';
 import SideBar from "./SideBar";
 
 function ThirdBar() {

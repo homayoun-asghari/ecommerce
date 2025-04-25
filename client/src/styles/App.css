@@ -5,7 +5,7 @@
   --color-bg: #ffffff;
   --color-text: #1a1a1a;
   --color-link: #6C7180;
-  --color-footer : #FAF9F6;
+  --color-footer: #FAF9F6;
 
   --font-base: 'Roboto', sans-serif;
   --font-size-base: 16px;
@@ -73,12 +73,12 @@ li {
 }
 
 
-.accordion-button:not(.collapsed){
+.accordion-button:not(.collapsed) {
   background-color: var(--color-primary) !important;
   color: var(--color-bg) !important;
 }
 
-.accordion-button:focus{
+.accordion-button:focus {
   box-shadow: none !important;
 }
 
@@ -86,12 +86,12 @@ li {
   transition: none !important;
 }
 
-.btn-primary{
+.btn-primary {
   background-color: var(--color-primary) !important;
   border-color: var(--color-primary) !important;
 }
 
-.btn-outline-primary{
+.btn-outline-primary {
   border-color: var(--color-primary) !important;
   color: var(--color-primary) !important;
 }
@@ -100,4 +100,20 @@ li {
   background-color: var(--color-primary) !important;
   border-color: var(--color-primary) !important;
   color: white !important;
+}
+
+.scroll-wrapper {
+  border: 0.1px solid var(--color-link);
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  overflow-x: auto;
+  padding: var(--space-xs);
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch; /* smooth scroll on iOS */
+}
+
+.scroll-item {
+  scroll-snap-align: start;
+  flex: 0 0 auto;
 }

@@ -15,8 +15,8 @@ function SideBar() {
         <div className="set category-wrapper">
             <div className="accordion-trigger">
                 <Accordion>
-                    <Accordion.Item eventKey="0" onClick={handleClick}>
-                        <Accordion.Header id="all">All categories</Accordion.Header>
+                    <Accordion.Item eventKey="0">
+                        <Accordion.Header id="all" onClick={handleClick}>All categories</Accordion.Header>
                         <Accordion.Body className="accordion-dropdown">
                             <AccordionItems />
                         </Accordion.Body>

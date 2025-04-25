@@ -1,0 +1,5 @@
+.especial-offers-card{
+    background-color: var(--color-primary);
+    color: white;
+    border: 0.1 solid var(--color-link);
+}

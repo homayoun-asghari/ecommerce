@@ -33,12 +33,10 @@ function Footer(props) {
             <Row className="py-2 g-5" lg={6} md={12} >
                 <Col>
                     <h5>Need Help ?</h5>
-                    <p >Autoseligen syr. Nek diarask fröbomba. Nör
-                        antipol kynoda nynat. Pressa fåmoska.</p>
+                    <p>Autoseligen syr. Nek diarask fröbomba. Nör antipol kynoda nynat. Pressa fåmoska.</p>
 
                     <p style={{ margin: "0" }}>Monday-Friday: 08am-9pm</p>
                     <h6>{<Telephone />} 0 800 300-353</h6>
-
 
                     <p style={{ margin: "0" }}>Need help with your order?</p>
                     <h6>{<Envelope />} info@example.com</h6>

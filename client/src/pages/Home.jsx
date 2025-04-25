@@ -2,18 +2,23 @@ import Row from 'react-bootstrap/Row';
 import CarouselItems from "../components/CarouselItems.jsx";
 import Featuresbar from '../components/Featuresbar.jsx';
 import HotCards from '../components/HotCards.jsx';
-import Products from '../components/Products.jsx';
+import NewArrivals from '../components/NewArrivals.jsx';
+import BestSellers from '../components/BestSellers.jsx';
+import EspecialOffers from '../components/EspecialOffers.jsx';
 
 
 function Home() {
+    const discountThreshold = 20;
     return (
         <Row className='d-flex justify-content-center align-items-center gap-5'>
             <CarouselItems />
             <Featuresbar />
+            <EspecialOffers discount = {discountThreshold}/>
             <HotCards />
-            <Products title = "New Arrivals" content = "Dont miss this opportunity at a special discount just for this week."/>
+            <BestSellers />
             <HotCards />
-            <Products title = "Best Sellers" content = "Some of the new products arriving this weeks"/>
+            <NewArrivals />
+            
         </Row>
     );
 }

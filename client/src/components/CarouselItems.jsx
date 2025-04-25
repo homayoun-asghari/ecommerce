@@ -26,9 +26,9 @@ function CarouselItems() {
     }, [isOpen]);
     return (
         <Row className="mb-4">
-            <Col lg={accordion ? 3 : 0}>
+            <Col xl={accordion ? 3 : 0} lg={accordion ? 4 : 0}>
             </Col>
-            <Col lg={accordion ? 9 : 12} >
+            <Col xl={accordion ? 9 : 12} lg={accordion ? 8 : 0}>
                 <Carousel fade>
                     <Carousel.Item>
                         <img
