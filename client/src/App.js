@@ -6,6 +6,7 @@ import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import Home from "./pages/Home.jsx";
 import Shop from './pages/Shop.jsx';
+import Product from './pages/Product.jsx';
 import BottomNavbar from './components/BottomNavbar.jsx';
 import MyContext from "./components/MyContext";
 
@@ -52,6 +53,7 @@ function App() {
               <Routes>
                 <Route path="/" element={<Home />} />
                 <Route path="/shop" element={<Shop />} />
+                <Route path="/product/:id" element={<Product />} />
               </Routes>
             </Container>
           </main>

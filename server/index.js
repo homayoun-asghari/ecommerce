@@ -40,10 +40,15 @@ app.use(bodyParser.json());
 app.get("/products/newarrivals", async (req, res) => {
     try {
         const result = await db.query(`
-            SELECT * 
-            FROM products 
-            ORDER BY created_at DESC 
+            SELECT p.*, 
+                AVG(r.rating) AS avg_rating, 
+                COUNT(r.id) AS review_count
+            FROM products p
+            LEFT JOIN reviews r ON p.id = r.product_id
+            GROUP BY p.id
+            ORDER BY p.created_at DESC
             LIMIT 10;
+
           `);
 
 
@@ -56,46 +61,102 @@ app.get("/products/newarrivals", async (req, res) => {
 
 app.get("/products/bestsellers", async (req, res) => {
     try {
-        const products = [];
         const result = await db.query(`
-            SELECT p.id AS product_id, 
-                   p.name AS product_name, 
-                   SUM(oi.quantity) AS total_quantity_sold
+            SELECT 
+                p.*, 
+                SUM(oi.quantity) AS total_quantity_sold,
+                AVG(r.rating) AS avg_rating, 
+                COUNT(r.id) AS review_count
             FROM products p
-            JOIN order_items oi ON p.id = oi.product_id
-            GROUP BY p.id, p.name
+            LEFT JOIN reviews r ON p.id = r.product_id
+            LEFT JOIN order_items oi ON p.id = oi.product_id
+            GROUP BY p.id
             ORDER BY total_quantity_sold DESC
             LIMIT 10;
+
           `);
-        for (let i = 0; i < result.rows.length; i++) {
-            const productResult = await db.query("SELECT * FROM products WHERE id = $1", [result.rows[i].product_id]);
-            products.push(productResult.rows[0]);
-        }
-        res.status(200).json(products);
+        res.status(200).json(result.rows);
     } catch (err) {
         console.error(err);
-        res.status(500).json({ error: "Failed to fetch new arrivals" });
+        res.status(500).json({ error: "Failed to fetch best sellers" });
     }
 });
 
 app.get("/products/especialoffers", async (req, res) => {
     const discount = parseFloat(req.query.discount);
     try {
-        const products = [];
         const result = await db.query(`
-            SELECT * 
-            FROM products
-            WHERE discount > $1
-            ORDER BY discount DESC
+            SELECT 
+                p.*, 
+                AVG(r.rating) AS avg_rating,
+                COUNT(r.rating) AS review_count
+            FROM products p
+            LEFT JOIN reviews r ON p.id = r.product_id
+            WHERE p.discount > $1
+            GROUP BY p.id
+            ORDER BY p.discount DESC
             LIMIT 10;
           `, [discount]);
         res.status(200).json(result.rows);
     } catch (err) {
         console.error(err);
-        res.status(500).json({ error: "Failed to fetch new arrivals" });
+        res.status(500).json({ error: "Failed to fetch especial offers" });
     }
 });
 
+app.get("/product", async (req, res) => {
+    const id = req.query.id;
+    try {
+        const result = await db.query(`
+            SELECT p.*, 
+                AVG(r.rating) AS avg_rating,
+                COUNT(r.rating) AS review_count
+            FROM products p
+            LEFT JOIN reviews r ON p.id = r.product_id
+            WHERE p.id = $1
+            GROUP BY p.id`, [id]);
+        res.status(200).json(result.rows);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: "Failed to fetch product" });
+    }
+
+})
+
+
+app.get("/review", async (req, res) => {
+    const id = req.query.id;
+    try {
+        const result = await db.query(`
+            SELECT r.*,
+                u.name as username
+            FROM reviews r
+            LEFT JOIN users as u ON r.user_id = u.id
+            WHERE r.product_id = $1
+            ORDER BY created_at DESC`, [id]);
+        res.status(200).json(result.rows);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: "Failed to fetch review" });
+    }
+
+})
+
+app.get("/related", async (req, res) => {
+    const category = req.query.category;
+    try {
+        const result = await db.query(`
+            SELECT *
+            FROM products
+            WHERE category = $1
+            LIMIT 10`, [category]);
+        res.status(200).json(result.rows);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: "Failed to fetch related" });
+    }
+
+})
 
 
 app.listen(port, '0.0.0.0', () => console.log('Server running on port 5050'));

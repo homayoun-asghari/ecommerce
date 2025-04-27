@@ -9,7 +9,7 @@ import skrill from "../assets/skrill.png";
 import klarna from "../assets/klarna.png";
 import googlePlay from "../assets/googlePlay.png";
 import appStore from "../assets/appStore.png";
-import { Telephone, Envelope, Facebook, Instagram, Twitter} from "react-bootstrap-icons";
+import { Telephone, Envelope, Facebook, Instagram, Twitter } from "react-bootstrap-icons";
 import { Nav } from "react-bootstrap";
 
 function Footer(props) {
@@ -25,21 +25,21 @@ function Footer(props) {
 
                 <Col lg={4} md={12} className="d-flex flex-column align-items-end">
                     <Searchbar button="Send" placeholder="Enter Your Email" />
-                    <p>By subscribing you agree to our Terms & Conditions and Privacy & Cookies Policy.</p>
+                    <p className="py-3">By subscribing you agree to our Terms & Conditions and Privacy & Cookies Policy.</p>
                 </Col>
             </Row>
 
 
-            <Row className="py-2 g-5" lg={6} md={12} >
+            <Row className="d-flex justify-content-center gap-5" lg={6} md={12} >
                 <Col>
                     <h5>Need Help ?</h5>
-                    <p>Autoseligen syr. Nek diarask fröbomba. Nör antipol kynoda nynat. Pressa fåmoska.</p>
+                    <p>New York, New York</p>
 
                     <p style={{ margin: "0" }}>Monday-Friday: 08am-9pm</p>
-                    <h6>{<Telephone />} 0 800 300-353</h6>
+                    <h6>{<Telephone />} +1(212)555-3333</h6>
 
-                    <p style={{ margin: "0" }}>Need help with your order?</p>
-                    <h6>{<Envelope />} info@example.com</h6>
+                    <p className="text-nowrap" style={{ margin: "0" }}>Need help with your order?</p>
+                    <h6>{<Envelope />} info@mail.com</h6>
                 </Col>
 
                 <Col >
@@ -130,7 +130,11 @@ function Footer(props) {
                         </Nav.Link>
                     </Nav>
                 </Col>
-                <Col  >
+
+            </Row>
+
+            <Row className="py-3">
+                <Col className="d-flex flex-column align-items-start">
                     <h5>Download our app</h5>
                     <Nav.Link href="/">
                         <img src={googlePlay} alt="google play logo" />
@@ -144,30 +148,33 @@ function Footer(props) {
                         -20% Discount</p>
                 </Col>
 
-                <Col>
-                    <h5>Follow us:</h5>
+                <Col className="d-flex flex-column align-items-end">
+                    <div className="d-flex flex-column align-items-start">
+                        <h5>Follow us:</h5>
 
-                    <Nav>
-                        <Nav.Link href="/">
-                            <h6>{<Facebook />}</h6>
-                        </Nav.Link>
-                        <Nav.Link href="/">
-                            <h6>{<Instagram />}</h6>
-                        </Nav.Link>
-                        <Nav.Link href="/">
-                            <h6>{<Twitter />}</h6>
-                        </Nav.Link>
-                    </Nav>
+                        <Nav>
+                            <Nav.Link href="/">
+                                <h6>{<Facebook />}</h6>
+                            </Nav.Link>
+                            <Nav.Link href="/">
+                                <h6>{<Instagram />}</h6>
+                            </Nav.Link>
+                            <Nav.Link href="/">
+                                <h6>{<Twitter />}</h6>
+                            </Nav.Link>
+                        </Nav>
 
-                    <p style={{ paddingTop: "var(--space-md)", margin: "0" }}>Payment Methods:</p>
-                    <span><img src={visa} alt="visa logo" />    <img src={payment} alt="payment logo" />    <img src={paypal} alt="paypal logo" />  <img src={skrill} alt="skrill logo" />  <img src={klarna} alt="klarna logo" /></span>
+                        <p style={{ paddingTop: "var(--space-md)", margin: "0" }}>Payment Methods:</p>
+                        <span><img src={visa} alt="visa logo" />    <img src={payment} alt="payment logo" />    <img src={paypal} alt="paypal logo" />  <img src={skrill} alt="skrill logo" />  <img src={klarna} alt="klarna logo" /></span>
+                    </div>
+
                 </Col>
             </Row>
 
 
             <Row lg={6} md={12} >
-                <Col lg={6} md={12} className="d-flex flex-column align-items-start">
-                    <p>Copyright © {year} Jinstore WooCommerce WordPress Theme. All right reserved. Powered by BlackRise Themes.</p>
+                <Col lg={6} md={12} className="d-flex align-items-end justify-content-start">
+                    <p style={{marginBottom: "0px"}}>Copyright © {year} Jinstore WooCommerce WordPress Theme. All right reserved. Powered by BlackRise Themes.</p>
                 </Col>
 
                 <Col lg={6} md={12} className="d-flex flex-column align-items-end">

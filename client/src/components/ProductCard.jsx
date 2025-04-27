@@ -5,9 +5,12 @@ import Card from 'react-bootstrap/Card';
 import { Link } from 'react-router-dom';
 import { Cart, Heart } from "react-bootstrap-icons";
 import Badge from 'react-bootstrap/Badge';
+import Rating from '@mui/material/Rating';
+
 
 function ProductCard({ product }) {
-    const { id, name, description, price, stock, category, image_url, discount } = product;
+    const { id, name, description, price, stock, category, image_url, discount, avg_rating, review_count } = product;
+    console.log("ProductCard", product);
     const [count, setCount] = useState(0);
 
     function handleIncrement() {
@@ -21,13 +24,13 @@ function ProductCard({ product }) {
     }
 
     function letterCont(str, num) {
-        return str.slice(0, num);
+        return str.slice(0, num) + " ...";
     }
 
     const letterLimit = 15;
     return (
         <Row className='d-flex justify-content-center align-items-center gap-5'>
-            <Link to={`/product/${id}`} style={{ textDecoration: "none" }}>
+            <Link to={`/product/${id}`} state={{ count }} style={{ textDecoration: "none" }}>
                 <Col className='d-flex justify-content-center align-items-center'>
                     <Card style={{ width: '18rem' }}>
                         <Card>
@@ -47,6 +50,23 @@ function ProductCard({ product }) {
                             </div>
                             <Card.Title>{letterCont(name, letterLimit)}</Card.Title>
                             <Card.Text>{letterCont(description, letterLimit)}</Card.Text>
+                            <div className="d-flex flex-row justify-content-start align-items-center gap-2">
+                                <Rating
+                                    name="read-only"
+                                    value={avg_rating || 0}
+                                    precision={0.5}
+                                    readOnly
+                                    sx={{
+                                        '& .MuiRating-iconEmpty': {
+                                            color: 'lightgray',
+                                        },
+                                        '& .MuiRating-iconFilled': {
+                                            color: 'gold',
+                                        }
+                                    }}
+                                />
+                                <Badge bg="light" text="dark">{review_count} reviews</Badge>
+                            </div>
                             <Card.Text className="text-muted">{(price - (price * discount / 100)).toFixed(2)}&nbsp;&nbsp;&nbsp;{discount > 0 && (
                                 <span style={{ textDecoration: "line-through" }}>{price}</span>
                             )}</Card.Text>

@@ -12,7 +12,6 @@ function NewArrivals() {
                 const response = await fetch("http://192.168.1.106:5050/products/newarrivals");
                 const data = await response.json();
                 setProducts(data);
-                console.log("Fetched products:", data);
             } catch (err) {
                 console.error("Error fetching new arrivals:", err);
             }

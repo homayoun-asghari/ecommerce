@@ -15,7 +15,6 @@ function EspecialOffers(props) {
                 const response = await fetch(`http://192.168.1.106:5050/products/especialoffers?discount=${props.discount}`);
                 const data = await response.json();
                 setProducts(data);
-                console.log("Fetched products:", data);
             } catch (err) {
                 console.error("Error fetching special offers:", err);
             }
