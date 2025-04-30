@@ -9,6 +9,9 @@ import Shop from './pages/Shop.jsx';
 import Product from './pages/Product.jsx';
 import BottomNavbar from './components/BottomNavbar.jsx';
 import MyContext from "./components/MyContext";
+import Account from './pages/Account.jsx'
+import ChooseRole from './pages/ChooseRole.jsx';
+import ResetPassword from './pages/ResetPassword.jsx';
 
 function App() {
   const [mode, setMode] = useState(() => {
@@ -54,6 +57,9 @@ function App() {
                 <Route path="/" element={<Home />} />
                 <Route path="/shop" element={<Shop />} />
                 <Route path="/product/:id" element={<Product />} />
+                <Route path="/chooserole" element={<ChooseRole />} />
+                <Route path="/account" element={<Account />} />
+                <Route path="/resetpassword" element={<ResetPassword />} />
               </Routes>
             </Container>
           </main>

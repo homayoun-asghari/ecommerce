@@ -32,7 +32,7 @@ function SecondBar(props) {
                 <Col lg={4} className="d-flex align-items-center justify-content-lg-end gap-3">
                     <Row className="w-100 justify-content-center align-items-center">
                         <Col lg={3} className="d-flex justify-content-center align-items-center">
-                            <Nav.Link href="/signin">
+                            <Nav.Link href="/account">
                                 <Person size={26} /> <span className="text-nowrap" >Account</span>
                             </Nav.Link>
                         </Col>
