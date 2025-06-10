@@ -1,5 +1,5 @@
 import './styles/App.css';
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Container from 'react-bootstrap/Container';
 import Navbar from "./components/Navbar";
@@ -8,70 +8,36 @@ import Home from "./pages/Home.jsx";
 import Shop from './pages/Shop.jsx';
 import Product from './pages/Product.jsx';
 import BottomNavbar from './components/BottomNavbar.jsx';
-import MyContext from "./components/MyContext";
-import Account from './pages/Account.jsx'
-import ChooseRole from './pages/ChooseRole.jsx';
-import ResetPassword from './pages/ResetPassword.jsx';
+import Account from './pages/Account.jsx';
+import Cart from './pages/Cart.jsx';
+import Checkout from './pages/Checkout.jsx';
+import ContextProvider from "./contexts/ContextProvider";
 
 function App() {
-  const [mode, setMode] = useState(() => {
-    const storedMode = localStorage.getItem('themeMode');
-    return storedMode === 'dark' ? false : true;
-  });
-
-  function handleClick() {
-    setMode(prev => {
-      const newMode = !prev;
-      localStorage.setItem('themeMode', newMode ? 'light' : 'dark');
-      return newMode;
-    });
-  }
-
-  useEffect(() => {
-    const body = document.body;
-
-    // Disable transitions
-    body.classList.add("theme-transition");
-
-    // Change theme
-    body.setAttribute("data-bs-theme", mode ? "light" : "dark");
-
-    // Re-enable transitions after a tick
-    const timeout = setTimeout(() => {
-      body.classList.remove("theme-transition");
-    }, 0);
-
-    return () => clearTimeout(timeout);
-  }, [mode]);
-
-  const [isOpen, setIsOpen] = useState(false);
-
   return (
-    <MyContext.Provider value={{ isOpen, setIsOpen }}>
-      <div className="app-wrapper">
-        <Router>
-          <Navbar onSubmit={handleClick} mode={mode} />
+    <Router>
+      <ContextProvider>
+        <div className="app-wrapper">
+          <Navbar />
           <main className="content-wrapper py-4">
             <Container fluid>
               <Routes>
                 <Route path="/" element={<Home />} />
                 <Route path="/shop" element={<Shop />} />
                 <Route path="/product/:id" element={<Product />} />
-                <Route path="/chooserole" element={<ChooseRole />} />
                 <Route path="/account" element={<Account />} />
-                <Route path="/resetpassword" element={<ResetPassword />} />
+                <Route path="/cart" element={<Cart />} />
+                <Route path="/checkout" element={<Checkout />} />
               </Routes>
             </Container>
           </main>
-          <Footer mode={mode} />
-          <div style={{ height: "55px", backgroundColor: mode ? "var(--color-secondary)" : "black", }}></div>
+          <Footer />
           <div className="d-block d-lg-none">
-            <BottomNavbar mode={mode} onSubmit={handleClick} />
+            <BottomNavbar />
           </div>
-        </Router >
-      </div>
-    </MyContext.Provider>
+        </div>
+      </ContextProvider>
+    </Router>
   );
 }
-
 export default App;

@@ -1,36 +1,36 @@
-import React, { useState } from "react";
+import React from "react";
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Card from 'react-bootstrap/Card';
 import { Link } from 'react-router-dom';
-import { Cart, Heart } from "react-bootstrap-icons";
+import { Cart, Heart, HeartFill } from "react-bootstrap-icons";
 import Badge from 'react-bootstrap/Badge';
 import Rating from '@mui/material/Rating';
-
+import { useCart } from "../contexts/CartContext";
+import { useWishList } from "../contexts/WishListContext";
 
 function ProductCard({ product }) {
     const { id, name, description, price, stock, category, image_url, discount, avg_rating, review_count } = product;
-    console.log("ProductCard", product);
-    const [count, setCount] = useState(0);
-
-    function handleIncrement() {
-        if (count < stock) setCount(count + 1);
-    }
-
-    function handleDecrement() {
-        if (count > 0) {
-            setCount(count - 1);
-        }
-    }
+    const {wishList, addToWishList, removeFromWishList} = useWishList();
+    const { addToCart, isInCart, increment, decrement, getQty } = useCart();
 
     function letterCont(str, num) {
         return str.slice(0, num) + " ...";
     }
 
+    function handleClick(){
+        const find = wishList.some(item => item.id === id);
+        if(find){
+            removeFromWishList(id);
+        }else{
+            addToWishList(id);
+        }
+    }
+
     const letterLimit = 15;
     return (
         <Row className='d-flex justify-content-center align-items-center gap-5'>
-            <Link to={`/product/${id}`} state={{ count }} style={{ textDecoration: "none" }}>
+            <Link to={`/product/${id}`}  style={{ textDecoration: "none" }}>
                 <Col className='d-flex justify-content-center align-items-center'>
                     <Card style={{ width: '18rem' }}>
                         <Card>
@@ -44,8 +44,8 @@ function ProductCard({ product }) {
                         </Card>
                         <Card.Body>
                             <div className="d-flex justify-content-end mb-2">
-                                <Link to="/shop" className="btn btn-outline-danger">
-                                    <Heart size={24} />
+                                <Link className="btn btn-outline-danger" onClick={handleClick}>
+                                    {wishList.some(item => item.id === id) === true ? <HeartFill size={24} /> : <Heart size={24} />}
                                 </Link>
                             </div>
                             <Card.Title>{letterCont(name, letterLimit)}</Card.Title>
@@ -70,10 +70,15 @@ function ProductCard({ product }) {
                             <Card.Text className="text-muted">{(price - (price * discount / 100)).toFixed(2)}&nbsp;&nbsp;&nbsp;{discount > 0 && (
                                 <span style={{ textDecoration: "line-through" }}>{price}</span>
                             )}</Card.Text>
-                            <Link to="/shop" className="btn btn-outline-success px-5"><Cart size={24} /></Link>
-                            <Link onClick={handleDecrement} style={{ width: "35px" }} className="btn btn-outline-primary m-1">-</Link>
-                            <Link className="btn btn-outline-primary" style={{ cursor: "default" }}>{count}</Link>
-                            <Link onClick={handleIncrement} style={{ width: "35px" }} className="btn btn-outline-primary m-1">+</Link>
+                            {!isInCart(id) ? (
+                                <Link className="btn btn-outline-success px-5" onClick={() => addToCart(product)}><Cart size={24} /></Link>
+                            ) : (
+                                <div className="qty-controls">
+                                    <Link className="btn btn-outline-success" onClick={() => decrement(id)}>-</Link>
+                                    <Link className="btn btn-outline-success" style={{ cursor: "default" }}>{getQty(id)}</Link>
+                                    <Link className="btn btn-outline-success" onClick={() => getQty(id) < stock && increment(id)} >+</Link>
+                                </div>
+                            )}
                         </Card.Body>
                     </Card>
                 </Col>

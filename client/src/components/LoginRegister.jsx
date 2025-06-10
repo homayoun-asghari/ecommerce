@@ -3,14 +3,17 @@ import Row from 'react-bootstrap/Row';
 import Nav from 'react-bootstrap/Nav';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
-import { useNavigate } from "react-router-dom";
 import { Google } from "react-bootstrap-icons";
 import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import {useTheme} from "../contexts/ThemeContext"
 
-function LoginRegister() {
+function LoginRegister(props) {
     const [activeTab, setActiveTab] = useState('login');
     const [email, setEmail] = useState(localStorage.getItem("email"));
     const [password, setPassword] = useState(localStorage.getItem("password"));
+    const {mode} = useTheme();
+
     const navigate = useNavigate();
 
     function handelChange(e) {
@@ -25,7 +28,7 @@ function LoginRegister() {
 
         const formDataObj = Object.fromEntries(formData.entries());
 
-        const response = await fetch("http://192.168.1.106:5050/register", {
+        const response = await fetch("http://192.168.1.106:5050/auth/register", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -55,7 +58,7 @@ function LoginRegister() {
             setPassword(formDataObj.password);
         }
 
-        const response = await fetch("http://192.168.1.106:5050/login", {
+        const response = await fetch("http://192.168.1.106:5050/auth/login", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -72,15 +75,13 @@ function LoginRegister() {
         }
     }
 
-
-
     async function handleForget(e) {
         e.preventDefault();
         const formData = new FormData(e.target);
 
         const formDataObj = Object.fromEntries(formData.entries());
 
-        const response = await fetch("http://192.168.1.106:5050/forgetpassword", {
+        const response = await fetch("http://192.168.1.106:5050/auth/forgetpassword", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -96,6 +97,92 @@ function LoginRegister() {
         }
     }
 
+    async function handleRole(e) {
+        e.preventDefault();
+        const formData = new FormData(e.target);
+        const formDataObj = Object.fromEntries(formData.entries());
+        const response = await fetch(`http://localhost:5050/user/updaterole?id=${props.id}`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(formDataObj)
+        });
+
+        const data = await response.json();
+        if (response.ok) {
+            localStorage.setItem("token", data.token);
+            navigate(`/account?token=${data.token}`);
+            alert("User Loged in successfully");
+        }
+    }
+
+    async function handleReset(e){
+        e.preventDefault();
+        const formData = new FormData(e.target);
+
+        const formDataObj = Object.fromEntries(formData.entries());
+
+        const response = await fetch(`http://192.168.1.106:5050/auth/resetpassword?token=${props.reset}`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(formDataObj)
+        });
+
+        const data = await response.json();
+        if (response.status === 400) {
+            alert(data.error);
+        } else if (response.status === 200) {
+            navigate("/account");
+        }
+    }
+
+    if (props.id) {
+        return (
+            <div className="d-flex justify-content-center" style={{ minHeight: "80vh" }}>
+                <div style={{ width: "100%", maxWidth: "400px" }}>
+                    <Form className="d-flex flex-column gap-3" onSubmit={handleRole}>
+                        <Form.Group className="mb-3">
+                            <Form.Select name="role" required>
+                                <option value="">You are ...</option>
+                                <option value="customer">Customer</option>
+                                <option value="vendor">Vendor</option>
+                            </Form.Select>
+                        </Form.Group>
+                        <Button variant="primary" type="submit">Submit</Button>
+                    </Form>
+                </div>
+            </div>
+        );
+    }
+
+
+    if (props.reset) {
+        return (
+            <div className="d-flex justify-content-center " style={{ minHeight: "80vh" }}>
+            <div style={{ width: "100%", maxWidth: "400px" }}>
+                <Form className="d-flex flex-column gap-3" controlId="register" onSubmit={handleReset}>
+
+                    <Form.Group className="mb-3" controlId="password">
+                        <Form.Label>Password</Form.Label>
+                        <Form.Control name="password" type="password" placeholder="Password" required />
+                    </Form.Group>
+
+                    <Form.Group className="mb-3" controlId="confirmPassword">
+                        <Form.Label>Confirm Password</Form.Label>
+                        <Form.Control name="confirmPassword" type="password" placeholder="Confirm Password" required />
+                    </Form.Group>
+
+                    <Button variant="primary" type="submit">
+                        Submit
+                    </Button>
+                </Form>
+            </div>
+        </div>
+        );
+    }
 
     return (
         <Row>
@@ -114,12 +201,12 @@ function LoginRegister() {
                         <Form className="d-flex flex-column gap-3" onSubmit={handleLogin}>
                             <Form.Group className="mb-3" controlId="email">
                                 <Form.Label>Email address</Form.Label>
-                                <Form.Control name="email" type="email" placeholder="Enter email" value={email} onChange={handelChange} required/>
+                                <Form.Control name="email" type="email" placeholder="Enter email" value={email} onChange={handelChange} required />
                             </Form.Group>
 
                             <Form.Group className="mb-3" controlId="password">
                                 <Form.Label>Password</Form.Label>
-                                <Form.Control name="password" type="password" placeholder="Password" value={password} onChange={handelChange} required/>
+                                <Form.Control name="password" type="password" placeholder="Password" value={password} onChange={handelChange} required />
                             </Form.Group>
                             <Form.Group className="mb-3" controlId="remember">
                                 <div className="d-flex justify-content-between align-items-center">
@@ -137,7 +224,7 @@ function LoginRegister() {
                                 Submit
                             </Button>
 
-                            <Link className="btn btn-secondary" to = "http://localhost:5050/auth/google">
+                            <Link className={mode ? "btn btn-dark" : "btn btn-light"} to="http://localhost:5050/auth/google">
                                 <Google size={24} /> Continue with Google
                             </Link>
                         </Form>
@@ -151,22 +238,22 @@ function LoginRegister() {
                         <Form className="d-flex flex-column gap-3" controlId="register" onSubmit={handleRegister}>
                             <Form.Group className="mb-3" controlId="name">
                                 <Form.Label>Full Name</Form.Label>
-                                <Form.Control name="name" type="text" placeholder="Enter Full Name" required/>
+                                <Form.Control name="name" type="text" placeholder="Enter Full Name" required />
                             </Form.Group>
 
                             <Form.Group className="mb-3" controlId="email">
                                 <Form.Label>Email address</Form.Label>
-                                <Form.Control name="email" type="email" placeholder="Enter email" required/>
+                                <Form.Control name="email" type="email" placeholder="Enter email" required />
                             </Form.Group>
 
                             <Form.Group className="mb-3" controlId="password">
                                 <Form.Label>Password</Form.Label>
-                                <Form.Control name="password" type="password" placeholder="Password" required/>
+                                <Form.Control name="password" type="password" placeholder="Password" required />
                             </Form.Group>
 
                             <Form.Group className="mb-3" controlId="confirmPassword">
                                 <Form.Label>Confirm Password</Form.Label>
-                                <Form.Control name="confirmPassword" type="password" placeholder="Confirm Password" required/>
+                                <Form.Control name="confirmPassword" type="password" placeholder="Confirm Password" required />
                             </Form.Group>
 
                             <Form.Group className="mb-3" controlId="formBasicCheckbox">
@@ -181,7 +268,7 @@ function LoginRegister() {
                                 Submit
                             </Button>
 
-                            <Link className="btn btn-secondary" to = "http://localhost:5050/auth/google">
+                            <Link className={mode ? "btn btn-dark" : "btn btn-light"}  to="http://localhost:5050/auth/google">
                                 <Google size={24} /> Continue with Google
                             </Link>
                         </Form>

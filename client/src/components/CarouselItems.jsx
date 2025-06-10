@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import Carousel from 'react-bootstrap/Carousel';
 import hero1 from "../assets/hero1.jpg";
 import hero2 from "../assets/hero2.jpg";
@@ -6,11 +6,11 @@ import hero3 from "../assets/hero3.jpg";
 import { Link } from 'react-router-dom';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
-import MyContext from "../components/MyContext";
 import "../styles/CarouselItems.css";
+import { useSideBar } from "../contexts/SideBarContext";
 
 function CarouselItems() {
-    const { isOpen } = useContext(MyContext);
+    const {isOpen} = useSideBar();
     const [accordion, setAccordion] = useState(false);
 
     useEffect(() => {

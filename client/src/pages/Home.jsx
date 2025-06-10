@@ -8,16 +8,15 @@ import EspecialOffers from '../components/EspecialOffers.jsx';
 
 
 function Home() {
-    const discountThreshold = 20;
     return (
         <Row className='d-flex justify-content-center align-items-center gap-5'>
             <CarouselItems />
             <Featuresbar />
-            <EspecialOffers discount = {discountThreshold}/>
+            <EspecialOffers/>
             <HotCards />
             <BestSellers />
             <HotCards />
-            <NewArrivals />
+            <NewArrivals/>
             
         </Row>
     );

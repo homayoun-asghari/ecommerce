@@ -4,15 +4,19 @@ import ProductCard from "./ProductCard";
 import "../styles/EspecialOffers.css";
 import Countdown from "./Countdown";
 import { Link } from "react-router-dom";
+import { useUser } from "../contexts/UserContext";
 
 
-function EspecialOffers(props) {
+function EspecialOffers() {
     const [products, setProducts] = useState([]);
+    const { user } = useUser();
+    const userId = user?.data?.id;
+    const discount = 20;
 
     useEffect(() => {
         async function fetchProducts() {
             try {
-                const response = await fetch(`http://192.168.1.106:5050/products/especialoffers?discount=${props.discount}`);
+                const response = await fetch(`http://192.168.1.106:5050/product/especialoffers?discount=${discount}`);
                 const data = await response.json();
                 setProducts(data);
             } catch (err) {
@@ -20,7 +24,7 @@ function EspecialOffers(props) {
             }
         }
         fetchProducts();
-    }, [props.discount]);
+    }, [discount]);
 
 
     return (
@@ -39,7 +43,7 @@ function EspecialOffers(props) {
                 {products.map((product) => (
                     <Col key={product.id} >
                         <div className="card-wrapper">
-                            <ProductCard product={product} />
+                            <ProductCard product={product} userId={userId} />
                         </div>
                     </Col>
                 ))}

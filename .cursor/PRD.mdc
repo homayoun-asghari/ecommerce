@@ -1,0 +1,114 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# This is a marketplace project. we have three roles: buyer, seller, and admin.
+# The tech stack I am using is PERN and react-bootstrap and fully responsive
+These are my DB tables and columns:
+users: 
+"id"	"integer"
+"name"	"character varying"
+"email"	"character varying"
+"password"	"text"
+"role"	"character varying"
+"created_at"	"timestamp without time zone"
+
+wishlist:
+"id"	"integer"
+"user_id"	"integer"
+"product_id"	"integer"
+"created_at"	"timestamp without time zone"
+
+tickets:
+"id"	"integer"
+"user_id"	"integer"
+"user_role"	"text"
+"order_id"	"integer"
+"category"	"text"
+"subject"	"text"
+"status"	"text"
+"created_at"	"timestamp without time zone"
+"updated_at"	"timestamp without time zone"
+
+ticket_messages:
+"id"	"integer"
+"ticket_id"	"integer"
+"sender_type"	"text"
+"sender_id"	"integer"
+"message"	"text"
+"attachment"	"text"
+"created_at"	"timestamp without time zone"
+
+reviews:
+"id"	"integer"
+"product_id"	"integer"
+"user_id"	"integer"
+"rating"	"real"
+"comment"	"text"
+"created_at"	"timestamp without time zone"
+
+products:
+"id"	"integer"
+"seller_id"	"integer"
+"name"	"character varying"
+"description"	"text"
+"price"	"numeric"
+"stock"	"integer"
+"category"	"character varying"
+"image_url"	"text"
+"created_at"	"timestamp without time zone"
+"discount"	"numeric"
+
+orders:
+"id"	"integer"
+"buyer_id"	"integer"
+"status"	"character varying"
+"total"	"numeric"
+"created_at"	"timestamp without time zone"
+"address_id"	"integer"
+
+
+order_items:
+"id"	"integer"
+"order_id"	"integer"
+"product_id"	"integer"
+"quantity"	"integer"
+"price"	"numeric"
+
+
+notifications:
+"id"	"integer"
+"user_id"	"integer"
+"title"	"text"
+"message"	"text"
+"is_read"	"boolean"
+"created_at"	"timestamp without time zone"
+
+cart_items
+"id"	"integer"
+"user_id"	"integer"
+"product_id"	"integer"
+"quantity"	"integer"
+
+blog:
+"id"	"integer"
+"author_id"	"integer"
+"title"	"character varying"
+"content"	"text"
+"image_url"	"text"
+"created_at"	"timestamp without time zone"
+"updated_at"	"timestamp without time zone"
+
+addresses:
+"id"	"integer"
+"user_id"	"integer"
+"full_name"	"text"
+"street"	"text"
+"city"	"text"
+"state"	"text"
+"postal_code"	"integer"
+"country"	"text"
+"phone"	"text"
+"is_default"	"boolean"
+

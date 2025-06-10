@@ -2,14 +2,17 @@ import React, { useEffect, useState } from "react";
 import { Row, Col } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import ProductCard from "./ProductCard";
+import { useUser } from "../contexts/UserContext";
 
 function NewArrivals() {
     const [products, setProducts] = useState([]);
+    const { user } = useUser();
+    const userId = user?.data?.id;
 
     useEffect(() => {
         async function fetchProducts() {
             try {
-                const response = await fetch("http://192.168.1.106:5050/products/bestsellers");
+                const response = await fetch("http://192.168.1.106:5050/product/bestsellers");
                 const data = await response.json();
                 setProducts(data);
             } catch (err) {
@@ -36,7 +39,7 @@ function NewArrivals() {
                 {products.map((product) => (
                     <Col key={product.id} >
                         <div className="card-wrapper">
-                            <ProductCard product={product} />
+                            <ProductCard product={product} userId={userId} />
                         </div>
                     </Col>
                 ))}

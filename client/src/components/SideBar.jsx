@@ -1,30 +1,18 @@
-import React, { useContext } from "react";
-import Accordion from 'react-bootstrap/Accordion';
-import "../styles/SideBar.css";
-import AccordionItems from "./AccordionItems";
-import MyContext from "./MyContext";
+import React from "react";
+import Categories from "./Categories";
+import AccountSideBar from "./AccountSideBar";
+import { useLocation } from "react-router-dom";
+import { useUser } from "../contexts/UserContext";
 
 function SideBar() {
-    const { isOpen, setIsOpen } = useContext(MyContext);
+  const location = useLocation();
+  const {user} = useUser();
 
-    function handleClick() {
-        setIsOpen(prev => !prev);
-        console.log(isOpen);
-    }
-    return (
-        <div className="set category-wrapper">
-            <div className="accordion-trigger">
-                <Accordion>
-                    <Accordion.Item eventKey="0">
-                        <Accordion.Header id="all" onClick={handleClick}>All categories</Accordion.Header>
-                        <Accordion.Body className="accordion-dropdown">
-                            <AccordionItems />
-                        </Accordion.Body>
-                    </Accordion.Item>
-                </Accordion>
-            </div>
-        </div>
-    );
+  if (location.pathname === "/account" && user) {
+    return <AccountSideBar />
+  } else {
+    return <Categories />;
+  }
 }
 
 export default SideBar;

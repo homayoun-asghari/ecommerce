@@ -11,11 +11,15 @@ import googlePlay from "../assets/googlePlay.png";
 import appStore from "../assets/appStore.png";
 import { Telephone, Envelope, Facebook, Instagram, Twitter } from "react-bootstrap-icons";
 import { Nav } from "react-bootstrap";
+import { useTheme } from '../contexts/ThemeContext.jsx';
+import { Send } from "react-bootstrap-icons";
 
-function Footer(props) {
+function Footer() {
     const year = new Date().getFullYear();
+    const { mode } = useTheme();
+
     return (
-        <Container fluid className={`footer g-5 ${props.mode ? "footer-light" : "footer-dark"}`}>
+        <Container fluid className={`footer g-5 ${mode ? "footer-light" : "footer-dark"}`}>
             <Row lg={6} md={12}>
                 <Col lg={8} md={12} >
                     <h5>Join our newsletter for 10$ offs</h5>
@@ -24,7 +28,7 @@ function Footer(props) {
                 </Col>
 
                 <Col lg={4} md={12} className="d-flex flex-column align-items-end">
-                    <Searchbar button="Send" placeholder="Enter Your Email" />
+                    <Searchbar button={<><Send /> </>} placeholder="Enter Your Email" />
                     <p className="py-3">By subscribing you agree to our Terms & Conditions and Privacy & Cookies Policy.</p>
                 </Col>
             </Row>
@@ -174,7 +178,7 @@ function Footer(props) {
 
             <Row lg={6} md={12} >
                 <Col lg={6} md={12} className="d-flex align-items-end justify-content-start">
-                    <p style={{marginBottom: "0px"}}>Copyright © {year} Jinstore WooCommerce WordPress Theme. All right reserved. Powered by BlackRise Themes.</p>
+                    <p style={{ marginBottom: "0px" }}>Copyright © {year} Jinstore WooCommerce WordPress Theme. All right reserved. Powered by BlackRise Themes.</p>
                 </Col>
 
                 <Col lg={6} md={12} className="d-flex flex-column align-items-end">
@@ -193,6 +197,12 @@ function Footer(props) {
                 </Col>
 
             </Row>
+            <div
+                style={{
+                    height: "55px",
+                    backgroundColor: mode ? "var(--color-secondary)" : "black",
+                }}
+            ></div>
 
         </Container>
     );

@@ -1,53 +1,79 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import LoginRegister from '../components/LoginRegister';
+import { useUser } from "../contexts/UserContext";
+import LoginRegister from "../components/LoginRegister";
+import Row from "react-bootstrap/Row";
+import Col from "react-bootstrap/Col";
+import Dashboard from "../components/Dashboard";
+import Orders from "../components/Orders";
+import WishList from "../components/WishList";
+import Addresses from "../components/Addresses";
+import Cart from "../pages/Cart";
+import Tickets from "../components/Tickets";
+import Notifications from "../components/Notifications";
+import { useAccountTab } from "../contexts/AccountTabContext";
+import { useSideBar } from "../contexts/SideBarContext";
+import SellerDashboard from "../components/SellerDashboard";
 
 function Account() {
-    const [authorized, setAuthorized] = useState(false);
-    const [user, setUser] = useState({});
-    const navigate = useNavigate();
-    const [searchParams] = useSearchParams();
+  const [searchParams] = useSearchParams();
+  const resetPassword = searchParams.get("resetpassword");
+  const id = searchParams.get("id");
+  const navigate = useNavigate();
+  const { user, authorized, logout } = useUser();
+  const { activeTab, setActiveTab } = useAccountTab();
+  const { isOpen } = useSideBar();
+  const tabFromURL = searchParams.get("tab");
 
-    if (searchParams.get('token')) {
-        localStorage.setItem("token", searchParams.get('token'));
-    }
+  useEffect(() => {
+    if (tabFromURL) setActiveTab(tabFromURL);
+  }, [tabFromURL]);
 
-    useEffect(() => {
-        const fetchProfile = async () => {
-            const token = localStorage.getItem("token");
-            const response = await fetch("http://localhost:5050/account", {
-                headers: {
-                    "Authorization": `Bearer ${token}`,
-                },
-            });
+  if (!authorized) {
+    return <LoginRegister id={id} reset={resetPassword} />;
+  }
 
-            const data = await response.json();
-            if (response.ok) {
-                setAuthorized(true);
-                setUser(data);
-            } else {
-                setAuthorized(false);
-            }
-        };
+  const role = user?.data?.role;
 
-        fetchProfile();
-    }, []);
+  if (role === "buyer") {
+    return (
+      <Row>
+        <Col lg={isOpen ? 3 : 0}></Col>
+        <Col lg={isOpen ? 9 : 12}>
+          {activeTab === "dashboard" && <Dashboard />}
+          {activeTab === "orders" && <Orders />}
+          {activeTab === "wishlist" && <WishList />}
+          {activeTab === "cart" && <Cart />}
+          {activeTab === "address" && <Addresses />}
+          {activeTab === "tickets" && <Tickets />}
+          {activeTab === "notifications" && <Notifications />}
+        </Col>
+      </Row>
+    );
+  } else if (role === "seller") {
+    return (
+      <Row>
+        <Col lg={isOpen ? 3 : 0}></Col>
+        <Col lg={isOpen ? 9 : 12}>
+          {activeTab === "dashboard" && <SellerDashboard />}
+          {activeTab === "products"}
+          {activeTab === "orders"}
+          {activeTab === "payment"}
+          {activeTab === "tickets"}
+          {activeTab === "notifications"}
+        </Col>
+      </Row>
+    );
+  } else if (role === "admin") {
+    return (
+      <div>
+        <h1>Welcome {user.data.name} - you are an admin</h1>
+        <button onClick={() => { logout(); navigate("/"); }}>Logout</button>
+      </div>
+    );
+  }
 
-    function handleLogout() {
-        localStorage.removeItem("token");
-        navigate("/");
-    }
-
-    if (authorized === true) {
-        return (
-            <div>
-                <h1>Welcome {user.data.name} to your account page</h1>
-                <button onClick={handleLogout}>logout</button>
-            </div>
-        );
-    } else {
-        return <LoginRegister />
-    }
+  return null;
 }
 
 export default Account;
