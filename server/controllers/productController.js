@@ -142,16 +142,12 @@ export const addProduct = async (req, res) => {
             folder: "products",
         });
 
-        // Get the next available ID
-        const maxIdResult = await db.query('SELECT COALESCE(MAX(id), 0) + 1 as next_id FROM products');
-        const nextId = maxIdResult.rows[0].next_id;
-
         // Save product to database with Cloudinary URL
         const dbResult = await db.query(`
-            INSERT INTO products (id, name, description, price, category, stock, image_url, seller_id)
-            VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+            INSERT INTO products (name, description, price, category, stock, image_url, seller_id)
+            VALUES ($1, $2, $3, $4, $5, $6, $7)
             RETURNING *`,
-            [nextId, name, description, price, category, stock, result.secure_url, seller_id]
+            [name, description, price, category, stock, result.secure_url, seller_id]
         );
 
         res.status(201).json({
