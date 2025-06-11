@@ -12,6 +12,7 @@ import addressRoute from "./routes/addressRoutes.js";
 import cartRoute from "./routes/cartRoutes.js";
 import ticketRoute from "./routes/ticketRoutes.js";
 import notificationRoute from "./routes/notificationRoutes.js";
+import paymentRoute from "./routes/paymentRoutes.js";
 
 
 dotenv.config();
@@ -49,6 +50,7 @@ app.use("/address", addressRoute);
 app.use("/cart", cartRoute);
 app.use("/ticket", ticketRoute);
 app.use("/notification", notificationRoute);
+app.use("/payment", paymentRoute);
 
 app.listen(port, '0.0.0.0', () => {
     console.log(`Server running on port ${port}`);

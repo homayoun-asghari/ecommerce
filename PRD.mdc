@@ -112,5 +112,15 @@ addresses:
 "phone"	"text"
 "is_default"	"boolean"
 
+payment:
+"id"	"integer"
+"seller_id"	"integer"
+"order_id"	"integer"
+"amount"	"numeric"
+"status"	"character varying"
+"method"	"character varying"
+"paid_at"	"timestamp without time zone"
+"created_at"	"timestamp without time zone"
+
 
 for API calls always use fetch instead of axios 

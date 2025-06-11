@@ -16,6 +16,7 @@ import { useSideBar } from "../contexts/SideBarContext";
 import SellerDashboard from "../components/SellerDashboard";
 import AddProducts from "../components/AddProducts";
 import SellerOrders from "../components/SellerOrders";
+import SellerPayment from "../components/SellerPayment";
 
 function Account() {
   const [searchParams] = useSearchParams();
@@ -60,7 +61,7 @@ function Account() {
           {activeTab === "dashboard" && <SellerDashboard />}
           {activeTab === "products" && <AddProducts />}
           {activeTab === "orders" && <SellerOrders />}
-          {activeTab === "payment"}
+          {activeTab === "payment" && <SellerPayment />}
           {activeTab === "tickets"}
           {activeTab === "notifications"}
         </Col>
