@@ -6,6 +6,7 @@ import { useUser } from "../contexts/UserContext";
 import PersonIcon from '@mui/icons-material/Person';
 import AccountTabs from "./AccountTabs.jsx";
 import SellerAccountTabs from "./SellerAccountTabs.jsx";
+import AdminAccountTabs from "./AdminAccountTabs.jsx";
 
 function Categories() {
     const { setIsOpen } = useSideBar();
@@ -31,6 +32,7 @@ function Categories() {
                         <Accordion.Body className="accordion-dropdown">
                             {userRole === "buyer" && <AccountTabs />}
                             {userRole === "seller" && <SellerAccountTabs />}
+                            {userRole === "admin" && <AdminAccountTabs />}
                         </Accordion.Body>
                     </Accordion.Item>
                 </Accordion>

@@ -22,6 +22,8 @@ import { useUser } from "../contexts/UserContext.jsx";
 import LanguageSwitcher from "./LanguageSwitcher";
 import { useNotification } from "../contexts/NotificationContext";
 import NotificationsIcon from '@mui/icons-material/Notifications';
+import SellerAccountTabs from "./SellerAccountTabs.jsx";
+import AdminAccountTabs from "./AdminAccountTabs.jsx";
 
 function BottomNavbar() {
   const { mode } = useTheme();
@@ -32,6 +34,7 @@ function BottomNavbar() {
   const { wishList } = useWishList();
   const location = useLocation();
   const { user } = useUser();
+  const userRole = user?.data?.role;
   const { notifications } = useNotification();
 
   useEffect(() => {
@@ -87,9 +90,10 @@ function BottomNavbar() {
           <div className="flex-grow-1 overflow-auto">
             <Searchbar button={<Search />} placeholder="Search Products" />
 
-            {/* <Accordion className="mt-3"><CategoryItems /></Accordion> */}
-
-            {(location.pathname === "/account" && user) ? <AccountTabs /> : <Accordion className="mt-3"><CategoryItems /></Accordion>}
+            {(location.pathname === "/account" && userRole === "buyer") && <AccountTabs />}
+            {(location.pathname === "/account" && userRole === "seller") && <SellerAccountTabs />}
+            {(location.pathname === "/account" && userRole === "admin") && <AdminAccountTabs />}
+            {(location.pathname !== "/account") && <Accordion className="mt-3"><CategoryItems /></Accordion>}
           </div>
 
           <div className="offcanvas-footer mt-4 d-flex align-items-center justify-content-between flex-wrap gap-3">

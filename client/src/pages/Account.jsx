@@ -62,17 +62,32 @@ function Account() {
           {activeTab === "products" && <AddProducts />}
           {activeTab === "orders" && <SellerOrders />}
           {activeTab === "payment" && <SellerPayment />}
-          {activeTab === "tickets"}
-          {activeTab === "notifications"}
+          {activeTab === "wishlist" && <WishList />}
+          {activeTab === "cart" && <Cart />}
+          {activeTab === "address" && <Addresses />}
+          {activeTab === "tickets" && <Tickets />}
+          {activeTab === "notifications" && <Notifications />}
         </Col>
       </Row>
     );
   } else if (role === "admin") {
     return (
-      <div>
-        <h1>Welcome {user.data.name} - you are an admin</h1>
-        <button onClick={() => { logout(); navigate("/"); }}>Logout</button>
-      </div>
+      <Row>
+        <Col lg={isOpen ? 3 : 0}></Col>
+        <Col lg={isOpen ? 9 : 12}>
+          <h1>Welcome {user.data.name} - you are an admin</h1>
+          {activeTab === "dashboard"}
+          {activeTab === "users"}
+          {activeTab === "products"}
+          {activeTab === "orders"}
+          {activeTab === "payment"}
+          {activeTab === "tickets"}
+          {activeTab === "reviews"}
+          {activeTab === "blog"}
+          {activeTab === "notifications"}
+          {activeTab === "setting"}
+        </Col>
+      </Row>
     );
   }
 
