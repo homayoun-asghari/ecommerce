@@ -3,60 +3,33 @@ import db from "../config/db.js";
 
 // Get monthly order data for the chart
 export const getMonthlyOrders = async (req, res) => {
-  try {
-    const { month } = req.query; // Format: YYYY-MM
-    
-    let dateCondition = '';
-    const params = [];
-    
-    if (month) {
-      dateCondition = 'AND date_trunc(\'month\', o.created_at) = date_trunc(\'month\', $1::date)';
-      params.push(month + '-01'); // First day of the selected month
-    } else {
-      // Default to last 6 months if no month is selected
-      dateCondition = 'AND o.created_at >= date_trunc(\'month\', CURRENT_DATE - INTERVAL \'5 months\')';
-    }
-    
-    const query = `
-      WITH date_series AS (
-        SELECT 
-          to_char(date_trunc('month', 
-            ${month ? '$1::date' : 'CURRENT_DATE'} - INTERVAL '5 months' + 
-            (n || ' months')::interval
-          ), 'YYYY-MM') as month
-        FROM generate_series(0, 5) n
-      ),
-      monthly_orders AS (
-        SELECT 
-          to_char(date_trunc('month', o.created_at), 'YYYY-MM') as month,
-          o.status,
-          COUNT(o.id) as order_count,
-          COALESCE(SUM(o.total), 0) as total_sales
-        FROM orders o
-        WHERE 1=1
-          ${dateCondition}
-          AND o.status IN ('delivered', 'pending')
-        GROUP BY to_char(date_trunc('month', o.created_at), 'YYYY-MM'), o.status
-        ORDER BY month, status
-      )
-      SELECT 
-        ds.month,
-        mo.status,
-        COALESCE(mo.order_count, 0) as order_count,
-        COALESCE(mo.total_sales, 0) as total_sales
-      FROM date_series ds
-      LEFT JOIN monthly_orders mo ON ds.month = mo.month
-      ORDER BY ds.month, mo.status`;
+    const { month, year } = req.query;
 
-    const result = await db.query(query, params);
-    res.status(200).json(result.rows);
-  } catch (err) {
-    console.error('Error in getMonthlyOrders:', err);
-    res.status(500).json({ 
-      error: 'Failed to fetch monthly order data',
-      details: process.env.NODE_ENV === 'development' ? err.message : undefined
-    });
-  }
+    try {
+        // 1. Day-level breakdown (grouped by day and status)
+        const dailyStats = await db.query(`
+            SELECT 
+                DATE_TRUNC('day', o.created_at) AS day,
+                o.status,
+                COUNT(DISTINCT o.id) AS order_count,
+                SUM(oi.quantity * oi.price) AS total_sales
+            FROM orders o
+            JOIN order_items oi ON o.id = oi.order_id
+            JOIN products p ON oi.product_id = p.id
+            WHERE DATE_PART('month', o.created_at) = $1
+              AND DATE_PART('year', o.created_at) = $2
+              AND o.status IN ('pending', 'delivered')
+            GROUP BY day, o.status
+            ORDER BY day;
+        `, [month, year]);        
+
+        res.status(200).json({
+            daily: dailyStats.rows,
+        });
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({ error: "Failed to fetch seller's orders." });
+    }
 };
 
 export const getOverview = async (req, res) => {
