@@ -18,6 +18,7 @@ import AddProducts from "../components/AddProducts";
 import SellerOrders from "../components/SellerOrders";
 import SellerPayment from "../components/SellerPayment";
 import AdminDashboard from "../components/AdminDashboard";
+import AdminUsers from "../components/AdminUsers";
 
 function Account() {
   const [searchParams] = useSearchParams();
@@ -77,7 +78,7 @@ function Account() {
         <Col lg={isOpen ? 3 : 0}></Col>
         <Col lg={isOpen ? 9 : 12}>
           {activeTab === "dashboard" && <AdminDashboard />}
-          {activeTab === "users"}
+          {activeTab === "users" && <AdminUsers />}
           {activeTab === "products"}
           {activeTab === "orders"}
           {activeTab === "payment"}

@@ -43,7 +43,7 @@ export const getUserStats = async (req, res) => {
     const ordersResult = await db.query(
       `SELECT COUNT(*) as order_count, COALESCE(SUM(total), 0) as total_spent 
        FROM orders 
-       WHERE user_id = $1`,
+       WHERE buyer_id = $1`,
       [id]
     );
     

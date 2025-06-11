@@ -65,10 +65,10 @@ const AdminUsers = () => {
   };
 
   return (
-    <div className="p-3">      
+    <div className="p-3">
       <Card className="mb-4">
-        <Card.Body>
-          <div className="d-flex flex-column flex-md-row justify-content-between gap-3 mb-4">
+        <Card.Header>
+        <div className="d-flex flex-column flex-md-row justify-content-between gap-3">
             <div style={{ maxWidth: '300px' }}>
               <InputGroup>
                 <InputGroup.Text><BsSearch /></InputGroup.Text>
@@ -80,7 +80,7 @@ const AdminUsers = () => {
                 />
               </InputGroup>
             </div>
-            
+
             <div className="d-flex align-items-center gap-2">
               <BsFilterLeft size={20} />
               <Form.Select
@@ -95,7 +95,9 @@ const AdminUsers = () => {
               </Form.Select>
             </div>
           </div>
-
+        </Card.Header>
+        <Card.Body>
+          
           {loading ? (
             <div className="text-center my-5">
               <div className="spinner-border" role="status">
