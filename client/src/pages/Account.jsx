@@ -17,6 +17,7 @@ import SellerDashboard from "../components/SellerDashboard";
 import AddProducts from "../components/AddProducts";
 import SellerOrders from "../components/SellerOrders";
 import SellerPayment from "../components/SellerPayment";
+import AdminDashboard from "../components/AdminDashboard";
 
 function Account() {
   const [searchParams] = useSearchParams();
@@ -75,8 +76,7 @@ function Account() {
       <Row>
         <Col lg={isOpen ? 3 : 0}></Col>
         <Col lg={isOpen ? 9 : 12}>
-          <h1>Welcome {user.data.name} - you are an admin</h1>
-          {activeTab === "dashboard"}
+          {activeTab === "dashboard" && <AdminDashboard />}
           {activeTab === "users"}
           {activeTab === "products"}
           {activeTab === "orders"}
