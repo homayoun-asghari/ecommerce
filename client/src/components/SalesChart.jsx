@@ -31,7 +31,6 @@ function SalesChart() {
 
             const res = await fetch(`http://localhost:5050/order/saleStats?userId=${userId}&month=${month}&year=${year}`);
             const raw = await res.json();
-            console.log(raw);
 
             if (res.ok) {
                 const delivered = [];
@@ -60,7 +59,6 @@ function SalesChart() {
     return (
         <>
             <Card>
-                {console.log(deliveredData, pendingData)}
                 <Card.Header className="d-flex justify-content-between align-items-center">
                     <h5>Total Sales: ${totalSales.toFixed(2)}</h5>
                     <select value={month} onChange={e => setMonth(Number(e.target.value))}>

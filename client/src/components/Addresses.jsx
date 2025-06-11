@@ -125,23 +125,53 @@ function Addresses() {
                         </Form.Group>
                         <Form.Group className="mb-3">
                             <Form.Label>Street</Form.Label>
-                            <Form.Control type="text" name="street" value={formData.street || ""} required />
+                            <Form.Control
+                              type="text"
+                              name="street"
+                              value={formData.street || ""}
+                              onChange={(e) => setFormData({ ...formData, street: e.target.value })}
+                              required
+                            />
                         </Form.Group>
                         <Form.Group className="mb-3">
                             <Form.Label>City</Form.Label>
-                            <Form.Control type="text" name="city" value={formData.city || ""} required />
+                            <Form.Control
+                              type="text"
+                              name="city"
+                              value={formData.city || ""}
+                              onChange={(e) => setFormData({ ...formData, city: e.target.value })}
+                              required
+                            />
                         </Form.Group>
                         <Form.Group className="mb-3">
                             <Form.Label>State</Form.Label>
-                            <Form.Control type="text" name="state" value={formData.state || ""} required />
+                            <Form.Control
+                              type="text"
+                              name="state"
+                              value={formData.state || ""}
+                              onChange={(e) => setFormData({ ...formData, state: e.target.value })}
+                              required
+                            />
                         </Form.Group>
                         <Form.Group className="mb-3">
                             <Form.Label>Postal Code</Form.Label>
-                            <Form.Control type="text" name="postal_code" value={formData.postal_code || ""} required />
+                            <Form.Control
+                              type="text"
+                              name="postal_code"
+                              value={formData.postal_code || ""}
+                              onChange={(e) => setFormData({ ...formData, postal_code: e.target.value })}
+                              required
+                            />
                         </Form.Group>
                         <Form.Group className="mb-3">
                             <Form.Label>Country</Form.Label>
-                            <Form.Control type="text" name="country" value={formData.country || ""} required />
+                            <Form.Control
+                              type="text"
+                              name="country"
+                              value={formData.country || ""}
+                              onChange={(e) => setFormData({ ...formData, country: e.target.value })}
+                              required
+                            />
                         </Form.Group>
                         <Form.Group className="mb-3">
                             <Form.Label>Phone</Form.Label>

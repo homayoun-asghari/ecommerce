@@ -84,3 +84,51 @@ export const getSaleStats = async (req, res) => {
     }
 };
 
+export const getSellerOrders = async (req, res) => {
+  const { userId } = req.query;
+
+  try {
+    const query = `
+    SELECT 
+      o.id AS order_id, 
+      o.status, 
+      o.created_at, 
+      o.total, 
+      u.name AS buyer_name,
+      json_build_object(
+        'street', a.street,
+        'city', a.city,
+        'state', a.state,
+        'country', a.country,
+        'postal_code', a.postal_code,
+        'phone', a.phone
+      ) AS shipping_address,
+      json_agg(
+        json_build_object(
+          'product_id', p.id,
+          'name', p.name,
+          'price', oi.price,
+          'quantity', oi.quantity,
+          'image_url', p.image_url
+        )
+      ) AS order_items
+    FROM orders o
+    JOIN users u ON o.buyer_id = u.id
+    JOIN addresses a ON o.address_id = a.id
+    JOIN order_items oi ON o.id = oi.order_id
+    JOIN products p ON oi.product_id = p.id
+    WHERE p.seller_id = $1
+    GROUP BY o.id, u.name, a.street, a.city, a.state, a.country, a.postal_code, a.phone
+    ORDER BY o.created_at DESC
+  `;
+  
+
+
+
+    const result = await db.query(query, [userId]);
+    res.status(200).json(result.rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to fetch seller orders' });
+  }
+};

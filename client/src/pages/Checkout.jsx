@@ -74,7 +74,7 @@ function Checkout() {
 
     useEffect(() => {
         const fetchAddresses = async () => {
-            const response = await fetch(`http://localhost:5050/addresses?userId=${userId}`);
+            const response = await fetch(`http://localhost:5050/address?userId=${userId}`);
             const data = await response.json();
             if (response.ok) {
                 setAddresses(data);

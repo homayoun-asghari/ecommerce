@@ -3,7 +3,7 @@ import { checkout, updateDBCart, getDBCart } from "../controllers/cartController
 
 const router = express.Router();
 
-router.get("/checkout", checkout);
+router.post("/checkout", checkout);
 router.post("/updateDBCart", updateDBCart);
 router.get("/getDBCart", getDBCart);
 

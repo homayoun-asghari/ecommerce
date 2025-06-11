@@ -14,6 +14,8 @@ import Notifications from "../components/Notifications";
 import { useAccountTab } from "../contexts/AccountTabContext";
 import { useSideBar } from "../contexts/SideBarContext";
 import SellerDashboard from "../components/SellerDashboard";
+import AddProducts from "../components/AddProducts";
+import SellerOrders from "../components/SellerOrders";
 
 function Account() {
   const [searchParams] = useSearchParams();
@@ -56,8 +58,8 @@ function Account() {
         <Col lg={isOpen ? 3 : 0}></Col>
         <Col lg={isOpen ? 9 : 12}>
           {activeTab === "dashboard" && <SellerDashboard />}
-          {activeTab === "products"}
-          {activeTab === "orders"}
+          {activeTab === "products" && <AddProducts />}
+          {activeTab === "orders" && <SellerOrders />}
           {activeTab === "payment"}
           {activeTab === "tickets"}
           {activeTab === "notifications"}
