@@ -1,6 +1,69 @@
 // server/controllers/adminController.js
 import db from "../config/db.js";
 
+// Get all users with filtering and search
+export const getUsers = async (req, res) => {
+  const { search = '', role = 'all' } = req.query;
+  
+  try {
+    let query = `
+      SELECT id, name, email, role, created_at as "createdAt"
+      FROM users
+      WHERE 1=1
+    `;
+    
+    const params = [];
+    
+    if (search) {
+      query += ` AND (LOWER(name) LIKE $${params.length + 1} OR LOWER(email) LIKE $${params.length + 1})`;
+      params.push(`%${search.toLowerCase()}%`);
+    }
+    
+    if (role !== 'all') {
+      query += ` AND role = $${params.length + 1}`;
+      params.push(role);
+    }
+    
+    query += ' ORDER BY created_at DESC';
+    
+    const { rows } = await db.query(query, params);
+    res.json(rows);
+  } catch (error) {
+    console.error('Error fetching users:', error);
+    res.status(500).json({ error: 'Failed to fetch users' });
+  }
+};
+
+// Get user statistics
+export const getUserStats = async (req, res) => {
+  const { id } = req.params;
+  
+  try {
+    // Get total orders
+    const ordersResult = await db.query(
+      `SELECT COUNT(*) as order_count, COALESCE(SUM(total), 0) as total_spent 
+       FROM orders 
+       WHERE user_id = $1`,
+      [id]
+    );
+    
+    // Get total reviews
+    const reviewsResult = await db.query(
+      'SELECT COUNT(*) as review_count FROM reviews WHERE user_id = $1',
+      [id]
+    );
+    
+    res.json({
+      orders: parseInt(ordersResult.rows[0]?.order_count) || 0,
+      reviews: parseInt(reviewsResult.rows[0]?.review_count) || 0,
+      totalSpent: parseFloat(ordersResult.rows[0]?.total_spent) || 0
+    });
+  } catch (error) {
+    console.error('Error fetching user stats:', error);
+    res.status(500).json({ error: 'Failed to fetch user statistics' });
+  }
+};
+
 // Get monthly order data for the chart
 export const getMonthlyOrders = async (req, res) => {
     const { month, year } = req.query;
