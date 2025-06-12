@@ -12,7 +12,6 @@ import {
   Tab
 } from 'react-bootstrap';
 import { 
-  CashStack,
   CheckCircleFill,
   ClockFill
 } from 'react-bootstrap-icons';
@@ -133,43 +132,73 @@ const AdminPayments = () => {
     }
   }, [filters, pagination.limit, setPagination]);
 
-  // Fetch data when tab or page changes
+  // Fetch payments and payouts data
   useEffect(() => {
     const fetchData = async () => {
-      if (activeTab === 'payments') {
-        await fetchPayments(pagination.page);
-      } else {
-        await fetchPayouts(pagination.page);
+      try {
+        if (activeTab === 'payments') {
+          await fetchPayments(pagination.page);
+        } else {
+          await fetchPayouts(pagination.page);
+        }
+      } catch (error) {
+        console.error('Error fetching data:', error);
       }
     };
 
     fetchData();
   }, [activeTab, pagination.page, fetchPayments, fetchPayouts]);
+  
+  // Reset filters when tab changes
+  useEffect(() => {
+    setSellerFilter('all');
+    setStatusFilter('all');
+    setDateRange({ start: '', end: '' });
+  }, [activeTab]);
 
-  // Apply filters
-  const filteredPayments = useMemo(() => {
-    let result = [...payments];
+  // Filter data based on active tab and filters
+  const filteredData = useMemo(() => {
+    const data = activeTab === 'payments' ? [...payments] : [...payouts];
+    let result = [...data];
 
     if (sellerFilter !== 'all') {
-      result = result.filter(p => p.seller?.id?.toString() === sellerFilter);
+      result = result.filter(item => {
+        // Handle both direct seller_id and nested seller object
+        const sellerId = activeTab === 'payments' 
+          ? (item.seller?.id || item.seller_id)
+          : (item.seller?.id || item.seller_id);
+        return sellerId?.toString() === sellerFilter;
+      });
     }
 
     if (statusFilter !== 'all') {
-      result = result.filter(p => p.status === statusFilter);
+      result = result.filter(item => item.status === statusFilter);
     }
 
     if (dateRange.start) {
-      result = result.filter(p => new Date(p.paid_at) >= new Date(dateRange.start));
+      const startDate = new Date(dateRange.start);
+      startDate.setHours(0, 0, 0, 0);
+      result = result.filter(item => {
+        const itemDate = new Date(activeTab === 'payments' ? item.paidAt || item.paid_at : item.createdAt || item.created_at);
+        return itemDate >= startDate;
+      });
     }
 
     if (dateRange.end) {
       const endDate = new Date(dateRange.end);
-      endDate.setHours(23, 59, 59);
-      result = result.filter(p => new Date(p.paid_at) <= endDate);
+      endDate.setHours(23, 59, 59, 999);
+      result = result.filter(item => {
+        const itemDate = new Date(activeTab === 'payments' ? item.paidAt || item.paid_at : item.createdAt || item.created_at);
+        return itemDate <= endDate;
+      });
     }
 
     return result;
-  }, [sellerFilter, statusFilter, dateRange, payments]);
+  }, [sellerFilter, statusFilter, dateRange, payments, payouts, activeTab]);
+  
+  // For backward compatibility
+  const filteredPayments = activeTab === 'payments' ? filteredData : [];
+  const filteredPayouts = activeTab === 'payouts' ? filteredData : [];
 
   const handleDateChange = (e) => {
     const { name, value } = e.target;
@@ -183,14 +212,6 @@ const AdminPayments = () => {
     setSellerFilter('all');
     setStatusFilter('all');
     setDateRange({ start: '', end: '' });
-  };
-
-  // Handle view payment details
-  const handleViewPayment = (payment) => {
-    // Open payment details in a modal or new page
-    // For now, we'll just log it and show an alert
-    console.log('View payment:', payment);
-    alert(`Payment Details:\nID: ${payment.id}\nOrder ID: ${payment.orderId}\nAmount: $${parseFloat(payment.amount).toFixed(2)}\nStatus: ${payment.status}\nDate: ${payment.paidAt ? new Date(payment.paidAt).toLocaleString() : 'N/A'}`);
   };
 
   // Handle export to CSV
@@ -284,7 +305,7 @@ const AdminPayments = () => {
         throw new Error(errorData.error || 'Failed to update payout status');
       }
       
-      const data = await response.json();
+      await response.json();
       
       // Update local state with the updated payout
       setPayouts(payouts.map(p => 
@@ -329,20 +350,44 @@ const AdminPayments = () => {
     return (method) => icons[method] || method;
   }, []);
 
-  // Generate seller options from payments data
-  // eslint-disable-next-line no-unused-vars
+  // Generate seller options from both payments and payouts data
   const sellerOptions = useMemo(() => {
-    const uniqueSellers = [...new Set(payments.map(p => p.seller?.id).filter(Boolean))];
-    const options = uniqueSellers.map(id => {
-      const seller = payments.find(p => p.seller?.id === id)?.seller;
-      return {
-        value: id,
-        label: seller ? `${seller.name} (${seller.email})` : `Seller ${id}`
-      };
-    });
+    // Get unique seller IDs from both payments and payouts
+    const paymentSellers = payments
+      .filter(p => p.seller?.id || p.seller_id)
+      .map(p => ({
+        id: p.seller?.id || p.seller_id,
+        name: p.seller?.name || `Seller ${p.seller_id}`,
+        email: p.seller?.email || ''
+      }));
+      
+    const payoutSellers = payouts
+      .filter(p => p.seller?.id || p.seller_id)
+      .map(p => ({
+        id: p.seller?.id || p.seller_id,
+        name: p.seller?.name || `Seller ${p.seller_id}`,
+        email: p.seller?.email || ''
+      }));
+    
+    // Combine and dedupe
+    const allSellers = [...paymentSellers, ...payoutSellers].reduce((acc, seller) => {
+      if (seller.id && !acc.some(s => s.id === seller.id)) {
+        acc.push(seller);
+      }
+      return acc;
+    }, []);
+    
+    // Create options
+    const options = allSellers.map(seller => ({
+      value: seller.id.toString(),
+      label: seller.email ? `${seller.name} (${seller.email})` : seller.name
+    }));
+    
+    // Sort alphabetically by name
+    options.sort((a, b) => a.label.localeCompare(b.label));
     
     return [{ value: 'all', label: 'All Sellers' }, ...options];
-  }, [payments]);
+  }, [payments, payouts]);
 
   return (
     <div className="mb-4">
@@ -503,13 +548,76 @@ const AdminPayments = () => {
         <Tab eventKey="payouts" title="Payouts">
           <Card className="border-0 shadow-sm">
             <Card.Body>
-              <div className="d-flex justify-content-between align-items-center mb-4">
-                <h5 className="mb-0">Seller Payouts</h5>
-                <Button variant="primary" size="sm">
-                  <CashStack className="me-1" /> Process Payouts
-                </Button>
+              {showFilters && (
+                <div className="bg-secondary p-3 rounded mb-4">
+                  <div className="row g-3">
+                    <div className="col-md-3">
+                      <Form.Group>
+                        <Form.Label>Seller</Form.Label>
+                        <Form.Select 
+                          value={sellerFilter}
+                          onChange={(e) => setSellerFilter(e.target.value)}
+                        >
+                          {sellerOptions.map(option => (
+                            <option key={option.value} value={option.value}>
+                              {option.label}
+                            </option>
+                          ))}
+                        </Form.Select>
+                      </Form.Group>
+                    </div>
+                    <div className="col-md-3">
+                      <Form.Group>
+                        <Form.Label>Status</Form.Label>
+                        <Form.Select 
+                          value={statusFilter}
+                          onChange={(e) => setStatusFilter(e.target.value)}
+                        >
+                          <option value="all">All Statuses</option>
+                          <option value="pending">Pending</option>
+                          <option value="paid">Paid</option>
+                          <option value="failed">Failed</option>
+                        </Form.Select>
+                      </Form.Group>
+                    </div>
+                    <div className="col-md-3">
+                      <Form.Group>
+                        <Form.Label>From Date</Form.Label>
+                        <Form.Control 
+                          type="date" 
+                          name="start"
+                          value={dateRange.start}
+                          onChange={handleDateChange}
+                        />
+                      </Form.Group>
+                    </div>
+                    <div className="col-md-3">
+                      <Form.Group>
+                        <Form.Label>To Date</Form.Label>
+                        <Form.Control 
+                          type="date" 
+                          name="end"
+                          value={dateRange.end}
+                          onChange={handleDateChange}
+                        />
+                      </Form.Group>
+                    </div>
+                    <div className="col-12">
+                      <Button 
+                        variant="outline-secondary" 
+                        size="sm"
+                        onClick={handleResetFilters}
+                      >
+                        Reset Filters
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              )}
+              <div className="mb-4">
+                <h5>Seller Payouts</h5>
               </div>
-
+              
               <div className="table-responsive">
                 <Table hover>
                   <thead>
@@ -523,36 +631,44 @@ const AdminPayments = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {payouts.map((payout) => (
-                      <tr key={payout.id}>
-                        <td>PY-{payout.id.toString().padStart(4, '0')}</td>
-                        <td>{payout.seller?.name || 'N/A'}</td>
-                        <td>${Number(payout.amount).toFixed(2)}</td>
-                        <td>
-                          {payout.status === 'paid' ? (
-                            <span className="text-success">
-                              <CheckCircleFill className="me-1" /> Paid
-                            </span>
-                          ) : (
-                            <span className="text-warning">
-                              <ClockFill className="me-1" /> Pending
-                            </span>
-                          )}
-                        </td>
-                        <td>{payout.createdAt ? new Date(payout.createdAt).toLocaleDateString() : 'N/A'}</td>
-                        <td>
-                          {payout.status === 'pending' && (
-                            <Button 
-                              variant="outline-success" 
-                              size="sm"
-                              onClick={() => handleManualPayout(payout)}
-                            >
-                              Mark as Paid
-                            </Button>
-                          )}
+                    {filteredPayouts.length > 0 ? (
+                      filteredPayouts.map((payout) => (
+                        <tr key={payout.id}>
+                          <td>PY-{payout.id.toString().padStart(4, '0')}</td>
+                          <td>{payout.seller?.name || 'N/A'}</td>
+                          <td>${Number(payout.amount).toFixed(2)}</td>
+                          <td>
+                            {payout.status === 'paid' ? (
+                              <span className="text-success">
+                                <CheckCircleFill className="me-1" /> Paid
+                              </span>
+                            ) : (
+                              <span className="text-warning">
+                                <ClockFill className="me-1" /> Pending
+                              </span>
+                            )}
+                          </td>
+                          <td>{payout.createdAt ? new Date(payout.createdAt).toLocaleDateString() : 'N/A'}</td>
+                          <td>
+                            {payout.status === 'pending' && (
+                              <Button 
+                                variant="outline-success" 
+                                size="sm"
+                                onClick={() => handleManualPayout(payout)}
+                              >
+                                Mark as Paid
+                              </Button>
+                            )}
+                          </td>
+                        </tr>
+                      ))
+                    ) : (
+                      <tr>
+                        <td colSpan="6" className="text-center py-4">
+                          No payouts found
                         </td>
                       </tr>
-                    ))}
+                    )}
                   </tbody>
                 </Table>
               </div>
