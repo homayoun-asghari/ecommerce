@@ -173,17 +173,181 @@ export const getOverview = async (req, res) => {
 
 
 export const getProducts = async (req, res) => {
-    
+  const {
+    page = 1,
+    limit = 10,
+    search = '',
+    category,
+    seller,
+    status
+  } = req.query;
+
+  const offset = (page - 1) * limit;
+  const params = [];
+  let filterClause = '';
+
+  // Search filter
+  if (search.trim()) {
+    params.push(`%${search.toLowerCase()}%`);
+    filterClause += ` AND (LOWER(p.name) LIKE $${params.length} OR LOWER(p.description) LIKE $${params.length})`;
+  }
+
+  // Category filter
+  if (category && category !== 'all') {
+    params.push(category);
+    filterClause += ` AND p.category = $${params.length}`;
+  }
+
+  // Seller filter
+  if (seller && seller !== 'all') {
+    params.push(seller);
+    filterClause += ` AND p.seller_id = $${params.length}`;
+  }
+
+  // Status filter
+  if (status && status !== 'all') {
+    params.push(status);
+    filterClause += ` AND p.status = $${params.length}`;
+  }
+
+  try {
+    // Query products with seller name and review stats
+    const productQuery = `
+      SELECT 
+        p.*, 
+        u.name AS seller_name,
+        (SELECT COUNT(*) FROM reviews r WHERE r.product_id = p.id) AS review_count,
+        (SELECT AVG(r.rating) FROM reviews r WHERE r.product_id = p.id) AS average_rating
+      FROM products p
+      LEFT JOIN users u ON p.seller_id = u.id
+      WHERE 1=1 ${filterClause}
+      ORDER BY p.created_at DESC
+      LIMIT $${params.length + 1} OFFSET $${params.length + 2}
+    `;
+
+    const productParams = [...params, parseInt(limit), parseInt(offset)];
+    const productsResult = await db.query(productQuery, productParams);
+
+    // Total count
+    const countQuery = `
+      SELECT COUNT(*) AS total
+      FROM products p
+      WHERE 1=1 ${filterClause}
+    `;
+    const countResult = await db.query(countQuery, params);
+    const total = parseInt(countResult.rows[0].total);
+
+    // Categories for filter
+    const categoriesResult = await db.query(`
+      SELECT DISTINCT category FROM products WHERE category IS NOT NULL
+    `);
+
+    // Sellers for filter
+    const sellersResult = await db.query(`
+      SELECT DISTINCT u.id, u.name
+      FROM users u
+      JOIN products p ON p.seller_id = u.id
+      WHERE u.role = 'seller'
+    `);
+
+    res.json({
+      products: productsResult.rows,
+      pagination: {
+        total,
+        page: parseInt(page),
+        pages: Math.ceil(total / limit),
+        limit: parseInt(limit)
+      },
+      filters: {
+        categories: categoriesResult.rows.map(r => r.category).filter(Boolean),
+        sellers: sellersResult.rows
+      }
+    });
+
+  } catch (error) {
+    console.error('Error fetching products:', error);
+    res.status(500).json({ error: 'Failed to fetch products' });
+  }
 };
 
+
 export const getProduct = async (req, res) => {
-    
+  const { id } = req.params;
+
+  try {
+    const result = await db.query(
+      `SELECT p.*, u.name AS seller_name,
+              (SELECT COUNT(*) FROM reviews r WHERE r.product_id = p.id) AS review_count,
+              (SELECT AVG(r.rating) FROM reviews r WHERE r.product_id = p.id) AS average_rating
+       FROM products p
+       JOIN users u ON p.seller_id = u.id
+       WHERE p.id = $1`,
+      [id]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'Product not found' });
+    }
+
+    res.json(result.rows[0]);
+
+  } catch (error) {
+    console.error('Error fetching product:', error);
+    res.status(500).json({ error: 'Failed to fetch product' });
+  }
 };
 
 export const updateProduct = async (req, res) => {
-    
+  const { id } = req.params;
+  const { status } = req.body;
+
+  if (!['pending', 'approved', 'rejected'].includes(status)) {
+    return res.status(400).json({ error: 'Invalid status value' });
+  }
+
+  try {
+    const result = await db.query(
+      `UPDATE products 
+       SET status = $1, updated_at = NOW() 
+       WHERE id = $2 
+       RETURNING *`,
+      [status, id]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'Product not found' });
+    }
+
+    res.json({
+      message: `Product ${status} successfully`,
+      product: result.rows[0]
+    });
+
+  } catch (error) {
+    console.error('Error updating product:', error);
+    res.status(500).json({ error: 'Failed to update product' });
+  }
 };
 
 export const deleteProduct = async (req, res) => {
+  const productId = parseInt(req.params.id);
+
+  try {
+    const checkResult = await db.query('SELECT * FROM products WHERE id = $1', [productId]);
+
+    if (checkResult.rows.length === 0) {
+      return res.status(404).json({ error: 'Product not found' });
+    }
     
+    await db.query('DELETE FROM products WHERE id = $1', [productId]);
+    
+    res.json({
+      message: 'Product deleted successfully',
+      productId
+    });
+
+  } catch (error) {
+    console.error('Error deleting product:', error);
+    res.status(500).json({ error: 'Failed to delete product' });
+  }
 };

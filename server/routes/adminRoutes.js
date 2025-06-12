@@ -24,8 +24,8 @@ router.get('/users/:id/stats', getUserStats);
 
 // Product management routes
 router.get('/products', getProducts);
-router.get('/product', getProduct);
-router.put('/product', updateProduct);
-router.delete('/product', deleteProduct);
+router.get('/product/:id', getProduct);
+router.put('/product/:id', updateProduct);
+router.delete('/product/:id', deleteProduct);
 
 export default router;
