@@ -301,7 +301,7 @@ const AdminOrders = () => {
                                         {orders.length > 0 ? (
                                             orders.map((order) => (
                                                 <tr key={order.id}>
-                                                    <td className="fw-semibold">{order.order_number}</td>
+                                                    <td className="fw-semibold">{order.id}</td>
                                                     <td>
                                                         <div className="d-flex flex-column">
                                                             <span>{order.buyer.name}</span>
