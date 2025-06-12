@@ -385,3 +385,247 @@ export const deleteProduct = async (req, res) => {
     res.status(500).json({ error: 'Failed to delete product' });
   }
 };
+
+// Get all orders with pagination and filtering
+export const getOrders = async (req, res) => {
+  try {
+    const { 
+      status = 'all',
+      search = '',
+      page = 1, 
+      limit = 10,
+      sort = 'newest'
+    } = req.query;
+    
+    const offset = (page - 1) * limit;
+    const params = [];
+    let whereClause = 'WHERE 1=1';
+    let orderBy = 'o.created_at DESC';
+
+    // Add status filter
+    if (status && status !== 'all') {
+      params.push(status);
+      whereClause += ` AND o.status = $${params.length}`;
+    }
+
+    // Add search filter
+    if (search) {
+      const searchTerm = `%${search}%`;
+      params.push(searchTerm, searchTerm, searchTerm);
+      whereClause += ` AND (
+        o.id::TEXT LIKE $${params.length - 2} OR 
+        LOWER(buyer.name) LIKE LOWER($${params.length - 1}) OR
+        LOWER(seller.name) LIKE LOWER($${params.length})
+      )`;
+    }
+
+    // Set sort order
+    if (sort === 'oldest') {
+      orderBy = 'o.created_at ASC';
+    } else if (sort === 'price_asc') {
+      orderBy = 'o.total ASC';
+    } else if (sort === 'price_desc') {
+      orderBy = 'o.total DESC';
+    }
+
+    // Query to get total count
+    const countQuery = `
+      SELECT COUNT(DISTINCT o.id) as total 
+      FROM orders o
+      JOIN users buyer ON o.buyer_id = buyer.id
+      JOIN order_items oi ON o.id = oi.order_id
+      JOIN products p ON oi.product_id = p.id
+      JOIN users seller ON p.seller_id = seller.id
+      ${whereClause}
+    `;
+    
+    const countResult = await db.query(countQuery, params);
+    const total = parseInt(countResult.rows[0].total);
+
+    // Main query to get paginated orders
+    const ordersQuery = `
+      SELECT 
+        o.id,
+        o.status,
+        o.total,
+        o.created_at as "createdAt",
+        COUNT(oi.id) as item_count,
+        json_build_object(
+          'id', buyer.id,
+          'name', buyer.name,
+          'email', buyer.email
+        ) as buyer,
+        json_build_object(
+          'id', seller.id,
+          'name', seller.name,
+          'email', seller.email
+        ) as seller
+      FROM orders o
+      JOIN users buyer ON o.buyer_id = buyer.id
+      JOIN order_items oi ON o.id = oi.order_id
+      JOIN products p ON oi.product_id = p.id
+      JOIN users seller ON p.seller_id = seller.id
+      ${whereClause}
+      GROUP BY o.id, buyer.id, seller.id
+      ORDER BY ${orderBy}
+      LIMIT $${params.length + 1} OFFSET $${params.length + 2}
+    `;
+    
+    const ordersParams = [...params, parseInt(limit), offset];
+    const ordersResult = await db.query(ordersQuery, ordersParams);
+
+    // Get unique statuses for filter dropdown
+    const statusesResult = await db.query('SELECT DISTINCT status FROM orders');
+    
+    res.json({
+      orders: ordersResult.rows,
+      pagination: {
+        total,
+        page: parseInt(page),
+        pages: Math.ceil(total / limit),
+        limit: parseInt(limit)
+      },
+      filters: {
+        statuses: statusesResult.rows.map(r => r.status)
+      }
+    });
+  } catch (error) {
+    console.error('Error fetching orders:', error);
+    res.status(500).json({ error: 'Failed to fetch orders' });
+  }
+};
+
+// Get order details by ID
+export const getOrderDetails = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    // Get order header info
+    const orderQuery = `
+      SELECT 
+        o.*,
+        json_build_object(
+          'id', buyer.id,
+          'name', buyer.name,
+          'email', buyer.email
+        ) as buyer,
+        json_build_object(
+          'id', a.id,
+          'fullName', a.full_name,
+          'street', a.street,
+          'city', a.city,
+          'state', a.state,
+          'postalCode', a.postal_code,
+          'country', a.country,
+          'phone', a.phone
+        ) as shipping_address
+      FROM orders o
+      JOIN users buyer ON o.buyer_id = buyer.id
+      LEFT JOIN addresses a ON o.address_id = a.id
+      WHERE o.id = $1
+    `;
+    
+    const orderResult = await db.query(orderQuery, [id]);
+    
+    if (orderResult.rows.length === 0) {
+      return res.status(404).json({ error: 'Order not found' });
+    }
+    
+    const order = orderResult.rows[0];
+    
+    // Get order items with product and seller info
+    const itemsQuery = `
+      SELECT 
+        oi.id,
+        oi.quantity,
+        oi.price,
+        p.id as product_id,
+        p.name as product_name,
+        p.image_url as product_image,
+        json_build_object(
+          'id', s.id,
+          'name', s.name,
+          'email', s.email
+        ) as seller
+      FROM order_items oi
+      JOIN products p ON oi.product_id = p.id
+      JOIN users s ON p.seller_id = s.id
+      WHERE oi.order_id = $1
+    `;
+    
+    const itemsResult = await db.query(itemsQuery, [id]);
+    
+    // Get payment info if available
+    let paymentInfo = null;
+    try {
+      // First check if payment table exists
+      const tableCheck = await db.query(
+        `SELECT EXISTS (
+          SELECT FROM information_schema.tables 
+          WHERE  table_schema = 'public'
+          AND    table_name   = 'payment'
+        )`
+      );
+      
+      if (tableCheck.rows[0].exists) {
+        const paymentQuery = 'SELECT * FROM payment WHERE order_id = $1';
+        const paymentResult = await db.query(paymentQuery, [id]);
+        if (paymentResult.rows.length > 0) {
+          paymentInfo = paymentResult.rows[0];
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching payment info:', error);
+      // Continue without payment info if there's an error
+    }
+    
+    res.json({
+      ...order,
+      items: itemsResult.rows,
+      payment: paymentInfo
+    });
+  } catch (error) {
+    console.error('Error fetching order details:', error);
+    res.status(500).json({ error: 'Failed to fetch order details' });
+  }
+};
+
+// Update order status
+export const updateOrderStatus = async (req, res) => {
+  const { id } = req.params;
+  const { status } = req.body;
+  
+  // Validate status
+  const validStatuses = ['pending', 'processing', 'shipped', 'delivered', 'cancelled'];
+  if (!validStatuses.includes(status)) {
+    return res.status(400).json({ error: 'Invalid status value' });
+  }
+  
+  try {
+    // Check if order exists
+    const orderCheck = await db.query('SELECT id FROM orders WHERE id = $1', [id]);
+    if (orderCheck.rows.length === 0) {
+      return res.status(404).json({ error: 'Order not found' });
+    }
+    
+    // Update order status
+    const updateQuery = `
+      UPDATE orders 
+      SET status = $1, updated_at = NOW() 
+      WHERE id = $2 
+      RETURNING *
+    `;
+    
+    const result = await db.query(updateQuery, [status, id]);
+    
+    // TODO: Add order status change notification
+    
+    res.json({
+      message: 'Order status updated successfully',
+      order: result.rows[0]
+    });
+  } catch (error) {
+    console.error('Error updating order status:', error);
+    res.status(500).json({ error: 'Failed to update order status' });
+  }
+};

@@ -7,7 +7,10 @@ import {
   getProducts,
   getProduct,
   updateProduct,
-  deleteProduct 
+  deleteProduct,
+  getOrders,
+  getOrderDetails,
+  updateOrderStatus
 } from '../controllers/adminController.js';
 
 const router = express.Router();
@@ -27,5 +30,10 @@ router.get('/products', getProducts);
 router.get('/product/:id', getProduct);
 router.put('/product/:id', updateProduct);
 router.delete('/product/:id', deleteProduct);
+
+// Order management routes
+router.get('/orders', getOrders);
+router.get('/orders/:id', getOrderDetails);
+router.put('/orders/:id/status', updateOrderStatus);
 
 export default router;

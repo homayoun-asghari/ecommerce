@@ -170,7 +170,6 @@ const AdminProducts = () => {
 
     return (
         <div className="p-3">
-            <h2 className="mb-4">Product Management</h2>
 
             <Card className="mb-4">
                 <Card.Header>
