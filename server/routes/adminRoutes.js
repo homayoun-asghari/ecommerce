@@ -3,7 +3,11 @@ import {
   getOverview, 
   getMonthlyOrders, 
   getUsers, 
-  getUserStats 
+  getUserStats,
+  getProducts,
+  getProduct,
+  updateProduct,
+  deleteProduct 
 } from '../controllers/adminController.js';
 
 const router = express.Router();
@@ -17,5 +21,11 @@ router.get('/monthly-orders', getMonthlyOrders);
 // User management routes
 router.get('/users', getUsers);
 router.get('/users/:id/stats', getUserStats);
+
+// Product management routes
+router.get('/products', getProducts);
+router.get('/product', getProduct);
+router.put('/product', updateProduct);
+router.delete('/product', deleteProduct);
 
 export default router;
