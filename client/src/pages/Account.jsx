@@ -21,6 +21,7 @@ import AdminDashboard from "../components/AdminDashboard";
 import AdminUsers from "../components/AdminUsers";
 import AdminProducts from "../components/AdminProducts";
 import AdminOrders from "../components/AdminOrders";
+import AdminPayments from "../components/AdminPayments";
 
 function Account() {
   const [searchParams] = useSearchParams();
@@ -83,7 +84,7 @@ function Account() {
           {activeTab === "users" && <AdminUsers />}
           {activeTab === "products" && <AdminProducts />}
           {activeTab === "orders" && <AdminOrders />}
-          {activeTab === "payment"}
+          {activeTab === "payment" && <AdminPayments />}
           {activeTab === "tickets"}
           {activeTab === "reviews"}
           {activeTab === "blog"}
