@@ -10,7 +10,11 @@ import {
   deleteProduct,
   getOrders,
   getOrderDetails,
-  updateOrderStatus
+  updateOrderStatus,
+  getPayments,
+  getPaymentDetails,
+  processPayout,
+  getPayouts
 } from '../controllers/adminController.js';
 
 const router = express.Router();
@@ -35,5 +39,11 @@ router.delete('/product/:id', deleteProduct);
 router.get('/orders', getOrders);
 router.get('/orders/:id', getOrderDetails);
 router.put('/orders/:id/status', updateOrderStatus);
+
+// Payment management routes
+router.get('/payments', getPayments);
+router.get('/payments/:id', getPaymentDetails);
+router.post('/payments/:id/process-payout', processPayout);
+router.get('/payouts', getPayouts);
 
 export default router;

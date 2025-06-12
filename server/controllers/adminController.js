@@ -563,12 +563,12 @@ export const getOrderDetails = async (req, res) => {
         `SELECT EXISTS (
           SELECT FROM information_schema.tables 
           WHERE  table_schema = 'public'
-          AND    table_name   = 'payment'
+          AND    table_name   = 'payments'
         )`
       );
       
       if (tableCheck.rows[0].exists) {
-        const paymentQuery = 'SELECT * FROM payment WHERE order_id = $1';
+        const paymentQuery = 'SELECT * FROM payments WHERE order_id = $1';
         const paymentResult = await db.query(paymentQuery, [id]);
         if (paymentResult.rows.length > 0) {
           paymentInfo = paymentResult.rows[0];
@@ -627,5 +627,316 @@ export const updateOrderStatus = async (req, res) => {
   } catch (error) {
     console.error('Error updating order status:', error);
     res.status(500).json({ error: 'Failed to update order status' });
+  }
+};
+
+// Get all payments with filtering and pagination
+export const getPayments = async (req, res) => {
+  try {
+    const { 
+      seller_id,
+      status,
+      start_date,
+      end_date,
+      search = '',
+      page = 1,
+      limit = 10
+    } = req.query;
+
+    const offset = (page - 1) * limit;
+    const params = [];
+    let whereClause = 'WHERE 1=1';
+    let joinClause = 'LEFT JOIN users buyer ON payments.buyer_id = buyer.id';
+    
+    // Add filters
+    if (seller_id) {
+      params.push(seller_id);
+      whereClause += ` AND payments.buyer_id = $${params.length}`;
+    }
+    
+    if (status) {
+      params.push(status);
+      whereClause += ` AND payments.status = $${params.length}`;
+    }
+    
+    if (start_date) {
+      params.push(start_date);
+      whereClause += ` AND payments.created_at >= $${params.length}::date`;
+    }
+    
+    if (end_date) {
+      params.push(end_date);
+      whereClause += ` AND payments.created_at <= ($${params.length}::date + '1 day'::interval)`;
+    }
+    
+    if (search) {
+      params.push(`%${search}%`);
+      whereClause += ` AND (
+        payments.id::TEXT ILIKE $${params.length} OR
+        payments.order_id::TEXT ILIKE $${params.length} OR
+        buyer.name ILIKE $${params.length}
+      )`;
+    }
+
+    // Get total count
+    const countQuery = `
+      SELECT COUNT(DISTINCT payments.id) as total 
+      FROM payments
+      ${joinClause}
+      ${whereClause}
+    `;
+    
+    const countResult = await db.query(countQuery, params);
+    const total = parseInt(countResult.rows[0].total);
+
+    // Get paginated results
+    const paymentsQuery = `
+      SELECT 
+        payments.id,
+        payments.order_id as "orderId",
+        payments.amount,
+        payments.status,
+        payments.method,
+        payments.paid_at as "paidAt",
+        payments.created_at as "createdAt",
+        json_build_object(
+          'id', buyer.id,
+          'name', buyer.name,
+          'email', buyer.email
+        ) as buyer
+      FROM payments
+      ${joinClause}
+      ${whereClause}
+      ORDER BY payments.created_at DESC
+      LIMIT $${params.length + 1} OFFSET $${params.length + 2}
+    `;
+    
+    const paymentsParams = [...params, parseInt(limit), offset];
+    const paymentsResult = await db.query(paymentsQuery, paymentsParams);
+
+    // Get available sellers for filter
+    const sellersQuery = `
+      SELECT DISTINCT u.id, u.name 
+      FROM users u
+      JOIN payments p ON u.id = p.buyer_id
+      ORDER BY u.name
+    `;
+    const sellersResult = await db.query(sellersQuery);
+
+    res.json({
+      payments: paymentsResult.rows,
+      pagination: {
+        total,
+        page: parseInt(page),
+        pages: Math.ceil(total / limit),
+        limit: parseInt(limit)
+      },
+      filters: {
+        sellers: sellersResult.rows
+      }
+    });
+  } catch (error) {
+    console.error('Error fetching payments:', error);
+    res.status(500).json({ error: 'Failed to fetch payments' });
+  }
+};
+
+// Get payment details by ID
+export const getPaymentDetails = async (req, res) => {
+  try {
+    const { id } = req.params;
+    
+    const paymentQuery = `
+      SELECT 
+        p.*,
+        json_build_object(
+          'id', u.id,
+          'name', u.name,
+          'email', u.email
+        ) as seller,
+        json_build_object(
+          'id', o.id,
+          'status', o.status,
+          'total', o.total,
+          'created_at', o.created_at
+        ) as order_info
+      FROM payments p
+      LEFT JOIN users u ON p.buyer_id = u.id
+      LEFT JOIN orders o ON p.order_id = o.id
+      WHERE p.id = $1
+    `;
+    
+    const paymentResult = await db.query(paymentQuery, [id]);
+    
+    if (paymentResult.rows.length === 0) {
+      return res.status(404).json({ error: 'Payment not found' });
+    }
+    
+    res.json(paymentResult.rows[0]);
+  } catch (error) {
+    console.error('Error fetching payment details:', error);
+    res.status(500).json({ error: 'Failed to fetch payment details' });
+  }
+};
+
+// Process a payout to a seller
+export const processPayout = async (req, res) => {
+  const { id } = req.params;
+  
+  try {
+    // Start a transaction
+    await db.query('BEGIN');
+    
+    // Get the payment with FOR UPDATE to lock the row
+    const getPaymentQuery = `
+      SELECT * FROM payments 
+      WHERE id = $1 
+      FOR UPDATE
+    `;
+    const paymentResult = await db.query(getPaymentQuery, [id]);
+    
+    if (paymentResult.rows.length === 0) {
+      await db.query('ROLLBACK');
+      return res.status(404).json({ error: 'Payment not found' });
+    }
+    
+    const payment = paymentResult.rows[0];
+    
+    // Check if payment is already processed
+    if (payment.status === 'paid') {
+      await db.query('ROLLBACK');
+      return res.status(400).json({ error: 'Payment already processed' });
+    }
+    
+    // Update payment status
+    const updatePaymentQuery = `
+      UPDATE payments 
+      SET status = 'paid', 
+          paid_at = NOW(),
+          updated_at = NOW()
+      WHERE id = $1
+      RETURNING *
+    `;
+    
+    const updatedPayment = await db.query(updatePaymentQuery, [id]);
+    
+    // Create a payout record (assuming we have a payouts table)
+    const createPayoutQuery = `
+      INSERT INTO payouts (
+        payment_id, 
+        seller_id, 
+        amount, 
+        status
+      ) VALUES ($1, $2, $3, 'completed')
+      RETURNING *
+    `;
+    
+    const payoutParams = [
+      id,
+      payment.seller_id,
+      payment.amount
+    ];
+    
+    const payoutResult = await db.query(createPayoutQuery, payoutParams);
+    
+    // Commit the transaction
+    await db.query('COMMIT');
+    
+    res.json({
+      message: 'Payout processed successfully',
+      payment: updatedPayment.rows[0],
+      payout: payoutResult.rows[0]
+    });
+    
+  } catch (error) {
+    await db.query('ROLLBACK');
+    console.error('Error processing payout:', error);
+    res.status(500).json({ error: 'Failed to process payout' });
+  }
+};
+
+// Get payouts with filtering
+export const getPayouts = async (req, res) => {
+  try {
+    const { 
+      seller_id,
+      status,
+      start_date,
+      end_date,
+      page = 1,
+      limit = 10
+    } = req.query;
+
+    const offset = (page - 1) * limit;
+    const params = [];
+    let whereClause = 'WHERE 1=1';
+    
+    // Add filters
+    if (seller_id) {
+      params.push(seller_id);
+      whereClause += ` AND p.seller_id = $${params.length}`;
+    }
+    
+    if (status) {
+      params.push(status);
+      whereClause += ` AND p.status = $${params.length}`;
+    }
+    
+    if (start_date) {
+      params.push(start_date);
+      whereClause += ` AND p.created_at >= $${params.length}::date`;
+    }
+    
+    if (end_date) {
+      params.push(end_date);
+      whereClause += ` AND p.created_at <= ($${params.length}::date + '1 day'::interval)`;
+    }
+
+    // Get total count
+    const countQuery = `
+      SELECT COUNT(*) as total 
+      FROM payouts p
+      ${whereClause}
+    `;
+    
+    const countResult = await db.query(countQuery, params);
+    const total = parseInt(countResult.rows[0].total);
+
+    // Get paginated results
+    const payoutsQuery = `
+      SELECT 
+        p.id,
+        p.payment_id as "paymentId",
+        p.amount,
+        p.status,
+        p.created_at as "createdAt",
+        p.updated_at as "updatedAt",
+        json_build_object(
+          'id', u.id,
+          'name', u.name,
+          'email', u.email
+        ) as seller
+      FROM payouts p
+      LEFT JOIN users u ON p.seller_id = u.id
+      ${whereClause}
+      ORDER BY p.created_at DESC
+      LIMIT $${params.length + 1} OFFSET $${params.length + 2}
+    `;
+    
+    const payoutsParams = [...params, parseInt(limit), offset];
+    const payoutsResult = await db.query(payoutsQuery, payoutsParams);
+
+    res.json({
+      payouts: payoutsResult.rows,
+      pagination: {
+        total,
+        page: parseInt(page),
+        pages: Math.ceil(total / limit),
+        limit: parseInt(limit)
+      }
+    });
+  } catch (error) {
+    console.error('Error fetching payouts:', error);
+    res.status(500).json({ error: 'Failed to fetch payouts' });
   }
 };

@@ -112,7 +112,7 @@ addresses:
 "phone"	"text"
 "is_default"	"boolean"
 
-payment:
+payments:
 "id"	"integer"
 "seller_id"	"integer"
 "order_id"	"integer"
@@ -121,6 +121,19 @@ payment:
 "method"	"character varying"
 "paid_at"	"timestamp without time zone"
 "created_at"	"timestamp without time zone"
+
+payouts:
+"id"	"integer"
+"seller_id"	"integer"
+"payment_id"	"integer"
+"amount"	"numeric"
+"payout_method"	"character varying"
+"payout_status"	"character varying"
+"requested_at"	"timestamp without time zone"
+"paid_at"	"timestamp without time zone"
+"notes"	"text"
+"created_at"	"timestamp without time zone"
+"updated_at"	"timestamp without time zone"
 
 
 for API calls always use fetch instead of axios 

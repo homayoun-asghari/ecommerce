@@ -1,12 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { 
   Card, 
   Table, 
   Button, 
   Form, 
-  InputGroup, 
   Badge, 
-  Dropdown, 
   Modal,
   Alert,
   Spinner,
@@ -14,117 +12,146 @@ import {
   Tab
 } from 'react-bootstrap';
 import { 
-  Funnel, 
-  FunnelFill, 
-  CashStack, 
-  ArrowClockwise,
-  Funnel as FunnelIcon,
-  Download,
-  ThreeDotsVertical,
+  CashStack,
   CheckCircleFill,
-  XCircleFill,
   ClockFill
 } from 'react-bootstrap-icons';
 
-// Mock data - replace with real API calls
-const mockPayments = [
-  {
-    id: 'PAY-001',
-    order_id: 'ORD-1001',
-    seller: { id: 1, name: 'Tech Store' },
-    amount: 149.99,
-    status: 'completed',
-    method: 'credit_card',
-    paid_at: '2025-06-10T14:30:00Z',
-    created_at: '2025-06-10T14:30:00Z',
-    payout_status: 'pending'
-  },
-  {
-    id: 'PAY-002',
-    order_id: 'ORD-1002',
-    seller: { id: 2, name: 'Fashion Hub' },
-    amount: 89.50,
-    status: 'completed',
-    method: 'paypal',
-    paid_at: '2025-06-09T10:15:00Z',
-    created_at: '2025-06-09T10:15:00Z',
-    payout_status: 'paid'
-  },
-  {
-    id: 'PAY-003',
-    order_id: 'ORD-1003',
-    seller: { id: 1, name: 'Tech Store' },
-    amount: 210.00,
-    status: 'refunded',
-    method: 'credit_card',
-    paid_at: '2025-06-08T16:45:00Z',
-    created_at: '2025-06-08T16:45:00Z',
-    payout_status: 'refunded'
-  },
-];
+// API base URL
+const API_BASE_URL = 'http://localhost:5050/admin';
 
-const mockSellers = [
-  { id: 1, name: 'Tech Store' },
-  { id: 2, name: 'Fashion Hub' },
-  { id: 3, name: 'Home & Living' },
-  { id: 4, name: 'Electronics Pro' },
-];
+
 
 const AdminPayments = () => {
   const [payments, setPayments] = useState([]);
-  const [filteredPayments, setFilteredPayments] = useState([]);
+  const [payouts, setPayouts] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [showFilters, setShowFilters] = useState(false);
   const [activeTab, setActiveTab] = useState('payments');
   
+  // Pagination states
+  const [pagination, setPagination] = useState({
+    page: 1,
+    pages: 1,
+    limit: 10,
+    total: 0
+  });
+  
   // Filter states
+  // eslint-disable-next-line no-unused-vars
+  const [filters, setFilters] = useState({
+    seller_id: '',
+    status: '',
+    start_date: '',
+    end_date: '',
+    search: ''
+  });
+  
+  // Local filter states for UI
   const [sellerFilter, setSellerFilter] = useState('all');
   const [statusFilter, setStatusFilter] = useState('all');
-  const [dateRange, setDateRange] = useState({
-    start: '',
-    end: ''
-  });
+  const [dateRange, setDateRange] = useState({ start: '', end: '' });
 
   // Payout states
   const [showPayoutModal, setShowPayoutModal] = useState(false);
   const [selectedPayout, setSelectedPayout] = useState(null);
-  const [payouts, setPayouts] = useState([
-    { id: 1, seller: 'Tech Store', amount: 149.99, status: 'pending', date: '2025-06-10' },
-    { id: 2, seller: 'Fashion Hub', amount: 89.50, status: 'paid', date: '2025-06-09' },
-  ]);
 
-  // Fetch payments (mock for now)
+  // Fetch payments from API
+  const fetchPayments = useCallback(async (page = 1) => {
+    setLoading(true);
+    setError(null);
+    
+    try {
+      // Build query params
+      const params = new URLSearchParams({
+        page,
+        limit: pagination.limit,
+        ...Object.fromEntries(
+          Object.entries(filters).filter(([_, value]) => value !== '')
+        )
+      });
+      
+      const response = await fetch(`${API_BASE_URL}/payments?${params}`);
+      
+      if (!response.ok) {
+        throw new Error('Failed to fetch payments');
+      }
+      
+      const data = await response.json();
+      
+      setPayments(data.payments);
+      setPagination(prev => ({
+        ...prev,
+        page: data.pagination.page,
+        pages: data.pagination.pages,
+        total: data.pagination.total
+      }));
+    } catch (err) {
+      setError(err.message || 'Failed to load payments');
+      console.error('Error fetching payments:', err);
+    } finally {
+      setLoading(false);
+    }
+  }, [filters, pagination.limit, setPagination]);
+
+  // Fetch payouts from API
+  const fetchPayouts = useCallback(async (page = 1) => {
+    setLoading(true);
+    setError(null);
+    
+    try {
+      // Build query params
+      const params = new URLSearchParams({
+        page,
+        limit: pagination.limit,
+        ...Object.fromEntries(
+          Object.entries(filters).filter(([_, value]) => value !== '')
+        )
+      });
+      
+      const response = await fetch(`${API_BASE_URL}/payouts?${params}`);
+      
+      if (!response.ok) {
+        throw new Error('Failed to fetch payouts');
+      }
+      
+      const data = await response.json();
+      
+      setPayouts(data.payouts);
+      setPagination(prev => ({
+        ...prev,
+        page: data.pagination.page,
+        pages: data.pagination.pages,
+        total: data.pagination.total
+      }));
+    } catch (err) {
+      setError(err.message || 'Failed to load payouts');
+      console.error('Error fetching payouts:', err);
+    } finally {
+      setLoading(false);
+    }
+  }, [filters, pagination.limit, setPagination]);
+
+  // Fetch data when tab or page changes
   useEffect(() => {
-    const fetchPayments = async () => {
-      setLoading(true);
-      try {
-        // TODO: Replace with actual API call
-        // const response = await fetch('http://localhost:5050/admin/payments');
-        // const data = await response.json();
-        // setPayments(data);
-        // setFilteredPayments(data);
-        
-        // Mock data for now
-        setPayments(mockPayments);
-        setFilteredPayments(mockPayments);
-      } catch (err) {
-        setError('Failed to load payments');
-        console.error('Error fetching payments:', err);
-      } finally {
-        setLoading(false);
+    const fetchData = async () => {
+      if (activeTab === 'payments') {
+        await fetchPayments(pagination.page);
+      } else {
+        await fetchPayouts(pagination.page);
       }
     };
 
-    fetchPayments();
-  }, []);
+    fetchData();
+  }, [activeTab, pagination.page, fetchPayments, fetchPayouts]);
 
   // Apply filters
-  useEffect(() => {
+  const filteredPayments = useMemo(() => {
     let result = [...payments];
 
     if (sellerFilter !== 'all') {
-      result = result.filter(p => p.seller.id.toString() === sellerFilter);
+      result = result.filter(p => p.seller?.id?.toString() === sellerFilter);
     }
 
     if (statusFilter !== 'all') {
@@ -141,7 +168,7 @@ const AdminPayments = () => {
       result = result.filter(p => new Date(p.paid_at) <= endDate);
     }
 
-    setFilteredPayments(result);
+    return result;
   }, [sellerFilter, statusFilter, dateRange, payments]);
 
   const handleDateChange = (e) => {
@@ -196,16 +223,31 @@ const AdminPayments = () => {
     );
   };
 
-  const getPaymentMethodIcon = (method) => {
+  const getPaymentMethodIcon = useMemo(() => {
     const icons = {
       credit_card: '💳',
       paypal: '🔵 PayPal',
-      bank_transfer: '🏦',
+      bank_transfer: '🏦 Bank',
       stripe: '💳 Stripe'
     };
 
-    return icons[method] || method;
-  };
+    return (method) => icons[method] || method;
+  }, []);
+
+  // Generate seller options from payments data
+  // eslint-disable-next-line no-unused-vars
+  const sellerOptions = useMemo(() => {
+    const uniqueSellers = [...new Set(payments.map(p => p.seller?.id).filter(Boolean))];
+    const options = uniqueSellers.map(id => {
+      const seller = payments.find(p => p.seller?.id === id)?.seller;
+      return {
+        value: id,
+        label: seller ? `${seller.name} (${seller.email})` : `Seller ${id}`
+      };
+    });
+    
+    return [{ value: 'all', label: 'All Sellers' }, ...options];
+  }, [payments]);
 
   return (
     <div className="mb-4">
@@ -217,11 +259,10 @@ const AdminPayments = () => {
             className="me-2"
             onClick={() => setShowFilters(!showFilters)}
           >
-            {showFilters ? <FunnelFill className="me-1" /> : <Funnel className="me-1" />}
             {showFilters ? 'Hide Filters' : 'Filters'}
           </Button>
-          <Button variant="outline-primary">
-            <Download className="me-1" /> Export
+          <Button variant="outline-primary" className="ms-2">
+            Export
           </Button>
         </div>
       </div>
@@ -235,7 +276,7 @@ const AdminPayments = () => {
           <Card className="border-0 shadow-sm">
             <Card.Body>
               {showFilters && (
-                <div className="bg-light p-3 rounded mb-4">
+                <div className="bg-secondary p-3 rounded mb-4">
                   <div className="row g-3">
                     <div className="col-md-3">
                       <Form.Group>
@@ -244,10 +285,9 @@ const AdminPayments = () => {
                           value={sellerFilter}
                           onChange={(e) => setSellerFilter(e.target.value)}
                         >
-                          <option value="all">All Sellers</option>
-                          {mockSellers.map(seller => (
-                            <option key={seller.id} value={seller.id}>
-                              {seller.name}
+                          {sellerOptions.map(option => (
+                            <option key={option.value} value={option.value}>
+                              {option.label}
                             </option>
                           ))}
                         </Form.Select>
@@ -318,7 +358,7 @@ const AdminPayments = () => {
                       <tr>
                         <th>Payment ID</th>
                         <th>Order ID</th>
-                        <th>Seller</th>
+                        <th>Buyer</th>
                         <th>Amount</th>
                         <th>Method</th>
                         <th>Status</th>
@@ -331,8 +371,8 @@ const AdminPayments = () => {
                         filteredPayments.map((payment) => (
                           <tr key={payment.id}>
                             <td className="fw-semibold">{payment.id}</td>
-                            <td>{payment.order_id}</td>
-                            <td>{payment.seller?.name || 'N/A'}</td>
+                            <td>{payment.orderId}</td>
+                            <td>{payment.buyer?.name || 'N/A'}</td>
                             <td>${parseFloat(payment.amount).toFixed(2)}</td>
                             <td>{getPaymentMethodIcon(payment.method)}</td>
                             <td>{getStatusBadge(payment.status)}</td>
@@ -385,8 +425,8 @@ const AdminPayments = () => {
                     {payouts.map((payout) => (
                       <tr key={payout.id}>
                         <td>PY-{payout.id.toString().padStart(4, '0')}</td>
-                        <td>{payout.seller}</td>
-                        <td>${payout.amount.toFixed(2)}</td>
+                        <td>{payout.seller?.name || 'N/A'}</td>
+                        <td>${Number(payout.amount).toFixed(2)}</td>
                         <td>
                           {payout.status === 'paid' ? (
                             <span className="text-success">
