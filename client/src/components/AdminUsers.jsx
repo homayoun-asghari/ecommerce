@@ -1,6 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { Card, Form, InputGroup, Table, Badge, Button, Modal } from 'react-bootstrap';
-import { BsSearch, BsEye, BsFilterLeft } from 'react-icons/bs';
+import { 
+  Card, 
+  Form, 
+  InputGroup, 
+  Table, 
+  Badge, 
+  Button, 
+  Modal, 
+  Pagination,
+  Spinner
+} from 'react-bootstrap';
+import { BsSearch, BsEye, BsFilterLeft, BsArrowLeft, BsArrowRight } from 'react-icons/bs';
 
 const AdminUsers = () => {
   const [users, setUsers] = useState([]);
@@ -9,23 +19,41 @@ const AdminUsers = () => {
   const [roleFilter, setRoleFilter] = useState('all');
   const [selectedUser, setSelectedUser] = useState(null);
   const [showDetails, setShowDetails] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [itemsPerPage] = useState(10);
+  const [availableRoles, setAvailableRoles] = useState([]);
   const [userStats, setUserStats] = useState({
     orders: 0,
     reviews: 0,
     totalSpent: 0
   });
 
-  // Fetch users
+  // Fetch users with pagination and filters
   useEffect(() => {
     const fetchUsers = async () => {
       try {
         setLoading(true);
-        const response = await fetch(`http://localhost:5050/admin/users?search=${searchTerm}&role=${roleFilter}`);
+        const queryParams = new URLSearchParams({
+          search: searchTerm,
+          role: roleFilter === 'all' ? '' : roleFilter,
+          page: currentPage,
+          limit: itemsPerPage
+        }).toString();
+
+        const response = await fetch(`http://localhost:5050/admin/users?${queryParams}`);
         if (!response.ok) {
           throw new Error('Failed to fetch users');
         }
+        
         const data = await response.json();
-        setUsers(data);
+        setUsers(data.users);
+        setTotalPages(data.pagination.pages);
+        
+        // Set available roles for filter dropdown
+        if (data.filters?.roles) {
+          setAvailableRoles(data.filters.roles);
+        }
       } catch (error) {
         console.error('Error fetching users:', error);
       } finally {
@@ -38,7 +66,7 @@ const AdminUsers = () => {
     }, 500);
 
     return () => clearTimeout(debounceTimer);
-  }, [searchTerm, roleFilter]);
+  }, [searchTerm, roleFilter, currentPage, itemsPerPage]);
 
   // Fetch user details
   const fetchUserDetails = async (userId) => {
@@ -84,14 +112,19 @@ const AdminUsers = () => {
             <div className="d-flex align-items-center gap-2">
               <BsFilterLeft size={20} />
               <Form.Select
-                style={{ width: 'auto' }}
+                style={{ minWidth: '150px' }}
                 value={roleFilter}
-                onChange={(e) => setRoleFilter(e.target.value)}
+                onChange={(e) => {
+                  setRoleFilter(e.target.value);
+                  setCurrentPage(1); // Reset to first page when filter changes
+                }}
               >
                 <option value="all">All Roles</option>
-                <option value="buyer">Buyers</option>
-                <option value="seller">Sellers</option>
-                <option value="admin">Admins</option>
+                {availableRoles.map(role => (
+                  <option key={role} value={role}>
+                    {role.charAt(0).toUpperCase() + role.slice(1)}
+                  </option>
+                ))}
               </Form.Select>
             </div>
           </div>
@@ -106,39 +139,84 @@ const AdminUsers = () => {
             </div>
           ) : (
             <div className="table-responsive">
-              <Table hover>
+              <Table hover className="align-middle">
                 <thead>
                   <tr>
                     <th>Name</th>
                     <th>Email</th>
                     <th>Role</th>
+                    <th>Orders</th>
                     <th>Joined</th>
                     <th>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {users.map((user) => (
-                    <tr key={user.id}>
-                      <td>{user.name}</td>
-                      <td>{user.email}</td>
-                      <td>{getRoleBadge(user.role)}</td>
-                      <td>{new Date(user.createdAt).toLocaleDateString()}</td>
-                      <td>
-                        <Button
-                          variant="outline-primary"
-                          size="sm"
-                          onClick={() => {
-                            setSelectedUser(user);
-                            fetchUserDetails(user.id);
-                          }}
-                        >
-                          <BsEye /> View
-                        </Button>
+                  {users.length > 0 ? (
+                    users.map((user) => (
+                      <tr key={user.id}>
+                        <td>{user.name}</td>
+                        <td>{user.email}</td>
+                        <td>{getRoleBadge(user.role)}</td>
+                        <td>{user.order_count || 0}</td>
+                        <td>{new Date(user.createdAt).toLocaleDateString()}</td>
+                        <td>
+                          <Button
+                            variant="outline-primary"
+                            size="sm"
+                            onClick={() => {
+                              setSelectedUser(user);
+                              fetchUserDetails(user.id);
+                            }}
+                          >
+                            <BsEye className="me-1" /> View
+                          </Button>
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan="6" className="text-center py-4">
+                        No users found
                       </td>
                     </tr>
-                  ))}
+                  )}
                 </tbody>
               </Table>
+              
+              {totalPages > 1 && (
+                <div className="d-flex justify-content-center mt-4">
+                  <Pagination>
+                    <Pagination.First 
+                      onClick={() => setCurrentPage(1)} 
+                      disabled={currentPage === 1} 
+                    />
+                    <Pagination.Prev 
+                      onClick={() => setCurrentPage(p => Math.max(1, p - 1))} 
+                      disabled={currentPage === 1} 
+                    />
+                    {[...Array(Math.min(5, totalPages))].map((_, i) => {
+                      const page = Math.max(1, Math.min(totalPages - 4, currentPage - 2)) + i;
+                      return (
+                        <Pagination.Item 
+                          key={page}
+                          active={page === currentPage}
+                          onClick={() => setCurrentPage(page)}
+                        >
+                          {page}
+                        </Pagination.Item>
+                      );
+                    })}
+                    <Pagination.Next 
+                      onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))} 
+                      disabled={currentPage === totalPages} 
+                    />
+                    <Pagination.Last 
+                      onClick={() => setCurrentPage(totalPages)} 
+                      disabled={currentPage === totalPages} 
+                    />
+                  </Pagination>
+                </div>
+              )}
             </div>
           )}
         </Card.Body>
