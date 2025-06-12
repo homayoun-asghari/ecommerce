@@ -855,6 +855,42 @@ export const processPayout = async (req, res) => {
   }
 };
 
+// Update payout status
+export const updatePayoutStatus = async (req, res) => {
+  const { id } = req.params;
+  const { status } = req.body;
+  
+  try {
+    // Validate status
+    if (!['pending', 'paid', 'failed'].includes(status)) {
+      return res.status(400).json({ error: 'Invalid status value' });
+    }
+    
+    const query = `
+      UPDATE payouts 
+      SET status = $1, 
+          updated_at = NOW()
+      WHERE id = $2
+      RETURNING *
+    `;
+    
+    const result = await db.query(query, [status, id]);
+    
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'Payout not found' });
+    }
+    
+    res.json({
+      message: 'Payout status updated successfully',
+      payout: result.rows[0]
+    });
+    
+  } catch (error) {
+    console.error('Error updating payout status:', error);
+    res.status(500).json({ error: 'Failed to update payout status' });
+  }
+};
+
 // Get payouts with filtering
 export const getPayouts = async (req, res) => {
   try {

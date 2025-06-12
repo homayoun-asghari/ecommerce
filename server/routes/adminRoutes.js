@@ -14,7 +14,8 @@ import {
   getPayments,
   getPaymentDetails,
   processPayout,
-  getPayouts
+  getPayouts,
+  updatePayoutStatus
 } from '../controllers/adminController.js';
 
 const router = express.Router();
@@ -45,5 +46,6 @@ router.get('/payments', getPayments);
 router.get('/payments/:id', getPaymentDetails);
 router.post('/payments/:id/process-payout', processPayout);
 router.get('/payouts', getPayouts);
+router.put('/payouts/:id/status', updatePayoutStatus);
 
 export default router;

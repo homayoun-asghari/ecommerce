@@ -185,26 +185,121 @@ const AdminPayments = () => {
     setDateRange({ start: '', end: '' });
   };
 
+  // Handle view payment details
+  const handleViewPayment = (payment) => {
+    // Open payment details in a modal or new page
+    // For now, we'll just log it and show an alert
+    console.log('View payment:', payment);
+    alert(`Payment Details:\nID: ${payment.id}\nOrder ID: ${payment.orderId}\nAmount: $${parseFloat(payment.amount).toFixed(2)}\nStatus: ${payment.status}\nDate: ${payment.paidAt ? new Date(payment.paidAt).toLocaleString() : 'N/A'}`);
+  };
+
+  // Handle export to CSV
+  const handleExport = () => {
+    try {
+      const dataToExport = activeTab === 'payments' ? payments : payouts;
+      if (dataToExport.length === 0) {
+        alert('No data to export');
+        return;
+      }
+      
+      // Format data for CSV
+      let csvContent = '';
+      const headers = [];
+      
+      // Get headers from first item
+      if (dataToExport.length > 0) {
+        const firstItem = dataToExport[0];
+        headers.push(...Object.keys(firstItem).filter(key => key !== 'seller' && key !== 'buyer'));
+        
+        // Add seller/buyer details if available
+        if (firstItem.seller) headers.push('seller_name', 'seller_email');
+        if (firstItem.buyer) headers.push('buyer_name', 'buyer_email');
+        
+        csvContent += headers.join(',') + '\n';
+        
+        // Add rows
+        dataToExport.forEach(item => {
+          const row = [];
+          
+          // Add main fields
+          headers.forEach(header => {
+            if (header === 'seller_name' && item.seller) {
+              row.push(`"${item.seller.name || ''}"`);
+            } else if (header === 'seller_email' && item.seller) {
+              row.push(`"${item.seller.email || ''}"`);
+            } else if (header === 'buyer_name' && item.buyer) {
+              row.push(`"${item.buyer.name || ''}"`);
+            } else if (header === 'buyer_email' && item.buyer) {
+              row.push(`"${item.buyer.email || ''}"`);
+            } else if (header in item) {
+              // Escape quotes and wrap in quotes
+              const value = String(item[header]).replace(/"/g, '""');
+              row.push(`"${value}"`);
+            } else {
+              row.push('');
+            }
+          });
+          
+          csvContent += row.join(',') + '\n';
+        });
+      }
+      
+      // Create download link
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.setAttribute('href', url);
+      link.setAttribute('download', `${activeTab}_export_${new Date().toISOString().split('T')[0]}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (error) {
+      console.error('Error exporting data:', error);
+      alert('Failed to export data');
+    }
+  };
+
+  // Handle manual payout
   const handleManualPayout = (payout) => {
     setSelectedPayout(payout);
     setShowPayoutModal(true);
   };
 
-  const confirmPayout = () => {
-    // TODO: Replace with actual API call
-    // await fetch(`http://localhost:5050/admin/payouts/${selectedPayout.id}`, {
-    //   method: 'PUT',
-    //   headers: { 'Content-Type': 'application/json' },
-    //   body: JSON.stringify({ status: 'paid' })
-    // });
-    
-    // Update local state for demo
-    setPayouts(payouts.map(p => 
-      p.id === selectedPayout.id ? { ...p, status: 'paid' } : p
-    ));
-    
-    setShowPayoutModal(false);
-    setSelectedPayout(null);
+  const confirmPayout = async () => {
+    try {
+      setLoading(true);
+      
+      const response = await fetch(`http://localhost:5050/admin/payouts/${selectedPayout.id}/status`, {
+        method: 'PUT',
+        headers: { 
+          'Content-Type': 'application/json',
+          // Add authorization header if needed
+          // 'Authorization': `Bearer ${yourAuthToken}`
+        },
+        body: JSON.stringify({ status: 'paid' })
+      });
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to update payout status');
+      }
+      
+      const data = await response.json();
+      
+      // Update local state with the updated payout
+      setPayouts(payouts.map(p => 
+        p.id === selectedPayout.id ? { ...p, status: 'paid', updatedAt: new Date().toISOString() } : p
+      ));
+      
+      setShowPayoutModal(false);
+      setSelectedPayout(null);
+      
+    } catch (error) {
+      console.error('Error updating payout status:', error);
+      alert(error.message || 'Failed to update payout status');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const getStatusBadge = (status) => {
@@ -261,8 +356,20 @@ const AdminPayments = () => {
           >
             {showFilters ? 'Hide Filters' : 'Filters'}
           </Button>
-          <Button variant="outline-primary" className="ms-2">
-            Export
+          <Button 
+            variant="outline-primary" 
+            className="ms-2"
+            onClick={handleExport}
+            disabled={loading}
+          >
+            {loading ? (
+              <>
+                <Spinner as="span" size="sm" animation="border" role="status" aria-hidden="true" className="me-1" />
+                Exporting...
+              </>
+            ) : (
+              'Export'
+            )}
           </Button>
         </div>
       </div>
@@ -363,7 +470,6 @@ const AdminPayments = () => {
                         <th>Method</th>
                         <th>Status</th>
                         <th>Date</th>
-                        <th>Actions</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -376,17 +482,12 @@ const AdminPayments = () => {
                             <td>${parseFloat(payment.amount).toFixed(2)}</td>
                             <td>{getPaymentMethodIcon(payment.method)}</td>
                             <td>{getStatusBadge(payment.status)}</td>
-                            <td>{new Date(payment.paid_at).toLocaleDateString()}</td>
-                            <td>
-                              <Button variant="outline-primary" size="sm">
-                                View
-                              </Button>
-                            </td>
+                            <td>{payment.paidAt ? new Date(payment.paidAt).toLocaleDateString() : 'N/A'}</td>
                           </tr>
                         ))
                       ) : (
                         <tr>
-                          <td colSpan="8" className="text-center py-4">
+                          <td colSpan="7" className="text-center py-4">
                             No payments found
                           </td>
                         </tr>
@@ -438,7 +539,7 @@ const AdminPayments = () => {
                             </span>
                           )}
                         </td>
-                        <td>{payout.date}</td>
+                        <td>{payout.createdAt ? new Date(payout.createdAt).toLocaleDateString() : 'N/A'}</td>
                         <td>
                           {payout.status === 'pending' && (
                             <Button 
@@ -473,8 +574,8 @@ const AdminPayments = () => {
           {selectedPayout && (
             <div>
               <p>Are you sure you want to mark this payout as paid?</p>
-              <p><strong>Seller:</strong> {selectedPayout.seller}</p>
-              <p><strong>Amount:</strong> ${selectedPayout.amount.toFixed(2)}</p>
+              <p><strong>Seller:</strong> {selectedPayout.seller?.name || 'N/A'}</p>
+              <p><strong>Amount:</strong> ${Number(selectedPayout.amount || 0).toFixed(2)}</p>
               <p className="text-muted">This action cannot be undone.</p>
             </div>
           )}

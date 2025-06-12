@@ -128,7 +128,7 @@ payouts:
 "payment_id"	"integer"
 "amount"	"numeric"
 "payout_method"	"character varying"
-"payout_status"	"character varying"
+"status"	"character varying"
 "requested_at"	"timestamp without time zone"
 "paid_at"	"timestamp without time zone"
 "notes"	"text"
