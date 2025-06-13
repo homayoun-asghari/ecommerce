@@ -135,5 +135,17 @@ payouts:
 "created_at"	"timestamp without time zone"
 "updated_at"	"timestamp without time zone"
 
+settings:
+"id"	"integer"
+"key"	"text"
+"value"	"text"
+"updated_at"	"timestamp without time zone"
+
+documents:
+"id"	"integer"
+"type"	"text"
+"content"	"text"
+"updated_at"	"timestamp without time zone"
+
 
 for API calls always use fetch instead of axios 
