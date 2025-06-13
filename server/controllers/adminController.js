@@ -1604,27 +1604,156 @@ export const markNotificationsAsRead = async (req, res) => {
 
 // Delete multiple notifications
 export const deleteNotificationsBatch = async (req, res) => {
-  const { notificationIds } = req.body;
+  const client = await db.getClient();
   
-  if (!Array.isArray(notificationIds) || notificationIds.length === 0) {
-    return res.status(400).json({ error: 'No notification IDs provided' });
-  }
-
   try {
+    const { ids } = req.body;
+    
+    if (!Array.isArray(ids) || ids.length === 0) {
+      return res.status(400).json({ error: 'No notification IDs provided' });
+    }
+    
+    await client.query('BEGIN');
+    
+    const query = 'DELETE FROM notifications WHERE id = ANY($1::int[])';
+    await client.query(query, [ids]);
+    
+    await client.query('COMMIT');
+    
+    res.json({ message: 'Notifications deleted successfully' });
+  } catch (error) {
+    await client.query('ROLLBACK');
+    console.error('Error deleting notifications batch:', error);
+    res.status(500).json({ error: 'Failed to delete notifications' });
+  } finally {
+    client.release();
+  }
+};
+
+// Blog Management
+
+// Get all blog posts with pagination
+export const getBlogPosts = async (req, res) => {
+  try {
+    const { page = 1, limit = 10 } = req.query;
+    const offset = (page - 1) * limit;
+    
+    // Get total count
+    const countQuery = 'SELECT COUNT(*) FROM blog';
+    const countResult = await db.query(countQuery);
+    const total = parseInt(countResult.rows[0].count);
+    
+    // Get paginated posts with author names
     const query = `
-      DELETE FROM notifications 
-      WHERE id = ANY($1::int[])
+      SELECT b.*, u.name as author_name 
+      FROM blog b
+      LEFT JOIN users u ON b.author_id = u.id
+      ORDER BY b.created_at DESC
+      LIMIT $1 OFFSET $2
+    `;
+    
+    const result = await db.query(query, [limit, offset]);
+    
+    res.json({
+      posts: result.rows,
+      pagination: {
+        total,
+        page: parseInt(page),
+        pages: Math.ceil(total / limit),
+        limit: parseInt(limit)
+      }
+    });
+  } catch (error) {
+    console.error('Error fetching blog posts:', error);
+    res.status(500).json({ error: 'Failed to fetch blog posts', details: error.message });
+  }
+};
+
+// Create a new blog post
+export const createBlogPost = async (req, res) => {
+  try {
+    const { title, content, image_url } = req.body;
+    const author_id = req.user?.id; // Assuming user is authenticated and user info is in req.user
+    
+    if (!title || !content) {
+      return res.status(400).json({ error: 'Title and content are required' });
+    }
+    
+    const query = `
+      INSERT INTO blog (title, content, image_url, author_id, created_at, updated_at)
+      VALUES ($1, $2, $3, $4, NOW(), NOW())
       RETURNING *
     `;
     
-    const result = await db.query(query, [notificationIds]);
+    const result = await db.query(query, [title, content, image_url || null, author_id || null]);
     
-    res.json({
-      message: 'Notifications deleted successfully',
-      count: result.rowCount
+    res.status(201).json({
+      message: 'Blog post created successfully',
+      post: result.rows[0]
     });
   } catch (error) {
-    console.error('Error deleting notifications:', error);
-    res.status(500).json({ error: 'Failed to delete notifications' });
+    console.error('Error creating blog post:', error);
+    res.status(500).json({ error: 'Failed to create blog post' });
+  }
+};
+
+// Update a blog post
+export const updateBlogPost = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { title, content, image_url } = req.body;
+    
+    if (!title || !content) {
+      return res.status(400).json({ error: 'Title and content are required' });
+    }
+    
+    // Check if post exists
+    const checkQuery = 'SELECT id FROM blog WHERE id = $1';
+    const checkResult = await db.query(checkQuery, [id]);
+    
+    if (checkResult.rows.length === 0) {
+      return res.status(404).json({ error: 'Blog post not found' });
+    }
+    
+    const query = `
+      UPDATE blog 
+      SET title = $1, content = $2, image_url = $3, updated_at = NOW()
+      WHERE id = $4
+      RETURNING *
+    `;
+    
+    const result = await db.query(query, [title, content, image_url || null, id]);
+    
+    res.json({
+      message: 'Blog post updated successfully',
+      post: result.rows[0]
+    });
+  } catch (error) {
+    console.error('Error updating blog post:', error);
+    res.status(500).json({ error: 'Failed to update blog post' });
+  }
+};
+
+// Delete a blog post
+export const deleteBlogPost = async (req, res) => {
+  try {
+    const { id } = req.params;
+    
+    // Check if post exists
+    const checkQuery = 'SELECT id FROM blog WHERE id = $1';
+    const checkResult = await db.query(checkQuery, [id]);
+    
+    if (checkResult.rows.length === 0) {
+      return res.status(404).json({ error: 'Blog post not found' });
+    }
+    
+    // Delete the post
+    const deleteQuery = 'DELETE FROM blog WHERE id = $1';
+    await db.query(deleteQuery, [id]);
+    
+    res.json({ message: 'Blog post deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting blog post:', error);
+    res.status(500).json({ error: 'Failed to delete blog post' });
   }
 };

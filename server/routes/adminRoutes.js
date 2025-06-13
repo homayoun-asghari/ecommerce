@@ -27,7 +27,11 @@ import {
   updateNotificationStatus,
   deleteNotification,
   markNotificationsAsRead,
-  deleteNotificationsBatch
+  deleteNotificationsBatch,
+  getBlogPosts,
+  createBlogPost,
+  updateBlogPost,
+  deleteBlogPost
 } from '../controllers/adminController.js';
 
 const router = express.Router();
@@ -69,6 +73,12 @@ router.post('/tickets/:id/respond', addTicketResponse);
 // Review management routes
 router.get('/reviews', getReviews);
 router.delete('/reviews/:id', deleteReview);
+
+// Blog management routes
+router.get('/blog', getBlogPosts);
+router.post('/blog', createBlogPost);
+router.put('/blog/:id', updateBlogPost);
+router.delete('/blog/:id', deleteBlogPost);
 
 // Notification management routes
 router.get('/notifications', getNotifications);
