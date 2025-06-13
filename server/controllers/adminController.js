@@ -1087,9 +1087,17 @@ export const updateTicketStatus = async (req, res) => {
     const { id } = req.params;
     const { status } = req.body;
 
-    if (!['open', 'in_progress', 'waiting', 'closed'].includes(status)) {
-      return res.status(400).json({ error: 'Invalid status value' });
-    }
+    // Map old status values to new ones for backward compatibility
+    const statusMap = {
+      'in_progress': 'pending',
+      'waiting': 'pending',
+      'pending': 'pending',
+      'resolved': 'resolved',
+      'closed': 'closed',
+      'open': 'open'
+    };
+
+    const newStatus = statusMap[status] || 'open';
 
     const query = `
       UPDATE tickets 
@@ -1099,7 +1107,7 @@ export const updateTicketStatus = async (req, res) => {
       RETURNING *
     `;
     
-    const result = await db.query(query, [status, id]);
+    const result = await db.query(query, [newStatus, id]);
     
     if (result.rows.length === 0) {
       return res.status(404).json({ error: 'Ticket not found' });
@@ -1111,7 +1119,10 @@ export const updateTicketStatus = async (req, res) => {
     });
   } catch (error) {
     console.error('Error updating ticket status:', error);
-    res.status(500).json({ error: 'Failed to update ticket status' });
+    res.status(500).json({ 
+      error: 'Failed to update ticket status',
+      details: error.message 
+    });
   }
 };
 

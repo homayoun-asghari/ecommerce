@@ -60,8 +60,8 @@ const AdminTickets = () => {
   const statuses = [
     { value: 'all', label: 'All Statuses' },
     { value: 'open', label: 'Open' },
-    { value: 'in_progress', label: 'In Progress' },
-    { value: 'waiting', label: 'Waiting' },
+    { value: 'pending', label: 'Pending' },
+    { value: 'resolved', label: 'Resolved' },
     { value: 'closed', label: 'Closed' }
   ];
 
@@ -258,10 +258,10 @@ const AdminTickets = () => {
     switch (status) {
       case 'open':
         return <Badge bg="primary">Open</Badge>;
-      case 'in_progress':
-        return <Badge bg="info">In Progress</Badge>;
-      case 'waiting':
-        return <Badge bg="warning" text="dark">Waiting</Badge>;
+      case 'pending':
+        return <Badge bg="warning" text="dark">Pending</Badge>;
+      case 'resolved':
+        return <Badge bg="success">Resolved</Badge>;
       case 'closed':
         return <Badge bg="secondary">Closed</Badge>;
       default:
@@ -274,10 +274,10 @@ const AdminTickets = () => {
     switch (status) {
       case 'open':
         return 'primary';
-      case 'in_progress':
-        return 'info';
-      case 'waiting':
+      case 'pending':
         return 'warning';
+      case 'resolved':
+        return 'success';
       case 'closed':
         return 'secondary';
       default:
@@ -290,12 +290,12 @@ const AdminTickets = () => {
     switch (status) {
       case 'open':
         return <ExclamationCircle className="me-1" />;
-      case 'in_progress':
+      case 'pending':
         return <Clock className="me-1" />;
-      case 'waiting':
-        return <ArrowClockwise className="me-1" />;
-      case 'closed':
+      case 'resolved':
         return <Check2Circle className="me-1" />;
+      case 'closed':
+        return <XCircle className="me-1" />;
       default:
         return null;
     }
