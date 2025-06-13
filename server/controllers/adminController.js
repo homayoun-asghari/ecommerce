@@ -1272,3 +1272,119 @@ export const getPayouts = async (req, res) => {
     res.status(500).json({ error: 'Failed to fetch payouts' });
   }
 };
+
+// Get all reviews with filtering and pagination
+export const getReviews = async (req, res) => {
+  try {
+    const { 
+      page = 1, 
+      limit = 10,
+      rating,
+      search = ''
+    } = req.query;
+
+    const offset = (page - 1) * limit;
+    const params = [];
+    let whereClause = 'WHERE 1=1';
+
+    // Add rating filter
+    if (rating) {
+      params.push(parseInt(rating));
+      whereClause += ` AND r.rating = $${params.length}`;
+    }
+
+    // Add search filter
+    if (search) {
+      params.push(`%${search}%`);
+      whereClause += ` AND (
+        p.name ILIKE $${params.length} OR 
+        u.name ILIKE $${params.length} OR
+        u.email ILIKE $${params.length} OR
+        r.comment ILIKE $${params.length}
+      )`;
+    }
+
+    // Get total count
+    const countQuery = `
+      SELECT COUNT(*) as total 
+      FROM reviews r
+      JOIN products p ON r.product_id = p.id
+      JOIN users u ON r.user_id = u.id
+      ${whereClause}
+    `;
+
+    const countResult = await db.query(countQuery, params);
+    const total = parseInt(countResult.rows[0].total);
+
+    // Get paginated reviews with user and product info
+    const reviewsQuery = `
+      SELECT 
+        r.id, r.rating, r.comment, r.created_at,
+        p.id as product_id, p.name as product_name,
+        u.id as user_id, u.name as user_name, u.email as user_email
+      FROM reviews r
+      JOIN products p ON r.product_id = p.id
+      JOIN users u ON r.user_id = u.id
+      ${whereClause}
+      ORDER BY r.created_at DESC
+      LIMIT $${params.length + 1} OFFSET $${params.length + 2}
+    `;
+
+    const reviewsParams = [...params, parseInt(limit), offset];
+    const reviewsResult = await db.query(reviewsQuery, reviewsParams);
+
+    // Format the response
+    const reviews = reviewsResult.rows.map(row => ({
+      id: row.id,
+      rating: parseFloat(row.rating),
+      comment: row.comment,
+      created_at: row.created_at,
+      product: {
+        id: row.product_id,
+        name: row.product_name
+      },
+      user: {
+        id: row.user_id,
+        name: row.user_name,
+        email: row.user_email
+      }
+    }));
+
+    res.json({
+      data: reviews,
+      pagination: {
+        total,
+        page: parseInt(page),
+        limit: parseInt(limit),
+        totalPages: Math.ceil(total / limit)
+      }
+    });
+  } catch (error) {
+    console.error('Error fetching reviews:', error);
+    res.status(500).json({ error: 'Failed to fetch reviews' });
+  }
+};
+
+// Delete a review
+export const deleteReview = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // Check if review exists
+    const checkQuery = 'SELECT id FROM reviews WHERE id = $1';
+    const checkResult = await db.query(checkQuery, [id]);
+
+    if (checkResult.rows.length === 0) {
+      return res.status(404).json({ error: 'Review not found' });
+    }
+
+    // Delete the review
+    const deleteQuery = 'DELETE FROM reviews WHERE id = $1 RETURNING *';
+    await db.query(deleteQuery, [id]);
+
+    res.json({ message: 'Review deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting review:', error);
+    res.status(500).json({ error: 'Failed to delete review' });
+  }
+};

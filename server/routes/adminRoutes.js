@@ -19,7 +19,9 @@ import {
   getTickets,
   getTicketDetails,
   updateTicketStatus,
-  addTicketResponse
+  addTicketResponse,
+  getReviews,
+  deleteReview
 } from '../controllers/adminController.js';
 
 const router = express.Router();
@@ -57,5 +59,9 @@ router.get('/tickets', getTickets);
 router.get('/tickets/:id', getTicketDetails);
 router.put('/tickets/:id/status', updateTicketStatus);
 router.post('/tickets/:id/respond', addTicketResponse);
+
+// Review management routes
+router.get('/reviews', getReviews);
+router.delete('/reviews/:id', deleteReview);
 
 export default router;
