@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { Search } from 'react-bootstrap-icons';
 import "../styles/Searchbar.css";
 
-function Searchbar({ width, placeholder = 'Search products...', button = 'Search', onSearch }) {
+function Searchbar({ width, placeholder = 'Search products...', onSearch }) {
     const [searchQuery, setSearchQuery] = useState('');
     const [searchResults, setSearchResults] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
@@ -81,10 +81,15 @@ function Searchbar({ width, placeholder = 'Search products...', button = 'Search
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
                         onFocus={() => searchResults.length > 0 && setShowResults(true)}
+                        onKeyDown={(e) => e.key === 'Enter' && handleSubmit(e)}
                         autoComplete="off"
                     />
-                    <Button id="search-button" type="submit" disabled={!searchQuery.trim()}>
-                        <Search className="me-1" /> {button}
+                    <Button 
+                        type="submit" 
+                        className="search-button"
+                        disabled={!searchQuery.trim()}
+                    >
+                        <Search />
                     </Button>
                 </InputGroup>
             </Form>
