@@ -18,7 +18,7 @@ export const getNotification = async (req, res) => {
     const userId = req.query.userId;
     try {
         const result = await db.query(
-            "SELECT * FROM notifications WHERE user_id = $1 ORDER BY created_at DESC",
+            "SELECT * FROM notifications WHERE user_id = $1 OR user_id IS NULL ORDER BY created_at DESC",
             [userId]
         );
         res.status(200).json(result.rows);
