@@ -1475,29 +1475,24 @@ export const getNotifications = async (req, res) => {
     res.status(500).json({ error: 'Failed to fetch notifications' });
   }
 };
-
-// Create a new notification
 export const createNotification = async (req, res) => {
-  const { title, message, userIds, isImportant = false } = req.body;
-  const client = await db.getClient();
+  const { title, message, userIds = [] } = req.body;
+  
+  if (!title || !message) {
+    return res.status(400).json({ error: 'Title and message are required' });
+  }
 
   try {
-    await client.query('BEGIN');
-    
-    // If userIds is null or empty, it's a global notification
-    if (!userIds || userIds.length === 0) {
-      // Create a single notification with null user_id for all users
+    // For global notification
+    if (!userIds.length) {
       const query = `
-        INSERT INTO notifications (title, message, is_read, is_important, user_id, created_at)
-        VALUES ($1, $2, false, $3, NULL, NOW())
+        INSERT INTO notifications (title, message, is_read, user_id, created_at)
+        VALUES ($1, $2, false, NULL, NOW())
         RETURNING *
       `;
-      
-      const result = await client.query(query, [title, message, isImportant]);
-      await client.query('COMMIT');
-      
+      const result = await db.query(query, [title, message]);
       return res.status(201).json({
-        message: 'Global notification created successfully',
+        message: 'Global notification created',
         notification: result.rows[0]
       });
     }
@@ -1505,28 +1500,24 @@ export const createNotification = async (req, res) => {
     // For specific users
     const notifications = [];
     for (const userId of userIds) {
+      if (!userId) continue;
+      
       const query = `
-        INSERT INTO notifications (title, message, is_read, is_important, user_id, created_at)
-        VALUES ($1, $2, false, $3, $4, NOW())
+        INSERT INTO notifications (title, message, is_read, user_id, created_at)
+        VALUES ($1, $2, false, $3, NOW())
         RETURNING *
       `;
-      
-      const result = await client.query(query, [title, message, isImportant, userId]);
+      const result = await db.query(query, [title, message, userId]);
       notifications.push(result.rows[0]);
     }
-    
-    await client.query('COMMIT');
     
     res.status(201).json({
       message: 'Notifications created successfully',
       notifications
     });
   } catch (error) {
-    await client.query('ROLLBACK');
-    console.error('Error creating notifications:', error);
+    console.error('Error:', error);
     res.status(500).json({ error: 'Failed to create notifications' });
-  } finally {
-    client.release();
   }
 };
 

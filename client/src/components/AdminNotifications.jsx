@@ -55,7 +55,6 @@ const AdminNotifications = () => {
   const [formData, setFormData] = useState({
     title: '',
     message: '',
-    isImportant: false,
     targetUsers: 'all', // 'all' or 'specific'
     userIds: ''
   });
@@ -107,49 +106,50 @@ const AdminNotifications = () => {
       [name]: type === 'checkbox' ? checked : value
     });
   };
+// In AdminNotifications.jsx
+const handleCreateNotification = async (e) => {
+  e.preventDefault();
+  try {
+    setLoading(true);
+    
+    const payload = {
+      title: formData.title,
+      message: formData.message,
+      // Send empty array for global, or array of user IDs for specific
+      userIds: formData.targetUsers === 'specific' 
+        ? formData.userIds.split(',').map(id => id.trim()).filter(Boolean)
+        : []
+    };
 
-  // Handle notification creation
-  const handleCreateNotification = async (e) => {
-    e.preventDefault();
-    try {
-      setLoading(true);
-      
-      const payload = {
-        title: formData.title,
-        message: formData.message,
-        isImportant: formData.isImportant,
-        userIds: formData.targetUsers === 'specific' ? formData.userIds.split(',').map(id => id.trim()) : null
-      };
+    const response = await fetch('http://localhost:5050/admin/notifications', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(payload)
+    });
 
-      const response = await fetch('http://localhost:5050/admin/notifications', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(payload)
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to create notification');
-      }
-
-      // Refresh notifications
-      await fetchNotifications();
-      setShowCreateModal(false);
-      setFormData({
-        title: '',
-        message: '',
-        isImportant: false,
-        targetUsers: 'all',
-        userIds: ''
-      });
-    } catch (err) {
-      console.error('Error creating notification:', err);
-      setError(err.message);
-    } finally {
-      setLoading(false);
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.error || 'Failed to create notification');
     }
-  };
+
+    // Refresh notifications and reset form
+    await fetchNotifications();
+    setShowCreateModal(false);
+    setFormData({
+      title: '',
+      message: '',
+      targetUsers: 'all',
+      userIds: ''
+    });
+  } catch (err) {
+    console.error('Error:', err);
+    setError(err.message);
+  } finally {
+    setLoading(false);
+  }
+};
 
   // Handle notification deletion
   const handleDeleteNotification = async () => {
@@ -421,17 +421,6 @@ const AdminNotifications = () => {
                 onChange={handleInputChange}
                 placeholder="Enter notification message"
                 required
-              />
-            </Form.Group>
-            
-            <Form.Group className="mb-3">
-              <Form.Check
-                type="switch"
-                id="isImportant"
-                label="Mark as important"
-                name="isImportant"
-                checked={formData.isImportant}
-                onChange={handleInputChange}
               />
             </Form.Group>
             
