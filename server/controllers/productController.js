@@ -1,6 +1,49 @@
 import db from "../config/db.js";
 import cloudinary from '../middlewares/cloudinary.js';
 
+// controllers/productController.js
+export const searchProducts = async (req, res) => {
+    const { q } = req.query;
+
+    if (!q) {
+        return res.status(400).json({ error: 'Search query is required' });
+    }
+
+    try {
+        const searchTerm = `%${q}%`;
+        const result = await db.query(`
+            SELECT 
+                p.*, 
+                COALESCE(AVG(r.rating), 0) AS avg_rating,
+                COUNT(r.id) AS review_count
+            FROM products p
+            LEFT JOIN reviews r ON p.id = r.product_id
+            WHERE p.name ILIKE $1 OR p.description ILIKE $1
+            GROUP BY p.id
+            ORDER BY 
+                CASE 
+                    WHEN p.name ILIKE $1 THEN 1
+                    WHEN p.description ILIKE $1 THEN 2
+                    ELSE 3
+                END,
+                p.name
+            LIMIT 10;
+        `, [searchTerm]);
+
+        res.status(200).json({
+            products: result.rows.map(p => ({
+                ...p,
+                avg_rating: parseFloat(p.avg_rating),
+                review_count: parseInt(p.review_count),
+            }))
+        });
+    } catch (err) {
+        console.error('Search error:', err);
+        res.status(500).json({ error: 'Failed to perform search' });
+    }
+};
+
+
 export const getProduct = async (req, res) => {
     const id = req.query.id;
     try {

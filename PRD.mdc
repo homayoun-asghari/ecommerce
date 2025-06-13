@@ -147,5 +147,7 @@ documents:
 "content"	"text"
 "updated_at"	"timestamp without time zone"
 
+"documents_type_check"	"CHECK ((type = ANY (ARRAY['terms'::text, 'privacy_policy'::text])))"
+
 
 for API calls always use fetch instead of axios 

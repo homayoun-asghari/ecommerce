@@ -1,5 +1,5 @@
 import express from "express";
-import { getProduct, getNewArrivals, getBestSellers, getEspecialOffers, getRelatedProducts, getSellersProducts, addProduct } from "../controllers/productController.js";
+import { searchProducts, getProduct, getNewArrivals, getBestSellers, getEspecialOffers, getRelatedProducts, getSellersProducts, addProduct } from "../controllers/productController.js";
 import upload from "../middlewares/multer.js";
 
 const router = express.Router();
@@ -10,5 +10,6 @@ router.get("/bestsellers", getBestSellers);
 router.get("/especialoffers", getEspecialOffers);
 router.get("/related", getRelatedProducts);
 router.get("/sellersproducts", getSellersProducts);
+router.get("/search", searchProducts);
 
 export default router;

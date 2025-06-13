@@ -1,18 +1,100 @@
+.search-container {
+    position: relative;
+    width: 100%;
+}
+
 .search-bar {
     width: 100%;
+    position: relative;
 }
 
 .search-input {
     height: 50px;
+    padding: 0.5rem 1rem;
+    border: 1px solid #ced4da;
+    border-radius: 8px 0 0 8px;
+    font-size: 1rem;
+    transition: border-color 0.2s ease-in-out;
+}
+
+.search-input:focus {
+    border-color: #80bdff;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+    outline: none;
 }
 
 #search-button {
     height: 50px;
-    font-size: 1.2rem;
+    font-size: 1rem;
     border-radius: 0 8px 8px 0;
     background-color: var(--color-primary);
     border: none;
     display: flex;
     align-items: center;
     justify-content: center;
+    padding: 0 1.5rem;
+    transition: background-color 0.2s ease-in-out;
+}
+
+#search-button:hover {
+    background-color: #0056b3;
+}
+
+#search-button:disabled {
+    background-color: #6c757d;
+    cursor: not-allowed;
+}
+
+/* Search Results Dropdown */
+.search-results-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    max-height: 400px;
+    overflow-y: auto;
+    background: white;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175);
+    margin-top: 4px;
+}
+
+.search-result-item {
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid #eee;
+    cursor: pointer;
+    transition: background-color 0.1s ease-in-out;
+}
+
+.search-result-item:last-child {
+    border-bottom: none;
+}
+
+.search-result-item:hover {
+    background-color: #f8f9fa;
+}
+
+.search-result-img {
+    width: 40px;
+    height: 40px;
+    object-fit: cover;
+    border-radius: 4px;
+}
+
+/* Loading spinner */
+@keyframes spinner-border {
+    to { transform: rotate(360deg); }
+}
+
+.spinner-border {
+    display: inline-block;
+    width: 1rem;
+    height: 1rem;
+    vertical-align: -0.125em;
+    border: 0.2em solid currentColor;
+    border-right-color: transparent;
+    border-radius: 50%;
+    animation: spinner-border 0.75s linear infinite;
 }
