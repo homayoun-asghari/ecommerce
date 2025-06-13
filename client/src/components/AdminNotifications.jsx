@@ -299,7 +299,7 @@ const AdminNotifications = () => {
               {notifications.map((notification) => (
                 <ListGroup.Item 
                   key={notification.id}
-                  className={`p-3 ${!notification.is_read ? 'bg-light' : ''}`}
+                  className={`p-3 ${!notification.is_read ? 'bg-success' : ''}`}
                   action
                 >
                   <div className="d-flex justify-content-between align-items-start">

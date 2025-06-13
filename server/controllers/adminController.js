@@ -1388,3 +1388,252 @@ export const deleteReview = async (req, res) => {
     res.status(500).json({ error: 'Failed to delete review' });
   }
 };
+
+// Get all notifications with filtering and pagination
+export const getNotifications = async (req, res) => {
+  try {
+    const { 
+      page = 1, 
+      limit = 10,
+      status = '',
+      search = ''
+    } = req.query;
+
+    const offset = (page - 1) * limit;
+    const params = [];
+    let whereClause = 'WHERE 1=1';
+    let joinClause = 'LEFT JOIN users u ON n.user_id = u.id';
+
+    // Add status filter
+    if (status === 'read') {
+      whereClause += ' AND n.is_read = true';
+    } else if (status === 'unread') {
+      whereClause += ' AND n.is_read = false';
+    }
+
+    // Add search filter
+    if (search) {
+      params.push(`%${search}%`);
+      whereClause += ` AND (
+        n.title ILIKE $${params.length} OR 
+        n.message ILIKE $${params.length} OR
+        u.name ILIKE $${params.length} OR
+        u.email ILIKE $${params.length}
+      )`;
+    }
+
+    // Get total count
+    const countQuery = `
+      SELECT COUNT(*) as total 
+      FROM notifications n
+      ${joinClause}
+      ${whereClause}
+    `;
+
+    const countResult = await db.query(countQuery, params);
+    const total = parseInt(countResult.rows[0].total);
+
+    // Get paginated notifications with user info
+    const notificationsQuery = `
+      SELECT 
+        n.id, n.title, n.message, n.is_read, n.created_at,
+        n.user_id,
+        u.name as user_name, u.email as user_email
+      FROM notifications n
+      ${joinClause}
+      ${whereClause}
+      ORDER BY n.created_at DESC
+      LIMIT $${params.length + 1} OFFSET $${params.length + 2}
+    `;
+
+    const notificationsParams = [...params, parseInt(limit), offset];
+    const notificationsResult = await db.query(notificationsQuery, notificationsParams);
+
+    // Format the response
+    const notifications = notificationsResult.rows.map(row => ({
+      id: row.id,
+      title: row.title,
+      message: row.message,
+      is_read: row.is_read,
+      created_at: row.created_at,
+      user_id: row.user_id,
+      user_name: row.user_name,
+      user_email: row.user_email
+    }));
+
+    res.json({
+      data: notifications,
+      pagination: {
+        total,
+        page: parseInt(page),
+        limit: parseInt(limit),
+        totalPages: Math.ceil(total / limit)
+      }
+    });
+  } catch (error) {
+    console.error('Error fetching notifications:', error);
+    res.status(500).json({ error: 'Failed to fetch notifications' });
+  }
+};
+
+// Create a new notification
+export const createNotification = async (req, res) => {
+  const { title, message, userIds, isImportant = false } = req.body;
+  const client = await db.getClient();
+
+  try {
+    await client.query('BEGIN');
+    
+    // If userIds is null or empty, it's a global notification
+    if (!userIds || userIds.length === 0) {
+      // Create a single notification with null user_id for all users
+      const query = `
+        INSERT INTO notifications (title, message, is_read, is_important, user_id, created_at)
+        VALUES ($1, $2, false, $3, NULL, NOW())
+        RETURNING *
+      `;
+      
+      const result = await client.query(query, [title, message, isImportant]);
+      await client.query('COMMIT');
+      
+      return res.status(201).json({
+        message: 'Global notification created successfully',
+        notification: result.rows[0]
+      });
+    }
+    
+    // For specific users
+    const notifications = [];
+    for (const userId of userIds) {
+      const query = `
+        INSERT INTO notifications (title, message, is_read, is_important, user_id, created_at)
+        VALUES ($1, $2, false, $3, $4, NOW())
+        RETURNING *
+      `;
+      
+      const result = await client.query(query, [title, message, isImportant, userId]);
+      notifications.push(result.rows[0]);
+    }
+    
+    await client.query('COMMIT');
+    
+    res.status(201).json({
+      message: 'Notifications created successfully',
+      notifications
+    });
+  } catch (error) {
+    await client.query('ROLLBACK');
+    console.error('Error creating notifications:', error);
+    res.status(500).json({ error: 'Failed to create notifications' });
+  } finally {
+    client.release();
+  }
+};
+
+// Update notification status (read/unread)
+export const updateNotificationStatus = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { isRead } = req.body;
+
+    const query = `
+      UPDATE notifications 
+      SET is_read = $1
+      WHERE id = $2
+      RETURNING *
+    `;
+
+    const result = await db.query(query, [isRead, id]);
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'Notification not found' });
+    }
+
+    res.json({
+      message: 'Notification status updated successfully',
+      notification: result.rows[0]
+    });
+  } catch (error) {
+    console.error('Error updating notification status:', error);
+    res.status(500).json({ error: 'Failed to update notification status' });
+  }
+};
+
+// Delete a notification
+export const deleteNotification = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // Check if notification exists
+    const checkQuery = 'SELECT id FROM notifications WHERE id = $1';
+    const checkResult = await db.query(checkQuery, [id]);
+
+    if (checkResult.rows.length === 0) {
+      return res.status(404).json({ error: 'Notification not found' });
+    }
+
+    // Delete the notification
+    const deleteQuery = 'DELETE FROM notifications WHERE id = $1 RETURNING *';
+    await db.query(deleteQuery, [id]);
+
+    res.json({ message: 'Notification deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting notification:', error);
+    res.status(500).json({ error: 'Failed to delete notification' });
+  }
+};
+
+// Mark multiple notifications as read
+export const markNotificationsAsRead = async (req, res) => {
+  const { notificationIds } = req.body;
+  
+  if (!Array.isArray(notificationIds) || notificationIds.length === 0) {
+    return res.status(400).json({ error: 'No notification IDs provided' });
+  }
+
+  try {
+    const query = `
+      UPDATE notifications 
+      SET is_read = true 
+      WHERE id = ANY($1::int[])
+      RETURNING *
+    `;
+    
+    const result = await db.query(query, [notificationIds]);
+    
+    res.json({
+      message: 'Notifications marked as read',
+      count: result.rowCount
+    });
+  } catch (error) {
+    console.error('Error marking notifications as read:', error);
+    res.status(500).json({ error: 'Failed to update notifications' });
+  }
+};
+
+// Delete multiple notifications
+export const deleteNotificationsBatch = async (req, res) => {
+  const { notificationIds } = req.body;
+  
+  if (!Array.isArray(notificationIds) || notificationIds.length === 0) {
+    return res.status(400).json({ error: 'No notification IDs provided' });
+  }
+
+  try {
+    const query = `
+      DELETE FROM notifications 
+      WHERE id = ANY($1::int[])
+      RETURNING *
+    `;
+    
+    const result = await db.query(query, [notificationIds]);
+    
+    res.json({
+      message: 'Notifications deleted successfully',
+      count: result.rowCount
+    });
+  } catch (error) {
+    console.error('Error deleting notifications:', error);
+    res.status(500).json({ error: 'Failed to delete notifications' });
+  }
+};
