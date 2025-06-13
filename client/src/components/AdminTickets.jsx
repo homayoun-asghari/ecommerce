@@ -240,17 +240,9 @@ const AdminTickets = () => {
     }
   };
   
-  // Helper to format dates
+  // Format date string
   const formatDate = (dateString) => {
-    if (!dateString) return 'N/A';
-    const options = { 
-      year: 'numeric', 
-      month: 'short', 
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    };
-    return new Date(dateString).toLocaleDateString('en-US', options);
+    return dateString ? new Date(dateString).toLocaleDateString() : 'N/A';
   };
   
   // Get status badge component
@@ -469,7 +461,7 @@ const AdminTickets = () => {
                             {ticket.status.replace('_', ' ').charAt(0).toUpperCase() + ticket.status.replace('_', ' ').slice(1)}
                           </Badge>
                         </td>
-                        <td>{formatDate(ticket.created_at)}</td>
+                        <td>{formatDate(ticket.createdAt)}</td>
                         <td>
                           <div className="d-flex gap-2">
                             <Button 
@@ -545,7 +537,7 @@ const AdminTickets = () => {
                 <div className="d-flex justify-content-between align-items-center mb-2">
                   <strong>{selectedTicket.user.name} ({selectedTicket.user.email})</strong>
                   <small className="text-muted">
-                    {formatDate(selectedTicket.created_at)}
+                    {formatDate(selectedTicket.createdAt)}
                   </small>
                 </div>
                 <p className="mb-0">
