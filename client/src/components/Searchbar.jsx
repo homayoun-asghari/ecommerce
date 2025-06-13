@@ -53,6 +53,7 @@ function Searchbar({ width, placeholder = 'Search products...', onSearch }) {
         if (searchQuery.trim()) {
             navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
             setShowResults(false);
+            setSearchQuery(''); // Clear the search input
             if (onSearch) onSearch(searchQuery.trim());
         }
     };

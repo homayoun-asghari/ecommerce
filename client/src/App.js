@@ -11,6 +11,7 @@ import BottomNavbar from './components/BottomNavbar.jsx';
 import Account from './pages/Account.jsx';
 import Cart from './pages/Cart.jsx';
 import Checkout from './pages/Checkout.jsx';
+import SearchResults from './pages/SearchResults.jsx';
 import ContextProvider from "./contexts/ContextProvider";
 
 function App() {
@@ -28,6 +29,7 @@ function App() {
                 <Route path="/account" element={<Account />} />
                 <Route path="/cart" element={<Cart />} />
                 <Route path="/checkout" element={<Checkout />} />
+                <Route path="/search" element={<SearchResults />} />
               </Routes>
             </Container>
           </main>
