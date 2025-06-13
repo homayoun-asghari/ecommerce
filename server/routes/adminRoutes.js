@@ -31,7 +31,12 @@ import {
   getBlogPosts,
   createBlogPost,
   updateBlogPost,
-  deleteBlogPost
+  deleteBlogPost,
+  getSettings,
+  updateSettings,
+  getDocuments,
+  saveDocument,
+  updateEmailTemplate
 } from '../controllers/adminController.js';
 
 const router = express.Router();
@@ -79,6 +84,17 @@ router.get('/blog', getBlogPosts);
 router.post('/blog', createBlogPost);
 router.put('/blog/:id', updateBlogPost);
 router.delete('/blog/:id', deleteBlogPost);
+
+// Settings management routes
+router.get('/settings', getSettings);
+router.post('/settings', updateSettings);
+
+// Document management routes
+router.get('/documents', getDocuments);
+router.post('/documents', saveDocument);
+
+// Email template routes
+router.post('/email-templates', updateEmailTemplate);
 
 // Notification management routes
 router.get('/notifications', getNotifications);

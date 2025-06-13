@@ -40,16 +40,14 @@ const AdminSettings = () => {
         const settingsRes = await fetch('http://localhost:5050/admin/settings');
         if (settingsRes.ok) {
           const settingsData = await settingsRes.json();
-          // Transform settings array to object
-          const settingsObj = settingsData.reduce((acc, { key, value }) => {
-            try {
-              acc[key] = JSON.parse(value);
-            } catch (e) {
-              acc[key] = value;
-            }
-            return acc;
-          }, {});
-          setSettings(prev => ({ ...prev, ...settingsObj }));
+          // The backend already returns an object with key-value pairs
+          setSettings(prev => ({
+            ...prev,
+            maintenanceMode: settingsData.maintenanceMode || false,
+            siteTitle: settingsData.siteTitle || '',
+            contactEmail: settingsData.contactEmail || '',
+            itemsPerPage: settingsData.itemsPerPage || 10
+          }));
         }
 
         // Fetch documents
@@ -109,11 +107,13 @@ const AdminSettings = () => {
       setError('');
       setSuccess('');
 
-      // Save general settings
-      const settingsToSave = Object.entries(settings).map(([key, value]) => ({
-        key,
-        value: typeof value === 'object' ? JSON.stringify(value) : value.toString()
-      }));
+      // Convert settings to array of {key, value} objects
+      const settingsToSave = [
+        { key: 'maintenanceMode', value: settings.maintenanceMode },
+        { key: 'siteTitle', value: settings.siteTitle },
+        { key: 'contactEmail', value: settings.contactEmail },
+        { key: 'itemsPerPage', value: settings.itemsPerPage }
+      ];
 
       const response = await fetch('http://localhost:5050/admin/settings', {
         method: 'POST',
@@ -121,11 +121,17 @@ const AdminSettings = () => {
         body: JSON.stringify(settingsToSave)
       });
 
-      if (!response.ok) throw new Error('Failed to save settings');
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to save settings');
+      }
       
       setSuccess('Settings saved successfully');
+      
+      // Hide success message after 3 seconds
+      setTimeout(() => setSuccess(''), 3000);
     } catch (err) {
-      setError('Failed to save settings. Please try again.');
+      setError(err.message || 'Failed to save settings. Please try again.');
       console.error('Error saving settings:', err);
     } finally {
       setSaving(false);
@@ -140,12 +146,9 @@ const AdminSettings = () => {
       setSuccess('');
 
       const doc = documents[type];
-      const url = doc.id 
-        ? `http://localhost:5050/admin/documents/${doc.id}`
-        : 'http://localhost:5050/admin/documents';
-
-      const response = await fetch(url, {
-        method: doc.id ? 'PUT' : 'POST',
+      
+      const response = await fetch('http://localhost:5050/admin/documents', {
+        method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           type,
@@ -153,7 +156,10 @@ const AdminSettings = () => {
         })
       });
 
-      if (!response.ok) throw new Error(`Failed to save ${type}`);
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || `Failed to save ${type}`);
+      }
       
       const savedDoc = await response.json();
       setDocuments(prev => ({
@@ -161,9 +167,15 @@ const AdminSettings = () => {
         [type]: { ...prev[type], id: savedDoc.id }
       }));
       
-      setSuccess(`${type.charAt(0).toUpperCase() + type.slice(1)} saved successfully`);
+      const typeName = type === 'terms' ? 'Terms and Conditions' : 
+                      type === 'privacy' ? 'Privacy Policy' : 'About Us';
+      
+      setSuccess(`${typeName} saved successfully`);
+      
+      // Hide success message after 3 seconds
+      setTimeout(() => setSuccess(''), 3000);
     } catch (err) {
-      setError(`Failed to save ${type}. Please try again.`);
+      setError(err.message || `Failed to save ${type}. Please try again.`);
       console.error(`Error saving ${type}:`, err);
     } finally {
       setSaving(false);
@@ -177,20 +189,33 @@ const AdminSettings = () => {
       setError('');
       setSuccess('');
 
+      const templateData = emailTemplates[template];
+      
       const response = await fetch('http://localhost:5050/admin/email-templates', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           template,
-          ...emailTemplates[template]
+          subject: templateData.subject,
+          content: templateData.content
         })
       });
 
-      if (!response.ok) throw new Error(`Failed to save ${template} template`);
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || `Failed to save ${template} template`);
+      }
       
-      setSuccess(`${template.split(/(?=[A-Z])/).join(' ').toLowerCase()} template saved successfully`);
+      const templateName = template === 'welcome' ? 'Welcome email' : 
+                         template === 'orderConfirmation' ? 'Order confirmation email' : 
+                         'Password reset email';
+      
+      setSuccess(`${templateName} template saved successfully`);
+      
+      // Hide success message after 3 seconds
+      setTimeout(() => setSuccess(''), 3000);
     } catch (err) {
-      setError(`Failed to save ${template} template. Please try again.`);
+      setError(err.message || `Failed to save template. Please try again.`);
       console.error(`Error saving ${template} template:`, err);
     } finally {
       setSaving(false);

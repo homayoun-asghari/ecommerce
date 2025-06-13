@@ -1757,3 +1757,152 @@ export const deleteBlogPost = async (req, res) => {
     res.status(500).json({ error: 'Failed to delete blog post' });
   }
 };
+
+// Settings Management
+
+// Get all settings
+export const getSettings = async (req, res) => {
+  try {
+    const query = 'SELECT * FROM settings';
+    const result = await db.query(query);
+    
+    // Transform array of settings into an object
+    const settings = result.rows.reduce((acc, { key, value }) => {
+      try {
+        // Try to parse JSON values
+        acc[key] = JSON.parse(value);
+      } catch (e) {
+        // If not valid JSON, use as is
+        acc[key] = value;
+      }
+      return acc;
+    }, {});
+    
+    res.json(settings);
+  } catch (error) {
+    console.error('Error fetching settings:', error);
+    res.status(500).json({ error: 'Failed to fetch settings' });
+  }
+};
+
+// Update settings
+export const updateSettings = async (req, res) => {
+  try {
+    const settings = req.body; // Array of { key, value } objects
+    
+    if (!Array.isArray(settings)) {
+      return res.status(400).json({ error: 'Settings must be an array of { key, value } objects' });
+    }
+    
+    // Start a transaction
+    await db.query('BEGIN');
+    
+    // Update each setting
+    for (const { key, value } of settings) {
+      const query = `
+        INSERT INTO settings (key, value, updated_at)
+        VALUES ($1, $2, NOW())
+        ON CONFLICT (key) 
+        DO UPDATE SET 
+          value = EXCLUDED.value,
+          updated_at = NOW()
+        RETURNING *
+      `;
+      
+      // Stringify if value is an object or array
+      const settingValue = typeof value === 'object' ? JSON.stringify(value) : value.toString();
+      
+      await db.query(query, [key, settingValue]);
+    }
+    
+    await db.query('COMMIT');
+    res.json({ message: 'Settings updated successfully' });
+  } catch (error) {
+    await db.query('ROLLBACK');
+    console.error('Error updating settings:', error);
+    res.status(500).json({ error: 'Failed to update settings', details: error.message });
+  }
+};
+
+// Get all documents
+export const getDocuments = async (req, res) => {
+  try {
+    const query = 'SELECT * FROM documents';
+    const result = await db.query(query);
+    res.json(result.rows);
+  } catch (error) {
+    console.error('Error fetching documents:', error);
+    res.status(500).json({ error: 'Failed to fetch documents' });
+  }
+};
+
+// Create or update document
+export const saveDocument = async (req, res) => {
+  try {
+    const { type, content } = req.body;
+    
+    if (!type || content === undefined) {
+      return res.status(400).json({ error: 'Type and content are required' });
+    }
+    
+    await db.query('BEGIN');
+    
+    const query = `
+      INSERT INTO documents (type, content, updated_at)
+      VALUES ($1, $2, NOW())
+      ON CONFLICT (type) 
+      DO UPDATE SET 
+        content = EXCLUDED.content,
+        updated_at = NOW()
+      RETURNING *
+    `;
+    
+    const result = await db.query(query, [type, content]);
+    
+    await db.query('COMMIT');
+    res.status(201).json(result.rows[0]);
+  } catch (error) {
+    await db.query('ROLLBACK');
+    console.error('Error saving document:', error);
+    res.status(500).json({ error: 'Failed to save document', details: error.message });
+  }
+};
+
+// Update email template
+export const updateEmailTemplate = async (req, res) => {
+  try {
+    const { template, subject, content } = req.body;
+    
+    if (!template || !subject || content === undefined) {
+      return res.status(400).json({ error: 'Template, subject and content are required' });
+    }
+    
+    await db.query('BEGIN');
+    
+    // Save subject and content as separate settings
+    const subjectKey = `email_${template}_subject`;
+    const contentKey = `email_${template}_content`;
+    
+    const query = `
+      INSERT INTO settings (key, value, updated_at)
+      VALUES ($1, $2, NOW()), ($3, $4, NOW())
+      ON CONFLICT (key) 
+      DO UPDATE SET 
+        value = EXCLUDED.value,
+        updated_at = NOW()
+      RETURNING *
+    `;
+    
+    await db.query(query, [subjectKey, subject, contentKey, content]);
+    
+    await db.query('COMMIT');
+    res.json({ message: 'Email template updated successfully' });
+  } catch (error) {
+    await db.query('ROLLBACK');
+    console.error('Error updating email template:', error);
+    res.status(500).json({ 
+      error: 'Failed to update email template',
+      details: error.message 
+    });
+  }
+};
