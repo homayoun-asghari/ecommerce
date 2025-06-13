@@ -110,9 +110,13 @@ function Searchbar({ width, placeholder = 'Search products...', onSearch }) {
                                 >
                                     <div className="d-flex align-items-center">
                                         <img
-                                            src={product.thumbnail || '/placeholder-product.jpg'}
+                                            src={product.image_url || '/placeholder-product.jpg'}
                                             alt={product.name}
                                             className="search-result-img me-2"
+                                            onError={(e) => {
+                                                e.target.onerror = null;
+                                                e.target.src = '/placeholder-product.jpg';
+                                            }}
                                         />
                                         <div>
                                             <div className="fw-bold">{product.name}</div>

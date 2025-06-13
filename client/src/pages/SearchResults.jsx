@@ -123,7 +123,7 @@ const SearchResults = () => {
                                 // Map the product data to match ProductCard's expected format
                                 const productData = {
                                     ...product,
-                                    image_url: product.thumbnail || '/placeholder-product.jpg',
+                                    // No need to map image_url as it's already coming from the API
                                     discount: product.discount || 0,
                                     stock: product.stock || 10, // Default stock if not provided
                                     category: product.category || 'Uncategorized',
