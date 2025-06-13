@@ -119,7 +119,7 @@ const AdminTickets = () => {
   // Fetch ticket details by ID
   const fetchTicketDetails = async (ticketId) => {
     try {
-      const response = await fetch(`http://localhost:5050/api/admin/tickets/${ticketId}`);
+      const response = await fetch(`http://localhost:5050/admin/tickets/${ticketId}`);
       if (!response.ok) {
         throw new Error('Failed to fetch ticket details');
       }
@@ -134,7 +134,7 @@ const AdminTickets = () => {
   const handleViewTicket = async (ticket) => {
     try {
       setLoading(true);
-      const response = await fetch(`http://localhost:5050/api/admin/tickets/${ticket.id}`);
+      const response = await fetch(`http://localhost:5050/admin/tickets/${ticket.id}`);
       if (!response.ok) {
         throw new Error('Failed to fetch ticket details');
       }
@@ -157,7 +157,7 @@ const AdminTickets = () => {
   const updateTicketStatus = async (ticketId, newStatus) => {
     try {
       setLoading(true);
-      const response = await fetch(`http://localhost:5050/api/admin/tickets/${ticketId}/status`, {
+      const response = await fetch(`http://localhost:5050/admin/tickets/${ticketId}/status`, {
         method: 'PUT',
         headers: { 
           'Content-Type': 'application/json',
@@ -199,21 +199,23 @@ const AdminTickets = () => {
     
     try {
       setLoading(true);
-      const response = await fetch(
-        `http://localhost:5050/api/admin/tickets/${selectedTicket.id}/respond`,
+      const apiResponse = await fetch(
+        `http://localhost:5050/admin/tickets/${selectedTicket.id}/respond`,
         {
           method: 'POST',
-          headers: { 
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${localStorage.getItem('token') || ''}`
-          },
-          body: JSON.stringify({ message: response })
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ 
+            message: response,
+            adminId: 1, // Hardcoded admin ID for demo
+            adminName: 'Admin' // Hardcoded admin name for demo
+          })
         }
       );
       
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.error || 'Failed to submit response');
+      const result = await apiResponse.json();
+      
+      if (!apiResponse.ok) {
+        throw new Error(result.error || 'Failed to submit response');
       }
       
       // Refresh ticket details to show the new response

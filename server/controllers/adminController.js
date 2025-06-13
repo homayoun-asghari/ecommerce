@@ -1119,12 +1119,7 @@ export const updateTicketStatus = async (req, res) => {
 export const addTicketResponse = async (req, res) => {
   try {
     const { id } = req.params;
-    const { message } = req.body;
-    const adminId = req.user?.id; // Assuming admin ID is available in req.user
-
-    if (!adminId) {
-      return res.status(401).json({ error: 'Unauthorized' });
-    }
+    const { message, adminId = 1, adminName = 'Admin' } = req.body;
 
     if (!message?.trim()) {
       return res.status(400).json({ error: 'Message is required' });
@@ -1137,12 +1132,16 @@ export const addTicketResponse = async (req, res) => {
       // Add message
       const messageQuery = `
         INSERT INTO ticket_messages 
-          (ticket_id, sender_id, sender_type, message)
-        VALUES ($1, $2, 'admin', $3)
+          (ticket_id, sender_id, sender_type, message, created_at)
+        VALUES ($1, $2, 'admin', $3, NOW())
         RETURNING *
       `;
       
-      const messageResult = await db.query(messageQuery, [id, adminId, message]);
+      const messageResult = await db.query(messageQuery, [
+        id, 
+        adminId,
+        message
+      ]);
       
       // Update ticket status to in_progress if it was closed
       await db.query(
@@ -1162,15 +1161,19 @@ export const addTicketResponse = async (req, res) => {
 
       res.status(201).json({
         message: 'Response added successfully',
-        response: messageResult.rows[0]
+        response: {
+          ...messageResult.rows[0],
+          sender_name: adminName // Ensure sender_name is included in response
+        }
       });
     } catch (error) {
       await db.query('ROLLBACK');
+      console.error('Database error in addTicketResponse:', error);
       throw error;
     }
   } catch (error) {
-    console.error('Error adding ticket response:', error);
-    res.status(500).json({ error: 'Failed to add response' });
+    console.error('Error in addTicketResponse:', error);
+    res.status(500).json({ error: 'Failed to add response', details: error.message });
   }
 };
 
