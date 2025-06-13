@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Container, Row, Col, Card, Spinner, Alert, Button, Form, InputGroup } from 'react-bootstrap';
-import { Search } from 'react-bootstrap-icons';
+import { Container, Row, Col, Spinner, Alert, Form } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import { useSideBar } from "../contexts/SideBarContext";
+import ProductCard from '../components/ProductCard';
 
 const SearchResults = () => {
     const location = useLocation();
@@ -119,49 +119,25 @@ const SearchResults = () => {
                 <Row>
                     <Col lg={isOpen ? 9 : 12} className="ms-auto">
                         <Row xs={1} sm={2} lg={3} xl={4} className="g-4">
-                            {sortedResults.map((product) => (
-                                <Col key={product.id}>
-                                    <Card className="h-100 product-card">
-                                        <Link to={`/product/${product.id}`} className="text-decoration-none">
-                                            <div className="product-image-container">
-                                                <Card.Img
-                                                    variant="top"
-                                                    src={product.thumbnail || '/placeholder-product.jpg'}
-                                                    alt={product.name}
-                                                    className="product-image"
-                                                />
-                                    </div>
-                                    <Card.Body>
-                                        <Card.Title className="product-title">
-                                            {product.name}
-                                        </Card.Title>
-                                        <div className="d-flex justify-content-between align-items-center mb-2">
-                                            <div className="product-price">
-                                                ${parseFloat(product.price || 0).toFixed(2)}
-                                                {product.original_price && (
-                                                    <span className="text-muted text-decoration-line-through ms-2">
-                                                        ${parseFloat(product.original_price || 0).toFixed(2)}
-                                                    </span>
-                                                )}
-                                            </div>
-                                            {product.avg_rating > 0 && (
-                                                <div className="product-rating">
-                                                    <span className="text-warning">★</span>
-                                                    <span className="ms-1">
-                                                        {parseFloat(product.avg_rating).toFixed(1)}
-                                                        <span className="text-muted"> ({product.review_count || 0})</span>
-                                                    </span>
-                                                </div>
-                                            )}
-                                        </div>
-                                    </Card.Body>
-                                </Link>
-                                    </Card>
-                                </Col>
-                            ))}
+                            {sortedResults.map((product) => {
+                                // Map the product data to match ProductCard's expected format
+                                const productData = {
+                                    ...product,
+                                    image_url: product.thumbnail || '/placeholder-product.jpg',
+                                    discount: product.discount || 0,
+                                    stock: product.stock || 10, // Default stock if not provided
+                                    category: product.category || 'Uncategorized',
+                                    description: product.description || ''
+                                };
+                                return (
+                                    <Col key={product.id} className="d-flex justify-content-center">
+                                        <ProductCard product={productData} />
+                                    </Col>
+                                );
+                            })}
                         </Row>
                     </Col>
-                    </Row>
+                </Row>
                 )}
             </Container>
     );
