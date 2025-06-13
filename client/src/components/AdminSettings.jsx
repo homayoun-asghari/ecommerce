@@ -20,8 +20,7 @@ const AdminSettings = () => {
   // Documents state
   const [documents, setDocuments] = useState({
     terms: { id: null, content: '' },
-    privacy: { id: null, content: '' },
-    about: { id: null, content: '' }
+    privacy_policy: { id: null, content: '' }
   });
 
   // Email templates state
@@ -54,11 +53,16 @@ const AdminSettings = () => {
         const docsRes = await fetch('http://localhost:5050/admin/documents');
         if (docsRes.ok) {
           const docsData = await docsRes.json();
-          const docsObj = {};
+          const docsObj = { terms: { content: '' }, privacy_policy: { content: '' } };
+          
+          // Map document types to our state structure
           docsData.forEach(doc => {
-            docsObj[doc.type] = { id: doc.id, content: doc.content };
+            if (doc.type === 'terms' || doc.type === 'privacy_policy') {
+              docsObj[doc.type] = { id: doc.id, content: doc.content };
+            }
           });
-          setDocuments(prev => ({ ...prev, ...docsObj }));
+          
+          setDocuments(docsObj);
         }
 
       } catch (err) {
@@ -167,8 +171,7 @@ const AdminSettings = () => {
         [type]: { ...prev[type], id: savedDoc.id }
       }));
       
-      const typeName = type === 'terms' ? 'Terms and Conditions' : 
-                      type === 'privacy' ? 'Privacy Policy' : 'About Us';
+      const typeName = type === 'terms' ? 'Terms and Conditions' : 'Privacy Policy';
       
       setSuccess(`${typeName} saved successfully`);
       
@@ -346,7 +349,7 @@ const AdminSettings = () => {
                   <Button
                     variant="outline-primary"
                     size="sm"
-                    onClick={() => saveDocument('privacy')}
+                    onClick={() => saveDocument('privacy_policy')}
                     disabled={saving}
                   >
                     {saving ? 'Saving...' : 'Save'}
@@ -355,30 +358,9 @@ const AdminSettings = () => {
                 <Form.Control
                   as="textarea"
                   rows={10}
-                  value={documents.privacy?.content || ''}
-                  onChange={(e) => handleDocumentChange('privacy', e.target.value)}
+                  value={documents.privacy_policy?.content || ''}
+                  onChange={(e) => handleDocumentChange('privacy_policy', e.target.value)}
                   placeholder="Enter privacy policy..."
-                />
-              </div>
-
-              <div className="mb-4">
-                <div className="d-flex justify-content-between align-items-center mb-2">
-                  <h6>About Us</h6>
-                  <Button
-                    variant="outline-primary"
-                    size="sm"
-                    onClick={() => saveDocument('about')}
-                    disabled={saving}
-                  >
-                    {saving ? 'Saving...' : 'Save'}
-                  </Button>
-                </div>
-                <Form.Control
-                  as="textarea"
-                  rows={10}
-                  value={documents.about?.content || ''}
-                  onChange={(e) => handleDocumentChange('about', e.target.value)}
-                  placeholder="Enter about us content..."
                 />
               </div>
             </Card.Body>
