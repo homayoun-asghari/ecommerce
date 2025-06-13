@@ -24,6 +24,7 @@ import AdminOrders from "../components/AdminOrders";
 import AdminPayments from "../components/AdminPayments";
 import AdminTickets from "../components/AdminTickets";
 import AdminReviews from "../components/AdminReviews";
+import AdminNotifications from "../components/AdminNotifications";
 
 function Account() {
   const [searchParams] = useSearchParams();
@@ -90,7 +91,7 @@ function Account() {
           {activeTab === "tickets" && <AdminTickets />}
           {activeTab === "reviews" && <AdminReviews />}
           {activeTab === "blog"}
-          {activeTab === "notifications"}
+          {activeTab === "notifications" && <AdminNotifications />}
           {activeTab === "setting"}
         </Col>
       </Row>
