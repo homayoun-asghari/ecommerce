@@ -121,3 +121,43 @@
 └─ users.py
 
 ```
+
+
+
+Ticket/Support Management
+View all tickets
+
+Filter by category/status
+
+Respond to tickets from admin side
+
+Close tickets
+
+📝 Review Moderation
+View all reviews
+
+Filter by rating
+
+Delete inappropriate reviews
+
+Flag/report system
+
+🔔 Notification Management
+Send global or targeted notifications
+
+Manage existing messages
+
+Push alerts for updates/offers
+
+📰 Blog/Content Management
+View, edit, delete blog posts
+
+Create new blog posts
+
+Manage authors
+
+⚙️ Settings & Config
+Platform-wide settings (maintenance mode, email templates, etc.)
+
+Terms and conditions, Privacy Policy update
+

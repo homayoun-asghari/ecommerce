@@ -15,7 +15,11 @@ import {
   getPaymentDetails,
   processPayout,
   getPayouts,
-  updatePayoutStatus
+  updatePayoutStatus,
+  getTickets,
+  getTicketDetails,
+  updateTicketStatus,
+  addTicketResponse
 } from '../controllers/adminController.js';
 
 const router = express.Router();
@@ -47,5 +51,11 @@ router.get('/payments/:id', getPaymentDetails);
 router.post('/payments/:id/process-payout', processPayout);
 router.get('/payouts', getPayouts);
 router.put('/payouts/:id/status', updatePayoutStatus);
+
+// Ticket management routes
+router.get('/tickets', getTickets);
+router.get('/tickets/:id', getTicketDetails);
+router.put('/tickets/:id/status', updateTicketStatus);
+router.post('/tickets/:id/respond', addTicketResponse);
 
 export default router;

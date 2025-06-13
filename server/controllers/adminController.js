@@ -892,6 +892,288 @@ export const updatePayoutStatus = async (req, res) => {
 };
 
 // Get payouts with filtering
+// Get all tickets with filtering and pagination
+export const getTickets = async (req, res) => {
+  try {
+    const { 
+      status = 'all',
+      category = 'all',
+      search = '',
+      page = 1,
+      limit = 10
+    } = req.query;
+
+    const offset = (page - 1) * limit;
+    const params = [];
+    let whereClause = 'WHERE 1=1';
+    let joinClause = 'LEFT JOIN users u ON t.user_id = u.id';
+
+    // Add filters
+    if (status && status !== 'all') {
+      params.push(status);
+      whereClause += ` AND t.status = $${params.length}`;
+    }
+
+    if (category && category !== 'all') {
+      params.push(category);
+      whereClause += ` AND t.category = $${params.length}`;
+    }
+
+    if (search) {
+      params.push(`%${search}%`);
+      whereClause += ` AND (
+        t.subject ILIKE $${params.length} OR
+        t.id::TEXT ILIKE $${params.length} OR
+        u.name ILIKE $${params.length} OR
+        u.email ILIKE $${params.length}
+      )`;
+    }
+
+    // Get total count
+    const countQuery = `
+      SELECT COUNT(*) as total 
+      FROM tickets t
+      ${joinClause}
+      ${whereClause}
+    `;
+    
+    const countResult = await db.query(countQuery, params);
+    const total = parseInt(countResult.rows[0].total);
+
+    // Get paginated tickets
+    const ticketsQuery = `
+      SELECT 
+        t.id, t.subject, t.category, t.status, 
+        t.created_at as "createdAt", t.updated_at as "updatedAt",
+        t.order_id as "orderId",
+        u.id as "userId", u.name as "userName", u.email as "userEmail"
+      FROM tickets t
+      ${joinClause}
+      ${whereClause}
+      ORDER BY t.updated_at DESC
+      LIMIT $${params.length + 1} OFFSET $${params.length + 2}
+    `;
+
+    const ticketsParams = [...params, parseInt(limit), offset];
+    const ticketsResult = await db.query(ticketsQuery, ticketsParams);
+
+    // Get ticket messages count for each ticket
+    const ticketIds = ticketsResult.rows.map(t => t.id);
+    let messagesCount = {};
+    if (ticketIds.length > 0) {
+      const messagesQuery = `
+        SELECT ticket_id, COUNT(*) as count 
+        FROM ticket_messages 
+        WHERE ticket_id = ANY($1)
+        GROUP BY ticket_id
+      `;
+      const messagesResult = await db.query(messagesQuery, [ticketIds]);
+      messagesCount = messagesResult.rows.reduce((acc, row) => {
+        acc[row.ticket_id] = row.count;
+        return acc;
+      }, {});
+    }
+
+    // Format response
+    const tickets = ticketsResult.rows.map(ticket => ({
+      id: ticket.id,
+      subject: ticket.subject,
+      category: ticket.category,
+      status: ticket.status,
+      createdAt: ticket.createdAt,
+      updatedAt: ticket.updatedAt,
+      orderId: ticket.orderId,
+      user: {
+        id: ticket.userId,
+        name: ticket.userName,
+        email: ticket.userEmail
+      },
+      messageCount: messagesCount[ticket.id] || 0
+    }));
+
+    res.json({
+      data: tickets,
+      pagination: {
+        total,
+        page: parseInt(page),
+        limit: parseInt(limit),
+        totalPages: Math.ceil(total / limit)
+      }
+    });
+
+  } catch (error) {
+    console.error('Error fetching tickets:', error);
+    res.status(500).json({ error: 'Failed to fetch tickets' });
+  }
+};
+
+// Get ticket details with messages
+export const getTicketDetails = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // Get ticket info
+    const ticketQuery = `
+      SELECT 
+        t.*, 
+        u.name as "userName", 
+        u.email as "userEmail"
+      FROM tickets t
+      LEFT JOIN users u ON t.user_id = u.id
+      WHERE t.id = $1
+    `;
+    
+    const ticketResult = await db.query(ticketQuery, [id]);
+    
+    if (ticketResult.rows.length === 0) {
+      return res.status(404).json({ error: 'Ticket not found' });
+    }
+
+    const ticket = ticketResult.rows[0];
+
+    // Get ticket messages
+    const messagesQuery = `
+      SELECT 
+        tm.*,
+        u.name as "senderName",
+        u.role as "senderRole"
+      FROM ticket_messages tm
+      LEFT JOIN users u ON tm.sender_id = u.id
+      WHERE tm.ticket_id = $1
+      ORDER BY tm.created_at ASC
+    `;
+    
+    const messagesResult = await db.query(messagesQuery, [id]);
+
+    // Format response
+    const response = {
+      id: ticket.id,
+      subject: ticket.subject,
+      category: ticket.category,
+      status: ticket.status,
+      orderId: ticket.order_id,
+      createdAt: ticket.created_at,
+      updatedAt: ticket.updated_at,
+      user: {
+        id: ticket.user_id,
+        name: ticket.userName,
+        email: ticket.userEmail,
+        role: ticket.user_role
+      },
+      messages: messagesResult.rows.map(msg => ({
+        id: msg.id,
+        message: msg.message,
+        attachment: msg.attachment,
+        createdAt: msg.created_at,
+        sender: {
+          id: msg.sender_id,
+          name: msg.senderName || 'System',
+          role: msg.sender_type || 'system',
+          isAdmin: msg.sender_type === 'admin'
+        }
+      }))
+    };
+
+    res.json(response);
+  } catch (error) {
+    console.error('Error fetching ticket details:', error);
+    res.status(500).json({ error: 'Failed to fetch ticket details' });
+  }
+};
+
+// Update ticket status
+export const updateTicketStatus = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { status } = req.body;
+
+    if (!['open', 'in_progress', 'waiting', 'closed'].includes(status)) {
+      return res.status(400).json({ error: 'Invalid status value' });
+    }
+
+    const query = `
+      UPDATE tickets 
+      SET status = $1, 
+          updated_at = NOW()
+      WHERE id = $2
+      RETURNING *
+    `;
+    
+    const result = await db.query(query, [status, id]);
+    
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'Ticket not found' });
+    }
+
+    res.json({
+      message: 'Ticket status updated successfully',
+      ticket: result.rows[0]
+    });
+  } catch (error) {
+    console.error('Error updating ticket status:', error);
+    res.status(500).json({ error: 'Failed to update ticket status' });
+  }
+};
+
+// Add response to ticket
+export const addTicketResponse = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { message } = req.body;
+    const adminId = req.user?.id; // Assuming admin ID is available in req.user
+
+    if (!adminId) {
+      return res.status(401).json({ error: 'Unauthorized' });
+    }
+
+    if (!message?.trim()) {
+      return res.status(400).json({ error: 'Message is required' });
+    }
+
+    // Start transaction
+    await db.query('BEGIN');
+
+    try {
+      // Add message
+      const messageQuery = `
+        INSERT INTO ticket_messages 
+          (ticket_id, sender_id, sender_type, message)
+        VALUES ($1, $2, 'admin', $3)
+        RETURNING *
+      `;
+      
+      const messageResult = await db.query(messageQuery, [id, adminId, message]);
+      
+      // Update ticket status to in_progress if it was closed
+      await db.query(
+        `UPDATE tickets 
+         SET status = 'in_progress', updated_at = NOW() 
+         WHERE id = $1 AND status = 'closed'`,
+        [id]
+      );
+
+      // Update ticket's updated_at
+      await db.query(
+        'UPDATE tickets SET updated_at = NOW() WHERE id = $1',
+        [id]
+      );
+
+      await db.query('COMMIT');
+
+      res.status(201).json({
+        message: 'Response added successfully',
+        response: messageResult.rows[0]
+      });
+    } catch (error) {
+      await db.query('ROLLBACK');
+      throw error;
+    }
+  } catch (error) {
+    console.error('Error adding ticket response:', error);
+    res.status(500).json({ error: 'Failed to add response' });
+  }
+};
+
 export const getPayouts = async (req, res) => {
   try {
     const { 
