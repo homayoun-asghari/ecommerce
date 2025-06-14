@@ -15,6 +15,7 @@ import SearchResults from './pages/SearchResults.jsx';
 import Blog from './pages/Blog.jsx';
 import BlogPost from './pages/BlogPost.jsx';
 import ContextProvider from "./contexts/ContextProvider";
+import Contact from './pages/Contact.jsx';
 
 function App() {
   return (
@@ -34,6 +35,7 @@ function App() {
                 <Route path="/search" element={<SearchResults />} />
                 <Route path="/blog" element={<Blog />} />
                 <Route path="/blog/:id" element={<BlogPost />} />
+                <Route path="/contact" element={<Contact />} />
               </Routes>
             </Container>
           </main>
