@@ -36,10 +36,18 @@ import {
   updateSettings,
   getDocuments,
   saveDocument,
-  updateEmailTemplate
+  updateEmailTemplate,
+  getMessages,
+  replyToMessage,
+  deleteMessage,
 } from '../controllers/adminController.js';
 
 const router = express.Router();
+
+// Message routes
+router.get('/messages', getMessages);
+router.post('/messages/reply', replyToMessage);
+router.delete('/messages/:id', deleteMessage);
 
 // Admin dashboard overview
 router.get('/overview', getOverview);

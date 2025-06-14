@@ -23,6 +23,7 @@ function SellerAccountTabs() {
             <Nav.Link eventKey="orders" onClick={() => handleClick("orders")}>Orders</Nav.Link>
             <Nav.Link eventKey="payment" onClick={() => handleClick("payment")}>Payment & Payouts</Nav.Link>
             <Nav.Link eventKey="tickets" onClick={() => handleClick("tickets")}>Tickets</Nav.Link>
+            <Nav.Link eventKey="messages" onClick={() => handleClick("messages")}>Messages</Nav.Link>
             <Nav.Link eventKey="reviews" onClick={() => handleClick("reviews")}>Reviews</Nav.Link>
             <Nav.Link eventKey="blog" onClick={() => handleClick("blog")}>Blog</Nav.Link>
             <Nav.Link eventKey="setting" onClick={() => handleClick("setting")}>Setting</Nav.Link>

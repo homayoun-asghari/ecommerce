@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 import { useUser } from "../contexts/UserContext";
 import LoginRegister from "../components/LoginRegister";
 import Row from "react-bootstrap/Row";
@@ -27,13 +27,13 @@ import AdminReviews from "../components/AdminReviews";
 import AdminNotifications from "../components/AdminNotifications";
 import AdminBlog from "../components/AdminBlog";
 import AdminSettings from "../components/AdminSettings";
+import AdminMessages from "../components/AdminMessages";
 
 function Account() {
   const [searchParams] = useSearchParams();
   const resetPassword = searchParams.get("resetpassword");
   const id = searchParams.get("id");
-  const navigate = useNavigate();
-  const { user, authorized, logout } = useUser();
+  const { user, authorized} = useUser();
   const { activeTab, setActiveTab } = useAccountTab();
   const { isOpen } = useSideBar();
   const tabFromURL = searchParams.get("tab");
@@ -91,6 +91,7 @@ function Account() {
           {activeTab === "orders" && <AdminOrders />}
           {activeTab === "payment" && <AdminPayments />}
           {activeTab === "tickets" && <AdminTickets />}
+          {activeTab === "messages" && <AdminMessages />}
           {activeTab === "reviews" && <AdminReviews />}
           {activeTab === "blog" && <AdminBlog />}
           {activeTab === "notifications" && <AdminNotifications />}

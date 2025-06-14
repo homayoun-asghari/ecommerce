@@ -70,7 +70,6 @@ const AdminProducts = () => {
                 }
 
                 const data = await response.json();
-                console.log(data);
 
                 setProducts(data.products);
                 setTotalPages(data.pagination.pages);

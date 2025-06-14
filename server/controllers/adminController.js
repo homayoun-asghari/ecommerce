@@ -1,6 +1,85 @@
 // server/controllers/adminController.js
 import db from "../config/db.js";
 
+// Message Management
+export const getMessages = async (req, res) => {
+  try {
+    const { page = 1, limit = 10 } = req.query;
+    const offset = (page - 1) * limit;
+
+    // Get paginated messages
+    const messages = await db.query(
+      `SELECT * FROM contacts 
+       ORDER BY created_at DESC 
+       LIMIT $1 OFFSET $2`,
+      [limit, offset]
+    );
+
+    // Get total count for pagination
+    const total = await db.query(
+      'SELECT COUNT(*) FROM contacts'
+    );
+
+    res.json({
+      data: messages.rows,
+      total: parseInt(total.rows[0].count),
+      page: parseInt(page),
+      limit: parseInt(limit)
+    });
+  } catch (error) {
+    console.error('Error fetching messages:', error);
+    res.status(500).json({ message: 'Error fetching messages' });
+  }
+};
+
+export const replyToMessage = async (req, res) => {
+  try {
+    const { messageId, reply } = req.body;
+    
+    if (!messageId || !reply) {
+      return res.status(400).json({ message: 'Message ID and reply are required' });
+    }
+
+    // Update the message with the reply
+    const result = await db.query(
+      `UPDATE contacts 
+       SET response_text = $1, status = 'resolved', responded_at = NOW() 
+       WHERE id = $2 
+       RETURNING *`,
+      [reply, messageId]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ message: 'Message not found' });
+    }
+
+    res.json({ message: 'Reply sent successfully', data: result.rows[0] });
+  } catch (error) {
+    console.error('Error replying to message:', error);
+    res.status(500).json({ message: 'Error sending reply' });
+  }
+};
+
+export const deleteMessage = async (req, res) => {
+  try {
+    const { id } = req.params;
+    
+    const result = await db.query(
+      'DELETE FROM contacts WHERE id = $1 RETURNING *',
+      [id]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ message: 'Message not found' });
+    }
+
+    res.json({ message: 'Message deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting message:', error);
+    res.status(500).json({ message: 'Error deleting message' });
+  }
+};
+
 // Get all users with pagination and filtering
 export const getUsers = async (req, res) => {
   try {
