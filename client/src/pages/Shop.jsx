@@ -20,6 +20,19 @@ function Shop() {
     const [categories, setCategories] = useState([]);
     const [sortBy, setSortBy] = useState('featured');
     const { isOpen } = useSideBar();
+    const [accordion, setAccordion] = useState(false);
+
+    useEffect(() => {
+        if (!isOpen) {
+            setTimeout(() => {
+                setAccordion(prev => !prev)
+            }, 350)
+        } else {
+            setTimeout(() => {
+                setAccordion(prev => !prev)
+            }, 0)
+        }
+    }, [isOpen]);
 
     // Get filters and update function from context
     const { filters, updateFilters } = useFilters();
@@ -29,10 +42,10 @@ function Shop() {
         const fetchProducts = async () => {
             try {
                 setLoading(true);
-                
+
                 // Build query parameters
                 const params = new URLSearchParams();
-                
+
                 // Add filters
                 if (filters?.categories?.length > 0) {
                     params.append('category', filters.categories[0]); // For now, using first category only
@@ -46,28 +59,28 @@ function Shop() {
                 if (filters?.minRating > 0) {
                     params.append('minRating', filters.minRating);
                 }
-                
+
                 // Add sorting
                 params.append('sort', sortBy);
-                
+
                 const url = `http://localhost:5050/product/shop?${params.toString()}`;
                 console.log('Fetching products from:', url);
-                
+
                 const response = await fetch(url);
                 const data = await response.json();
-                
+
                 if (!response.ok) {
                     console.error('Server response error:', data);
                     throw new Error(data.error || 'Failed to fetch products');
                 }
                 setFilteredProducts(data.products);
-                
+
                 // Update categories if not already set
                 if (categories.length === 0) {
                     const uniqueCategories = [...new Set(data.products.map(p => p.category))];
                     setCategories(uniqueCategories);
                 }
-                
+
             } catch (err) {
                 console.error('Error fetching products:', err);
                 setError(err.message);
@@ -118,8 +131,8 @@ function Shop() {
 
     return (
         <Row>
-            <Col lg={isOpen ? 3 : 0}></Col>
-            <Col lg={isOpen ? 9 : 12}>
+            <Col lg={accordion ? 3 : 0}></Col>
+            <Col lg={accordion ? 9 : 12}>
                 <Card className="mb-4 border-0 shadow-sm">
                     <Card.Body>
                         <Row className="align-items-center">
