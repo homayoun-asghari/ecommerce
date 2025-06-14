@@ -68,7 +68,7 @@ const FilterSideBar = ({
     return (
         <div className="set category-wrapper">
             <div className="accordion-trigger">
-                <Accordion defaultActiveKey="0">
+                <Accordion>
                     <Accordion.Item eventKey="0">
                         <Accordion.Header
                             onClick={handleClick}
@@ -77,7 +77,7 @@ const FilterSideBar = ({
                             Filters
                         </Accordion.Header>
                         <Accordion.Body className="accordion-dropdown" >
-                            <Accordion defaultActiveKey="0">
+                            <Accordion>
                                 {/* Price Range Filter */}
                                 <Accordion.Item eventKey="0" className="mb-3">
                                     <Accordion.Header>Price Range</Accordion.Header>
