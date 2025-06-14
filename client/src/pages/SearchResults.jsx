@@ -14,6 +14,19 @@ const SearchResults = () => {
     const [error, setError] = useState(null);
     const [sortBy, setSortBy] = useState('relevance');
     const { isOpen } = useSideBar();
+    const [accordion, setAccordion] = useState(false);
+
+    useEffect(() => {
+        if (!isOpen) {
+            setTimeout(() => {
+                setAccordion(prev => !prev)
+            }, 350)
+        } else {
+            setTimeout(() => {
+                setAccordion(prev => !prev)
+            }, 0)
+        }
+    }, [isOpen]);
 
     // Extract search query from URL
     useEffect(() => {
@@ -77,22 +90,22 @@ const SearchResults = () => {
     return (
         <Container fluid className="py-4">
             <Row className="mb-4">
-                <Col lg={isOpen ? 9 : 12} className="ms-auto">
+                <Col lg={accordion ? 9 : 12} className="ms-auto">
                     <div className="d-flex justify-content-between align-items-center px-3">
                         <h4>Search Results for "{searchQuery}"</h4>
-                    <div className="d-flex align-items-center">
-                        <span className="me-2">Sort by:</span>
-                        <Form.Select
-                            size="sm"
-                            style={{ width: 'auto' }}
-                            value={sortBy}
-                            onChange={(e) => setSortBy(e.target.value)}
-                        >
-                            <option value="relevance">Relevance</option>
-                            <option value="price_asc">Price: Low to High</option>
-                            <option value="price_desc">Price: High to Low</option>
-                            <option value="rating">Top Rated</option>
-                            <option value="newest">Newest</option>
+                        <div className="d-flex align-items-center">
+                            <span className="me-2">Sort by:</span>
+                            <Form.Select
+                                size="sm"
+                                style={{ width: 'auto' }}
+                                value={sortBy}
+                                onChange={(e) => setSortBy(e.target.value)}
+                            >
+                                <option value="relevance">Relevance</option>
+                                <option value="price_asc">Price: Low to High</option>
+                                <option value="price_desc">Price: High to Low</option>
+                                <option value="rating">Top Rated</option>
+                                <option value="newest">Newest</option>
                             </Form.Select>
                         </div>
                     </div>
@@ -117,7 +130,7 @@ const SearchResults = () => {
                 </div>
             ) : (
                 <Row>
-                    <Col lg={isOpen ? 9 : 12} className="ms-auto">
+                    <Col lg={accordion ? 9 : 12} className="ms-auto">
                         <Row xs={1} sm={2} lg={3} xl={4} className="g-4">
                             {sortedResults.map((product) => {
                                 // Map the product data to match ProductCard's expected format
@@ -138,8 +151,8 @@ const SearchResults = () => {
                         </Row>
                     </Col>
                 </Row>
-                )}
-            </Container>
+            )}
+        </Container>
     );
 };
 
