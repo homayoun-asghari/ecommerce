@@ -19,11 +19,11 @@ import PersonIcon from '@mui/icons-material/Person';
 import { useLocation } from "react-router-dom";
 import AccountTabs from "./AccountTabs.jsx";
 import { useUser } from "../contexts/UserContext.jsx";
-import LanguageSwitcher from "./LanguageSwitcher";
 import { useNotification } from "../contexts/NotificationContext";
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import SellerAccountTabs from "./SellerAccountTabs.jsx";
 import AdminAccountTabs from "./AdminAccountTabs.jsx";
+import FilterItems from "./FilterItems.jsx"
 
 function BottomNavbar() {
   const { mode } = useTheme();
@@ -82,7 +82,7 @@ function BottomNavbar() {
               <NotificationsIcon style={{ fontSize: 30 }} />
             </Badge>
           </Nav.Link>
-          <Offcanvas.Title><LanguageSwitcher /></Offcanvas.Title>
+          <Offcanvas.Title><ModeSwitch /></Offcanvas.Title>
         </Offcanvas.Header>
 
         <Offcanvas.Body className="d-flex flex-column">
@@ -93,17 +93,17 @@ function BottomNavbar() {
             {(location.pathname === "/account" && userRole === "buyer") && <AccountTabs />}
             {(location.pathname === "/account" && userRole === "seller") && <SellerAccountTabs />}
             {(location.pathname === "/account" && userRole === "admin") && <AdminAccountTabs />}
-            {(location.pathname !== "/account") && <Accordion className="mt-3"><CategoryItems /></Accordion>}
+            {(location.pathname === "/shop") && <FilterItems />}
+            {(location.pathname !== "/account" && location.pathname !== "/shop") && <Accordion className="mt-3"><CategoryItems /></Accordion>}
           </div>
 
           <div className="offcanvas-footer mt-4 d-flex align-items-center justify-content-between flex-wrap gap-3">
             <Nav className="d-flex gap-3">
+            <Nav.Link href="/shop" onClick={handleClose}>Shop</Nav.Link>
               <Nav.Link href="/blog" onClick={handleClose}>Blog</Nav.Link>
               <Nav.Link href="/contact" onClick={handleClose}>Contact</Nav.Link>
               <Nav.Link href="/about" onClick={handleClose}>About</Nav.Link>
             </Nav>
-
-            <ModeSwitch />
           </div>
         </Offcanvas.Body>
       </Offcanvas>

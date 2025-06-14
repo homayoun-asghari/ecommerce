@@ -124,7 +124,6 @@ function Shop() {
                     <Card.Body>
                         <Row className="align-items-center">
                             <Col xs={12} md={6}>
-                                <h2 className="mb-3 mb-md-0">Shop</h2>
                             </Col>
                             <Col xs={12} md={6} className="d-flex justify-content-md-end">
                                 <Stack direction="horizontal" gap={2} className="w-100" style={{ maxWidth: '300px' }}>
@@ -149,10 +148,9 @@ function Shop() {
                 {filteredProducts.length > 0 ? (
                     <Row xs={1} sm={2} lg={3} xl={4} className="g-4">
                         {filteredProducts.map((product) => (
-                            <Col key={product.id} className="d-flex">
+                            <Col key={product.id}>
                                 <ProductCard
                                     product={product}
-                                    className="h-100"
                                 />
                             </Col>
                         ))}
