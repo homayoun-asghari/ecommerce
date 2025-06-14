@@ -213,3 +213,143 @@ export const addProduct = async (req, res) => {
         }
     }
 }
+
+export const getShopProducts = async (req, res) => {
+    const { 
+        category, 
+        minPrice, 
+        maxPrice, 
+        minRating, 
+        sort = 'featured',
+        page = 1,
+        limit = 12
+    } = req.query;
+
+    console.log('Shop products query:', { category, minPrice, maxPrice, minRating, sort, page, limit });
+
+    // Define query and params at the function scope
+    let query = '';
+    const params = [];
+    let paramIndex = 1;
+
+    try {
+        // Base query
+        query = `
+            SELECT 
+                p.*, 
+                COALESCE(AVG(r.rating), 0) AS avg_rating,
+                COUNT(r.id) AS review_count,
+                COUNT(*) OVER() AS total_count
+            FROM products p
+            LEFT JOIN reviews r ON p.id = r.product_id
+        `;
+
+        // WHERE conditions
+        const conditions = [];
+
+        if (category) {
+            conditions.push(`p.category = $${paramIndex++}`);
+            params.push(category);
+        }
+
+        if (minPrice) {
+            conditions.push(`p.price >= $${paramIndex++}`);
+            params.push(parseFloat(minPrice));
+        }
+
+        if (maxPrice) {
+            conditions.push(`p.price <= $${paramIndex++}`);
+            params.push(parseFloat(maxPrice));
+        }
+
+        if (conditions.length > 0) {
+            query += ` WHERE ${conditions.join(' AND ')}`;
+        }
+        // GROUP BY for aggregate functions
+        query += ` GROUP BY p.id`;
+
+        // HAVING for rating filter (after GROUP BY)
+        if (minRating) {
+            query += ` HAVING COALESCE(AVG(r.rating), 0) >= $${paramIndex++}`;
+            params.push(parseFloat(minRating));
+        }
+
+        // ORDER BY based on sort parameter
+        switch (sort) {
+            case 'price-low':
+                query += ` ORDER BY p.price ASC`;
+                break;
+            case 'price-high':
+                query += ` ORDER BY p.price DESC`;
+                break;
+            case 'rating':
+                query += ` ORDER BY avg_rating DESC`;
+                break;
+            case 'newest':
+            case 'featured': // For now, treat 'featured' same as 'newest' since we don't have a featured column
+            default:
+                query += ` ORDER BY p.created_at DESC`;
+        }
+
+        // Add pagination
+        const offset = (page - 1) * limit;
+        query += ` LIMIT $${paramIndex++} OFFSET $${paramIndex++}`;
+        params.push(parseInt(limit), offset);
+
+        console.log('Executing query:', query);
+        console.log('With params:', params);
+        
+        const result = await db.query(query, params);
+        console.log('Query result rows:', result.rows.length);
+
+        // Get total count from the first row (if any)
+        const totalCount = result.rows.length > 0 ? parseInt(result.rows[0].total_count) : 0;
+        const totalPages = Math.ceil(totalCount / limit);
+
+        const responseData = {
+            products: result.rows.map(p => {
+                const product = {
+                    ...p,
+                    avg_rating: parseFloat(p.avg_rating),
+                    review_count: parseInt(p.review_count)
+                };
+                delete product.total_count; // Remove the total_count from each product
+                return product;
+            }),
+            pagination: {
+                total: totalCount,
+                total_pages: totalPages,
+                current_page: parseInt(page),
+                per_page: parseInt(limit)
+            }
+        };
+        
+        console.log('Sending response with', responseData.products.length, 'products');
+        res.status(200).json(responseData);
+    } catch (err) {
+        // Use the query and params that were in scope when the error occurred
+        console.error('Error in getShopProducts:', {
+            message: err.message,
+            stack: err.stack,
+            query: query || 'Query not available',
+            params: params || []
+        });
+        
+        res.status(500).json({ 
+            error: 'Failed to fetch products',
+            details: process.env.NODE_ENV === 'development' ? err.message : undefined
+        });
+    }
+};
+
+export default {
+    searchProducts,
+    getProduct,
+    getNewArrivals,
+    getBestSellers,
+    getEspecialOffers,
+    getRelatedProducts,
+    getSellersProducts,
+    addProduct,
+    getShopProducts
+};

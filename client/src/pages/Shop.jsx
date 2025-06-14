@@ -29,24 +29,52 @@ function Shop() {
         priceRange: { min: 0, max: 1000 }
     });
 
-    // Fetch products and categories
+    // Fetch products with filters and sorting
     useEffect(() => {
         const fetchProducts = async () => {
             try {
                 setLoading(true);
-                const response = await fetch('http://localhost:5050/product');
-                if (!response.ok) {
-                    throw new Error('Failed to fetch products');
+                
+                // Build query parameters
+                const params = new URLSearchParams();
+                
+                // Add filters
+                if (filters.categories.length > 0) {
+                    params.append('category', filters.categories[0]); // For now, using first category only
                 }
+                if (filters.priceRange.min > 0) {
+                    params.append('minPrice', filters.priceRange.min);
+                }
+                if (filters.priceRange.max < 1000) {
+                    params.append('maxPrice', filters.priceRange.max);
+                }
+                if (filters.minRating > 0) {
+                    params.append('minRating', filters.minRating);
+                }
+                
+                // Add sorting
+                params.append('sort', sortBy);
+                
+                const url = `http://localhost:5050/product/shop?${params.toString()}`;
+                console.log('Fetching products from:', url);
+                
+                const response = await fetch(url);
                 const data = await response.json();
-                setProducts(data);
-                setFilteredProducts(data);
-
-                // Extract unique categories
-                const uniqueCategories = [...new Set(data.map(p => p.category))];
-                setCategories(uniqueCategories);
-
+                
+                if (!response.ok) {
+                    console.error('Server response error:', data);
+                    throw new Error(data.error || 'Failed to fetch products');
+                }
+                setFilteredProducts(data.products);
+                
+                // Update categories if not already set
+                if (categories.length === 0) {
+                    const uniqueCategories = [...new Set(data.products.map(p => p.category))];
+                    setCategories(uniqueCategories);
+                }
+                
             } catch (err) {
+                console.error('Error fetching products:', err);
                 setError(err.message);
             } finally {
                 setLoading(false);
@@ -54,59 +82,28 @@ function Shop() {
         };
 
         fetchProducts();
-    }, []);
-
-    // Apply filters
-    useEffect(() => {
-        let result = [...products];
-
-        // Apply category filter
-        if (filters.categories.length > 0) {
-            result = result.filter(product =>
-                filters.categories.includes(product.category)
-            );
-        }
-
-        // Apply rating filter
-        if (filters.minRating > 0) {
-            result = result.filter(product =>
-                product.avg_rating >= filters.minRating
-            );
-        }
-
-        // Apply price range filter
-        result = result.filter(product =>
-            product.price >= filters.priceRange.min &&
-            product.price <= filters.priceRange.max
-        );
-
-        // Apply sorting
-        switch (sortBy) {
-            case 'price-low':
-                result.sort((a, b) => a.price - b.price);
-                break;
-            case 'price-high':
-                result.sort((a, b) => b.price - a.price);
-                break;
-            case 'rating':
-                result.sort((a, b) => b.avg_rating - a.avg_rating);
-                break;
-            case 'newest':
-                result.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
-                break;
-            default: // featured
-                // Keep default sorting or apply any other logic
-                break;
-        }
-
-        setFilteredProducts(result);
-    }, [filters, products, sortBy]);
+    }, [filters, sortBy]);
 
     const handleFilterChange = (newFilters) => {
-        setFilters(prev => ({
-            ...prev,
-            ...newFilters
-        }));
+        setFilters(prev => {
+            const updatedFilters = {
+                ...prev,
+                ...newFilters
+            };
+            
+            // If price range is being updated, ensure min is not greater than max
+            if (newFilters.priceRange) {
+                const { min, max } = newFilters.priceRange;
+                if (min !== undefined && max !== undefined && min > max) {
+                    updatedFilters.priceRange = {
+                        min: max,
+                        max: min
+                    };
+                }
+            }
+            
+            return updatedFilters;
+        });
     };
 
     if (loading) {
