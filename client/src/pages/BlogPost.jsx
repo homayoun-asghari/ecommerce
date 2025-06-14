@@ -22,15 +22,18 @@ function BlogPost() {
                 setLoading(true);
 
                 // Fetch the current post
-                const postResponse = await fetch(`http://localhost:5050/admin/blog/${id}`);
+                const postResponse = await fetch(`http://localhost:5050/admin/blog?id=${id}`);
                 if (!postResponse.ok) {
                     throw new Error('Post not found');
                 }
                 const postData = await postResponse.json();
-                setPost(postData);
+                // Get the first post from the array since we're querying by ID
+                const [post] = postData.posts || [];
+                if (!post) throw new Error('Post not found');
+                setPost(post);
 
                 // Fetch related posts (by the same author or similar tags)
-                const relatedResponse = await fetch(`http://localhost:5050/admin/blog?author_id=${postData.author_id}&limit=3`);
+                const relatedResponse = await fetch(`http://localhost:5050/admin/blog?author_id=${post.author_id}&limit=3`);
                 if (relatedResponse.ok) {
                     const relatedData = await relatedResponse.json();
                     // Filter out the current post from related posts
