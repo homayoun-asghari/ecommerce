@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useCallback, useState, useEffect } from 'react';
 import {
     Form,
     Accordion,
@@ -9,24 +9,30 @@ import {
     Col
 } from 'react-bootstrap';
 import { useSideBar } from "../contexts/SideBarContext";
+import { useFilters } from '../contexts/FilterContext';
 import "../styles/Categories.css";
 import CategoryItems from "./CategoryItems";
 
-const FilterSideBar = ({
-    categories = [],
-    onFilterChange,
-    filters,
-    className = ''
-}) => {
-    const [priceRange, setPriceRange] = useState({
-        min: 0,
-        max: 1000
-    });
+const FilterSideBar = ({ className = '' }) => {
+    const { filters, updateFilters } = useFilters();
     const { setIsOpen } = useSideBar();
+    const [priceRange, setPriceRange] = useState({
+        min: filters.priceRange?.min || 0,
+        max: filters.priceRange?.max || 1000
+    });
+
+    // Sync local price range with filters
+    useEffect(() => {
+        setPriceRange({
+            min: filters.priceRange?.min || 0,
+            max: filters.priceRange?.max || 1000
+        });
+    }, [filters.priceRange]);
 
     const handlePriceChange = useCallback((e) => {
         const { name, value } = e.target;
         const newValue = Math.max(0, Math.min(1000, parseInt(value, 10) || 0));
+        
         const newRange = {
             ...priceRange,
             [name]: newValue
@@ -40,26 +46,36 @@ const FilterSideBar = ({
         }
 
         setPriceRange(newRange);
-        onFilterChange({ priceRange: newRange });
-    }, [priceRange, onFilterChange]);
+        updateFilters({ 
+            ...filters,
+            priceRange: newRange 
+        });
+    }, [priceRange, filters, updateFilters]);
 
     const handleCategoryChange = useCallback((category, checked) => {
         const newCategories = checked
-            ? [...new Set([...filters.categories, category])]
-            : filters.categories.filter(c => c !== category);
+            ? [...new Set([...(filters.categories || []), category])]
+            : (filters.categories || []).filter(c => c !== category);
 
-        onFilterChange({ categories: newCategories });
-    }, [filters.categories, onFilterChange]);
+        updateFilters({ 
+            ...filters,
+            categories: newCategories 
+        });
+    }, [filters, updateFilters]);
 
     const handleRatingChange = useCallback((rating) => {
-        onFilterChange({
+        updateFilters({
+            ...filters,
             minRating: filters.minRating === rating ? 0 : rating
         });
-    }, [filters.minRating, onFilterChange]);
+    }, [filters, updateFilters]);
 
     const handleClearRating = useCallback(() => {
-        onFilterChange({ minRating: 0 });
-    }, [onFilterChange]);
+        updateFilters({
+            ...filters,
+            minRating: 0
+        });
+    }, [filters, updateFilters]);
 
     function handleClick() {
         setIsOpen(prev => !prev);
@@ -111,9 +127,8 @@ const FilterSideBar = ({
                                                                 min={priceRange.min}
                                                                 max="1000"
                                                                 value={priceRange.max}
-                                                                onChange={(e) => handlePriceChange({
-                                                                    target: { name: 'max', value: e.target.value }
-                                                                })}
+                                                                onChange={handlePriceChange}
+                                                                name="max"
                                                             />
                                                         </InputGroup>
                                                     </Form.Group>

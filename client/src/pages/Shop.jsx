@@ -10,11 +10,10 @@ import {
     Button
 } from 'react-bootstrap';
 import ProductCard from '../components/ProductCard';
-import FilterSideBar from '../components/FilterSideBar';
 import { useSideBar } from '../contexts/SideBarContext';
+import { useFilters } from '../contexts/FilterContext';
 
 function Shop() {
-    const [products, setProducts] = useState([]);
     const [filteredProducts, setFilteredProducts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -22,12 +21,8 @@ function Shop() {
     const [sortBy, setSortBy] = useState('featured');
     const { isOpen } = useSideBar();
 
-    // Filter state
-    const [filters, setFilters] = useState({
-        categories: [],
-        minRating: 0,
-        priceRange: { min: 0, max: 1000 }
-    });
+    // Get filters and update function from context
+    const { filters, updateFilters } = useFilters();
 
     // Fetch products with filters and sorting
     useEffect(() => {
@@ -39,16 +34,16 @@ function Shop() {
                 const params = new URLSearchParams();
                 
                 // Add filters
-                if (filters.categories.length > 0) {
+                if (filters?.categories?.length > 0) {
                     params.append('category', filters.categories[0]); // For now, using first category only
                 }
-                if (filters.priceRange.min > 0) {
+                if (filters?.priceRange?.min > 0) {
                     params.append('minPrice', filters.priceRange.min);
                 }
-                if (filters.priceRange.max < 1000) {
+                if (filters?.priceRange?.max < 1000) {
                     params.append('maxPrice', filters.priceRange.max);
                 }
-                if (filters.minRating > 0) {
+                if (filters?.minRating > 0) {
                     params.append('minRating', filters.minRating);
                 }
                 
@@ -82,29 +77,7 @@ function Shop() {
         };
 
         fetchProducts();
-    }, [filters, sortBy]);
-
-    const handleFilterChange = (newFilters) => {
-        setFilters(prev => {
-            const updatedFilters = {
-                ...prev,
-                ...newFilters
-            };
-            
-            // If price range is being updated, ensure min is not greater than max
-            if (newFilters.priceRange) {
-                const { min, max } = newFilters.priceRange;
-                if (min !== undefined && max !== undefined && min > max) {
-                    updatedFilters.priceRange = {
-                        min: max,
-                        max: min
-                    };
-                }
-            }
-            
-            return updatedFilters;
-        });
-    };
+    }, [filters, sortBy, categories.length]);
 
     if (loading) {
         return (
@@ -193,7 +166,7 @@ function Shop() {
                             </Card.Text>
                             <Button
                                 variant="outline-primary"
-                                onClick={() => setFilters({
+                                onClick={() => updateFilters({
                                     categories: [],
                                     minRating: 0,
                                     priceRange: { min: 0, max: 1000 }

@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React from "react";
 import Categories from "./Categories";
 import AccountSideBar from "./AccountSideBar";
 import { useLocation } from "react-router-dom";
@@ -7,32 +7,12 @@ import FilterSideBar from "./FilterSideBar";
 
 function SideBar() {
   const location = useLocation();
-  const {user} = useUser();
-
-  const handleFilterChange = (newFilters) => {
-    setFilters(prev => ({
-        ...prev,
-        ...newFilters
-    }));
-};
-
- // Filter state
-    const [filters, setFilters] = useState({
-        categories: [],
-        minRating: 0,
-        priceRange: { min: 0, max: 1000 }
-    });
-
-    const [categories, setCategories] = useState([]);
+  const { user } = useUser();
 
   if (location.pathname === "/account" && user) {
-    return <AccountSideBar />
+    return <AccountSideBar />;
   } else if (location.pathname === "/shop") {
-    return <FilterSideBar 
-    categories={categories}
-    onFilterChange={handleFilterChange}
-    filters={filters}
-/>
+    return <FilterSideBar />;
   } else {
     return <Categories />;
   }
