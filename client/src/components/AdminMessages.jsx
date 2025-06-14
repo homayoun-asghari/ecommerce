@@ -45,14 +45,20 @@ const AdminMessages = () => {
     if (!replyContent.trim()) return;
 
     try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        throw new Error('User not authenticated');
+      }
+
       const response = await fetch('http://localhost:5050/admin/messages/reply', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify({
           messageId: currentMessage.id,
-          reply: replyContent
+          reply: replyContent,
+          adminId: userId // Hardcoded admin ID - replace with actual admin ID later
         }),
       });
 

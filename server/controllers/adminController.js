@@ -34,19 +34,20 @@ export const getMessages = async (req, res) => {
 
 export const replyToMessage = async (req, res) => {
   try {
-    const { messageId, reply } = req.body;
+    const { messageId, reply, adminId } = req.body;
     
     if (!messageId || !reply) {
       return res.status(400).json({ message: 'Message ID and reply are required' });
     }
 
-    // Update the message with the reply
+    // Update the message with the reply and admin ID
     const result = await db.query(
       `UPDATE contacts 
-       SET response_text = $1, status = 'resolved', responded_at = NOW() 
+       SET response_text = $1, status = 'resolved', 
+           responded_at = NOW(), responded_by = $3 
        WHERE id = $2 
        RETURNING *`,
-      [reply, messageId]
+      [reply, messageId, adminId || 1] // Default to admin ID 1 if not provided
     );
 
     if (result.rows.length === 0) {
