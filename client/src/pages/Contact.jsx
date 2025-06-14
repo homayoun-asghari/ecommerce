@@ -10,6 +10,7 @@ const Contact = () => {
   });
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -19,7 +20,7 @@ const Contact = () => {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     
@@ -36,24 +37,51 @@ const Contact = () => {
       return;
     }
     
-    // In a real application, you would send the form data to your backend here
-    console.log('Form submitted:', formData);
-    
-    // Show success message
-    setSubmitted(true);
-    
-    // Reset form
-    setFormData({
-      name: '',
-      email: '',
-      subject: '',
-      message: ''
-    });
-    
-    // Hide success message after 5 seconds
-    setTimeout(() => {
-      setSubmitted(false);
-    }, 5000);
+    try {
+      setIsLoading(true);
+      
+      // Send form data to the backend using fetch
+      const response = await fetch('http://localhost:5050/contacts', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: formData.name.trim(),
+          email: formData.email.trim(),
+          subject: formData.subject.trim() || 'General Inquiry',
+          message: formData.message.trim()
+        })
+      });
+      
+      const data = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to send message');
+      }
+      
+      // Show success message
+      setSubmitted(true);
+      
+      // Reset form
+      setFormData({
+        name: '',
+        email: '',
+        subject: '',
+        message: ''
+      });
+      
+      // Hide success message after 5 seconds
+      setTimeout(() => {
+        setSubmitted(false);
+      }, 5000);
+      
+    } catch (err) {
+      console.error('Error submitting form:', err);
+      setError(err.message || 'An error occurred while submitting the form. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -128,8 +156,13 @@ const Contact = () => {
             </Form.Group>
             
             <div className="d-grid">
-              <Button variant="primary" type="submit" size="lg">
-                Send Message
+              <Button 
+                variant="primary" 
+                type="submit" 
+                size="lg"
+                disabled={isLoading}
+              >
+                {isLoading ? 'Sending...' : 'Send Message'}
               </Button>
             </div>
           </Form>
