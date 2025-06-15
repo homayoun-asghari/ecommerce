@@ -42,7 +42,7 @@ const ProductsGrid = styled.div`
 
 // Removed unused StyledCard component
 
-// Removed ResultsHeader styled component as we'll use Card.Header instead
+// Removed ResultsHeader styled component as we'll use Card components instead
 
 const SearchResults = () => {
     const location = useLocation();
@@ -56,12 +56,6 @@ const SearchResults = () => {
     const { isOpen } = useSideBar();
     const [accordion, setAccordion] = useState(false);
     const { filters } = useFilters();
-    const [pagination, setPagination] = useState({
-        page: 1,
-        limit: 12,
-        total: 0,
-        totalPages: 1
-    });
 
     useEffect(() => {
         if (!isOpen) {
@@ -75,7 +69,42 @@ const SearchResults = () => {
         }
     }, [isOpen]);
 
-    // Extract search query from URL
+    const fetchSearchResults = useCallback(async (query) => {
+        if (!query) return;
+        
+        try {
+            setLoading(true);
+            
+            // Build query parameters with filters
+            const params = new URLSearchParams({
+                q: encodeURIComponent(query),
+                ...(filters.categories?.length > 0 && { category: filters.categories[0] }),
+                ...(filters.minRating > 0 && { minRating: filters.minRating }),
+                ...(filters.priceRange && {
+                    minPrice: filters.priceRange.min,
+                    maxPrice: filters.priceRange.max
+                })
+            });
+
+            const response = await fetch(`http://localhost:5050/product/search?${params.toString()}`);
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.error || 'Failed to fetch search results');
+            }
+
+            setResults(data.products || []);
+            setError(null);
+        } catch (err) {
+            console.error('Error fetching search results:', err);
+            setError(err.message || 'An error occurred while searching');
+            setResults([]);
+        } finally {
+            setLoading(false);
+        }
+    }, [filters]);
+
+    // Fetch search results when query changes or filters update
     useEffect(() => {
         const params = new URLSearchParams(location.search);
         const query = params.get('q') || '';
@@ -86,75 +115,10 @@ const SearchResults = () => {
         } else {
             setLoading(false);
         }
-    }, [location.search]);
+    }, [location.search, fetchSearchResults]);
 
-    const fetchSearchResults = useCallback(async (query, page = 1) => {
-        try {
-            setLoading(true);
-            
-            // Build query parameters with current pagination limit
-            const params = new URLSearchParams({
-                q: encodeURIComponent(query),
-                page,
-                limit: 12, // Fixed limit as per initial state
-                sort: sortBy
-            });
-
-            // Add filters
-            if (filters?.categories?.length > 0) {
-                params.append('category', filters.categories[0]);
-            }
-            if (filters?.priceRange?.min > 0) {
-                params.append('minPrice', filters.priceRange.min);
-            }
-            if (filters?.priceRange?.max < 1000) {
-                params.append('maxPrice', filters.priceRange.max);
-            }
-            if (filters?.minRating > 0) {
-                params.append('minRating', filters.minRating);
-            }
-
-            const url = `http://localhost:5050/product/search?${params.toString()}`;
-            console.log('Fetching search results from:', url);
-
-            const response = await fetch(url);
-            const data = await response.json();
-
-            if (!response.ok) {
-                throw new Error(data.error || 'Failed to fetch search results');
-            }
-
-            setResults(data.products || []);
-            setPagination(prevPagination => ({
-                ...prevPagination,
-                page: data.pagination?.current_page || 1,
-                total: data.pagination?.total || 0,
-                totalPages: data.pagination?.total_pages || 1
-            }));
-            setError(null);
-        } catch (err) {
-            console.error('Error fetching search results:', err);
-            setError(err.message || 'An error occurred while searching');
-            setResults([]);
-        } finally {
-            setLoading(false);
-        }
-    }, [filters, sortBy]); // Removed pagination.limit from deps as it's now fixed
-
-    // Handle page change
-    const handlePageChange = (newPage) => {
-        if (newPage >= 1 && newPage <= pagination.totalPages) {
-            fetchSearchResults(searchQuery, newPage);
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-    };
-
-    // Refetch when filters, sort, or search query changes
-    useEffect(() => {
-        if (searchQuery) {
-            fetchSearchResults(searchQuery, 1);
-        }
-    }, [searchQuery, fetchSearchResults]);
+    // Search is handled via URL parameters, no need for separate submit handler
+    // navigate is already declared at the top of the component
 
     const sortResults = (results, sortBy) => {
         const sortedResults = [...results];
@@ -177,20 +141,19 @@ const SearchResults = () => {
     return (
         <Container fluid className="py-4 px-0 px-md-3">
       <Row className="position-relative">
-
         {/* Main Content */}
         <ContentColumn 
           $isOpen={isOpen && accordion}
           lg={isOpen ? 9 : 12}
           className="px-0 px-md-3"
         >
-          <Card className="mb-4">
-            <Card.Header className="d-flex justify-content-between align-items-center">
+          <Card className="mb-4 border-0 shadow-sm">
+            <Card.Header className="d-flex justify-content-between align-items-center py-3">
               <h5 className="mb-0">
                 Search Results for "{searchQuery}"
-                {!loading && (
+                {!loading && results.length > 0 && (
                   <span className="text-muted ms-2 fw-normal">
-                    ({pagination.total} {pagination.total === 1 ? 'item' : 'items'})
+                    ({results.length} {results.length === 1 ? 'item' : 'items'})
                   </span>
                 )}
               </h5>
@@ -225,11 +188,10 @@ const SearchResults = () => {
           ) : results.length === 0 ? (
             <div className="text-center py-5">
               <h5>No products found for "{searchQuery}"</h5>
-              <p className="text-muted">Try different keywords or adjust your filters</p>
+              <p className="text-muted">Try different keywords or check the spelling</p>
             </div>
-          ) : (
-            <>
-              <ProductsGrid>
+            ) : (
+              <ProductsGrid className="p-3">
                 {sortedResults.map((product) => (
                   <div key={product.id} className="d-flex">
                     <ProductCard
@@ -245,67 +207,13 @@ const SearchResults = () => {
                   </div>
                 ))}
               </ProductsGrid>
-              
-              {/* Pagination */}
-              {pagination.totalPages > 1 && (
-                <div className="d-flex justify-content-center mt-4">
-                  <nav aria-label="Search results pagination">
-                    <ul className="pagination">
-                      <li className={`page-item ${pagination.page === 1 ? 'disabled' : ''}`}>
-                        <button 
-                          className="page-link" 
-                          onClick={() => handlePageChange(pagination.page - 1)}
-                          disabled={pagination.page === 1}
-                        >
-                          Previous
-                        </button>
-                      </li>
-                      
-                      {Array.from({ length: Math.min(5, pagination.totalPages) }, (_, i) => {
-                        let pageNum;
-                        if (pagination.totalPages <= 5) {
-                          pageNum = i + 1;
-                        } else if (pagination.page <= 3) {
-                          pageNum = i + 1;
-                        } else if (pagination.page >= pagination.totalPages - 2) {
-                          pageNum = pagination.totalPages - 4 + i;
-                        } else {
-                          pageNum = pagination.page - 2 + i;
-                        }
-                        
-                        return (
-                          <li key={pageNum} className={`page-item ${pagination.page === pageNum ? 'active' : ''}`}>
-                            <button 
-                              className="page-link" 
-                              onClick={() => handlePageChange(pageNum)}
-                            >
-                              {pageNum}
-                            </button>
-                          </li>
-                        );
-                      })}
-                      
-                      <li className={`page-item ${pagination.page === pagination.totalPages ? 'disabled' : ''}`}>
-                        <button 
-                          className="page-link" 
-                          onClick={() => handlePageChange(pagination.page + 1)}
-                          disabled={pagination.page === pagination.totalPages}
-                        >
-                          Next
-                        </button>
-                      </li>
-                    </ul>
-                  </nav>
-                </div>
-              )}
-              </>
-              )}
+            )}
             </Card.Body>
           </Card>
         </ContentColumn>
       </Row>
     </Container>
-  );
+    );
 };
 
 export default SearchResults;
