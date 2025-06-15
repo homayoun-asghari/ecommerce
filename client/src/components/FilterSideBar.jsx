@@ -1,51 +1,84 @@
-import React, { useState, useEffect } from 'react';
-import Accordion from 'react-bootstrap/Accordion';
+import React, { useState, useEffect, useRef } from 'react';
 import { useSideBar } from "../contexts/SideBarContext";
 import "../styles/Categories.css";
 import FilterItems from "./FilterItems";
 
 const FilterSideBar = ({ className = '' }) => {
     const { isOpen, setIsOpen } = useSideBar();
-    const [activeKey, setActiveKey] = useState(isOpen ? '0' : null);
+    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+    const [isTransitioning, setIsTransitioning] = useState(false);
+    const dropdownRef = useRef(null);
+    const isFirstRender = useRef(true);
 
-    // Sync accordion state with sidebar state
+    // Sync with sidebar state
     useEffect(() => {
-        setActiveKey(isOpen ? '0' : null);
+        setIsDropdownOpen(isOpen);
     }, [isOpen]);
 
-    const handleAccordionClick = (event) => {
-        // Prevent the default behavior to handle the toggle ourselves
-        event.preventDefault();
-        event.stopPropagation();
-
-        // Toggle the sidebar state
-        const newState = !isOpen;
+    // Handle dropdown toggle
+    const handleToggle = (e) => {
+        e.stopPropagation();
+        const newState = !isDropdownOpen;
+        setIsDropdownOpen(newState);
         setIsOpen(newState);
-        setActiveKey(newState ? '0' : null);
     };
 
-    // Handle when accordion is toggled directly (e.g., keyboard navigation)
-    const handleAccordionToggle = (newActiveKey) => {
-        const isOpening = newActiveKey === '0';
-        setIsOpen(isOpening);
-        setActiveKey(isOpening ? '0' : null);
-    };
+    // Close dropdown when clicking outside
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+                setIsDropdownOpen(false);
+                if (isOpen) setIsOpen(false);
+            }
+        };
+
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, [isOpen, setIsOpen]);
+
+    // Handle transitions
+    useEffect(() => {
+        if (isFirstRender.current) {
+            isFirstRender.current = false;
+            return;
+        }
+
+
+        setIsTransitioning(true);
+        const timer = setTimeout(() => {
+            setIsTransitioning(false);
+        }, 350);
+
+        return () => clearTimeout(timer);
+    }, [isOpen]);
 
     return (
-        <div className="set category-wrapper">
-            <Accordion activeKey={activeKey} onSelect={handleAccordionToggle}>
-                <Accordion.Item eventKey="0">
-                    <Accordion.Header
-                        onClick={handleAccordionClick}
-                        id="all"
+        <div 
+            className={`set category-wrapper ${isTransitioning ? 'sidebar-transitioning' : ''} ${className}`}
+            ref={dropdownRef}
+        >
+            <div className="accordion">
+                <div className="accordion-item">
+                    <button 
+                        id="all" 
+                        className="accordion-button" 
+                        type="button"
+                        onClick={handleToggle}
+                        aria-expanded={isDropdownOpen}
                     >
                         Filters
-                    </Accordion.Header>
-                    <Accordion.Body className="accordion-dropdown">
-                        <FilterItems />
-                    </Accordion.Body>
-                </Accordion.Item>
-            </Accordion>
+                    </button>
+                    <div 
+                        className={`accordion-dropdown ${isDropdownOpen ? 'show' : ''}`}
+                    >
+                        <div className="accordion-body">
+                            <FilterItems />
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     );
 };

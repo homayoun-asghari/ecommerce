@@ -1,19 +1,100 @@
+/* Base styles for category wrapper */
 .category-wrapper {
     position: relative;
     width: 250px;
+    transition: all 0.3s ease-in-out;
+    transform-origin: top left;
 }
 
 #all {
     width: 300px;
+    transition: all 0.3s ease-in-out;
 }
 
+.accordion-button {
+    width: 100%;
+    text-align: left;
+    padding: 0.75rem 1.25rem;
+    font-size: 1rem;
+    font-weight: 500;
+    color: #333;
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.accordion-button::after {
+    content: '▼';
+    font-size: 0.6em;
+    transition: transform 0.3s ease-in-out;
+}
+
+.accordion-button[aria-expanded="true"]::after {
+    transform: rotate(180deg);
+}
+
+.accordion-button:focus {
+    outline: none;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+/* Dropdown styles with animations */
 .accordion-dropdown {
     position: absolute;
     top: 100%;
     left: 0;
     z-index: 999;
     width: 300px;
-    box-shadow: 0 0 1px var(--color-link);
+    max-height: 0;
+    opacity: 0;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     border-radius: 4px;
+    padding: 0;
+    margin-top: 0.5rem;
+    transform: translateY(-10px);
+    transition: all 0.3s ease-in-out, padding 0.1s ease-in-out 0.15s;
+}
+
+/* Show dropdown with animation */
+.accordion-dropdown.show {
+    max-height: 1000px; /* Adjust based on your content */
+    opacity: 1;
     padding: 1rem;
+    transform: translateY(0);
+    transition: all 0.3s ease-in-out, padding 0.1s ease-in-out;
+}
+
+/* Add a subtle delay for smoother transitions when closing */
+.accordion-dropdown:not(.show) {
+    transition: all 0.2s ease-in-out, padding 0.1s ease-in-out;
+}
+
+/* Prevent content flash during sidebar transitions */
+.sidebar-transitioning .accordion-dropdown {
+    display: none;
+}
+
+/* Responsive adjustments */
+@media (max-width: 992px) {
+    .category-wrapper {
+        width: 100%;
+    }
+    
+    #all {
+        width: 100%;
+    }
+    
+    .accordion-dropdown {
+        position: relative;
+        width: 100%;
+        left: 0;
+        box-shadow: none;
+        border-radius: 0;
+    }
 }
