@@ -1,14 +1,29 @@
 import React from "react";
 import Carousel from 'react-bootstrap/Carousel';
+import Container from 'react-bootstrap/Container';
+import Col from 'react-bootstrap/Col';
+import styled, { keyframes } from 'styled-components';
 import hero1 from "../assets/hero1.jpg";
 import hero2 from "../assets/hero2.jpg";
 import hero3 from "../assets/hero3.jpg";
 import { Link } from 'react-router-dom';
-import Row from 'react-bootstrap/Row';
-import Col from 'react-bootstrap/Col';
-import styled, { keyframes } from 'styled-components';
 import "../styles/CarouselItems.css";
 import { useSideBar } from "../contexts/SideBarContext";
+
+// ContentColumn styled component for sidebar layout
+const ContentColumn = styled(Col)`
+  transition: all 0.3s ease-in-out;
+  margin-left: 0;
+  width: 100%;
+  padding: 0 15px;
+  
+  @media (min-width: 998px) {
+    margin-left: ${({ $isOpen }) => ($isOpen ? '300px' : '0')};
+    width: ${({ $isOpen }) => ($isOpen ? 'calc(100% - 300px)' : '100%')};
+  }
+`;
+
+
 
 // Animation keyframes
 const fadeIn = keyframes`
@@ -75,22 +90,21 @@ const AnimatedCarousel = styled(Carousel)`
   
   .carousel-control-prev,
   .carousel-control-next {
-    width: 50px;
+     width: 50px;
     height: 50px;
+    backdrop-filter: blur(10px);
     border-radius: 50%;
     top: 50%;
     transform: translateY(-50%);
-    opacity: 0;
     transition: all 0.3s ease;
-    z-index: 2;
     
     &:hover {
-      transform: translateY(-50%) scale(1.1);
+        transform: translateY(-50%) scale(1.1);
     }
     
-    @media (max-width: 768px) {
-      width: 40px;
-      height: 40px;
+    @media (max-width: 576px) {
+        width: 40px;
+        height: 40px;
     }
   }
   
@@ -206,24 +220,10 @@ function CarouselItems() {
     const { isOpen } = useSideBar();
     
     return (
-        <Row className="mb-4 mx-0" style={{ minHeight: '500px', width: '100%' }}>
-            <Col xl={isOpen ? 3 : 0} lg={isOpen ? 4 : 0} className="p-0" style={{
-                transition: 'all 0.3s ease-in-out',
-                opacity: isOpen ? 1 : 0,
-                overflow: 'hidden',
-                maxWidth: isOpen ? '25%' : '0',
-                flex: isOpen ? '0 0 25%' : '0 0 0',
-                padding: 0,
-                margin: 0
-            }}>
-            </Col>
-            <Col xl={isOpen ? 9 : 12} lg={isOpen ? 8 : 12} className="p-0" style={{
-                transition: 'all 0.3s ease-in-out',
-                marginLeft: 'auto',
-                flex: isOpen ? '0 0 75%' : '0 0 100%',
-                maxWidth: isOpen ? '75%' : '100%'
-            }}>
-                <AnimatedCarousel fade>
+        <Container fluid className="py-4 px-0 px-md-3">
+            <div className="position-relative" style={{ minHeight: '500px', width: '100%' }}>
+                <ContentColumn $isOpen={isOpen} className="px-0 px-md-3">
+                    <AnimatedCarousel fade>
                     <Carousel.Item interval={5000}>
                         <img
                             className="d-block w-100"
@@ -274,9 +274,10 @@ function CarouselItems() {
                             </SlideContent>
                         </Carousel.Caption>
                     </Carousel.Item>
-                </AnimatedCarousel>
-            </Col>
-        </Row>
+                        </AnimatedCarousel>
+                    </ContentColumn>
+                </div>
+            </Container>
     );
 }
 
