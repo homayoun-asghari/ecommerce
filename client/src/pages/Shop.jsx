@@ -16,9 +16,14 @@ import { useFilters } from '../contexts/FilterContext';
 
 const ContentColumn = styled(Col)`
   transition: all 0.3s ease-in-out;
-  margin-left: ${({ $isOpen }) => ($isOpen ? '300px' : '0')};
-  width: ${({ $isOpen }) => ($isOpen ? 'calc(100% - 300px)' : '100%')};
+  margin-left: 0;
+  width: 100%;
   padding: 0 15px;
+  
+  @media (min-width: 998px) {
+    margin-left: ${({ $isOpen }) => ($isOpen ? '300px' : '0')};
+    width: ${({ $isOpen }) => ($isOpen ? 'calc(100% - 300px)' : '100%')};
+  }
 `;
 
 const ProductsGrid = styled.div`
