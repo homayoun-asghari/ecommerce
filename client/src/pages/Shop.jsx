@@ -9,38 +9,15 @@ import {
     Stack,
     Button
 } from 'react-bootstrap';
-import styled, { keyframes } from 'styled-components';
+import styled from 'styled-components';
 import ProductCard from '../components/ProductCard';
 import { useSideBar } from '../contexts/SideBarContext';
 import { useFilters } from '../contexts/FilterContext';
 
-// Animation keyframes
-const fadeIn = keyframes`
-  from { opacity: 0.95; transform: scale(0.98); }
-  to { opacity: 1; transform: scale(1); }
-`;
-
-const ShopContainer = styled.div`
-  transition: all 0.3s ease-in-out;
-  animation: ${fadeIn} 0.3s ease-out;
-  width: 100%;
-`;
-
-const SidebarColumn = styled(Col)`
-  transition: all 0.3s ease-in-out;
-  opacity: ${props => props.$isOpen ? 1 : 0};
-  overflow: hidden;
-  max-width: ${props => props.$isOpen ? '25%' : '0'};
-  flex: ${props => props.$isOpen ? '0 0 25%' : '0 0 0'};
-  padding: 0;
-  margin: 0;
-`;
-
 const ContentColumn = styled(Col)`
   transition: all 0.3s ease-in-out;
-  margin-left: auto;
-  flex: ${props => props.$isOpen ? '0 0 75%' : '0 0 100%'};
-  max-width: ${props => props.$isOpen ? '75%' : '100%'};
+  margin-left: ${({ $isOpen }) => ($isOpen ? '300px' : '0')};
+  width: ${({ $isOpen }) => ($isOpen ? 'calc(100% - 300px)' : '100%')};
   padding: 0 15px;
 `;
 
@@ -97,7 +74,7 @@ function Shop() {
     const fetchProducts = async (page = 1) => {
         try {
             setLoading(true);
-            
+
             // Build query parameters
             const params = new URLSearchParams({
                 page,
@@ -154,7 +131,7 @@ function Shop() {
     // Initial fetch and when filters/sort change
     useEffect(() => {
         fetchProducts(1);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [filters, sortBy]); // fetchProducts is stable and doesn't need to be in deps
 
     // Handle page change
@@ -203,20 +180,12 @@ function Shop() {
     }
 
     return (
-        <ShopContainer>
-            <Row className="mx-0">
-                <SidebarColumn 
-                    lg={3} 
-                    $isOpen={accordion}
-                    className="p-0"
-                >
-                    {/* Sidebar content goes here */}
-                </SidebarColumn>
-                
-                <ContentColumn 
-                    lg={accordion ? 9 : 12} 
-                    $isOpen={accordion}
-                    className="p-0"
+        <Container fluid className="py-4 px-0 px-md-3">
+            <Row className="position-relative">
+                <ContentColumn
+                    $isOpen={isOpen && accordion}
+                    lg={isOpen ? 9 : 12}
+                    className="px-0 px-md-3"
                 >
                     <Card className="border-0 shadow-sm mb-4">
                         <Card.Header className="border-bottom-0 py-3">
@@ -262,22 +231,22 @@ function Shop() {
                                             </div>
                                         ))}
                                     </ProductsGrid>
-                                    
+
                                     {/* Pagination */}
                                     {pagination.totalPages > 1 && (
                                         <div className="d-flex justify-content-center mt-4 mb-3">
                                             <nav aria-label="Product pagination">
                                                 <ul className="pagination">
                                                     <li className={`page-item ${pagination.page === 1 ? 'disabled' : ''}`}>
-                                                        <button 
-                                                            className="page-link" 
+                                                        <button
+                                                            className="page-link"
                                                             onClick={() => handlePageChange(pagination.page - 1)}
                                                             disabled={pagination.page === 1}
                                                         >
                                                             Previous
                                                         </button>
                                                     </li>
-                                                    
+
                                                     {Array.from({ length: Math.min(5, pagination.totalPages) }, (_, i) => {
                                                         // Calculate page numbers to show (max 5 at a time)
                                                         let pageNum;
@@ -290,11 +259,11 @@ function Shop() {
                                                         } else {
                                                             pageNum = pagination.page - 2 + i;
                                                         }
-                                                        
+
                                                         return (
                                                             <li key={pageNum} className={`page-item ${pagination.page === pageNum ? 'active' : ''}`}>
-                                                                <button 
-                                                                    className="page-link" 
+                                                                <button
+                                                                    className="page-link"
                                                                     onClick={() => handlePageChange(pageNum)}
                                                                 >
                                                                     {pageNum}
@@ -302,10 +271,10 @@ function Shop() {
                                                             </li>
                                                         );
                                                     })}
-                                                    
+
                                                     <li className={`page-item ${pagination.page === pagination.totalPages ? 'disabled' : ''}`}>
-                                                        <button 
-                                                            className="page-link" 
+                                                        <button
+                                                            className="page-link"
                                                             onClick={() => handlePageChange(pagination.page + 1)}
                                                             disabled={pagination.page === pagination.totalPages}
                                                         >
@@ -340,7 +309,7 @@ function Shop() {
                     </Card>
                 </ContentColumn>
             </Row>
-        </ShopContainer>
+        </Container>
     );
 }
 
