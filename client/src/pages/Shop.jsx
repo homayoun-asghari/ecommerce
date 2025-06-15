@@ -44,18 +44,22 @@ const ContentColumn = styled(Col)`
   padding: 0 15px;
 `;
 
-const ProductsGrid = styled(Row)`
+const ProductsGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 1.5rem;
   padding: 1rem 0;
+  width: 100%;
   
   @media (max-width: 768px) {
     grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
   }
   
   @media (max-width: 576px) {
-    grid-template-columns: 1fr;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
   }
 `;
 
@@ -216,12 +220,12 @@ function Shop() {
                 >
                     <Card className="border-0 shadow-sm mb-4">
                         <Card.Header className="border-bottom-0 py-3">
-                            <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center">
-                                <h5 className="mb-2 mb-md-0">
+                            <div className="d-flex flex-column flex-md-row justify-content-center justify-content-md-between align-items-center">
+                                <h5 className="mb-3 mb-md-0 text-center text-md-start">
                                     {pagination.total} {pagination.total === 1 ? 'Product' : 'Products'} Found
                                 </h5>
-                                <div className="w-100" style={{ maxWidth: '300px' }}>
-                                    <Stack direction="horizontal" gap={2} className="justify-content-md-end">
+                                <div style={{ maxWidth: '300px', width: '100%' }}>
+                                    <Stack direction="horizontal" gap={2} className="justify-content-center justify-content-md-end">
                                         <Form.Label className="mb-0 text-nowrap">Sort by:</Form.Label>
                                         <Form.Select
                                             value={sortBy}
@@ -250,7 +254,7 @@ function Shop() {
                                 <>
                                     <ProductsGrid className="p-3">
                                         {products.map((product) => (
-                                            <div key={product.id} className="d-flex">
+                                            <div key={product.id} className="w-100" style={{ maxWidth: '320px' }}>
                                                 <ProductCard
                                                     product={product}
                                                     className="h-100 w-100"
