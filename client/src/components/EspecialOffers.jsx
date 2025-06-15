@@ -42,9 +42,7 @@ function EspecialOffers() {
             <Col lg={8} className="scroll-wrapper" style={{ backgroundColor: "var(--color-primary)", borderRadius: "0px" }}>
                 {products.map((product) => (
                     <Col key={product.id} >
-                        <div className="card-wrapper">
-                            <ProductCard product={product} userId={userId} />
-                        </div>
+                        <ProductCard product={product} userId={userId} />
                     </Col>
                 ))}
             </Col>

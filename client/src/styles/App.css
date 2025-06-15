@@ -104,17 +104,52 @@ li {
 }
 
 .scroll-wrapper {
-  border: 0.1px solid var(--color-link);
+  position: relative;
   display: flex;
   align-items: center;
-  gap: var(--space-xs);
+  gap: var(--space-md);
   overflow-x: auto;
-  padding: var(--space-xs);
+  padding: var(--space-sm) var(--space-md);
   scroll-snap-type: x mandatory;
   -webkit-overflow-scrolling: touch; /* smooth scroll on iOS */
+  scrollbar-width: none; /* Hide scrollbar for Firefox */
+}
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+.scroll-wrapper::-webkit-scrollbar {
+  display: none;
 }
 
 .scroll-item {
   scroll-snap-align: start;
   flex: 0 0 auto;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transform-origin: center;
+  position: relative;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  background: white;
+}
+
+.scroll-item:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1), 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.scroll-wrapper::before {
+  left: 0;
+  background: linear-gradient(90deg, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0) 100%);
+}
+
+.scroll-wrapper::after {
+  right: 0;
+  background: linear-gradient(270deg, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0) 100%);
+}
+
+/* Hide gradients when at the start/end of scroll */
+.scroll-wrapper.scroll-start::before,
+.scroll-wrapper.scroll-end::after {
+  opacity: 0;
 }
