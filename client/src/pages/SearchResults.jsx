@@ -19,24 +19,31 @@ const SidebarColumn = styled(Col)`
 
 const ContentColumn = styled(Col)`
   transition: all 0.3s ease-in-out;
-  margin-left: ${({ $isOpen }) => ($isOpen ? '300px' : '0')};
-  width: ${({ $isOpen }) => ($isOpen ? 'calc(100% - 300px)' : '100%')};
+  margin-left: 0;
+  width: 100%;
+  
+  @media (min-width: 998px) {
+    margin-left: ${({ $isOpen }) => ($isOpen ? '300px' : '0')};
+    width: ${({ $isOpen }) => ($isOpen ? 'calc(100% - 300px)' : '100%')};
+  }
 `;
 
 const ProductsGrid = styled.div`
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 1.5rem;
-  padding: 1rem;
+  padding: 1rem 0;
+  width: 100%;
   
   @media (max-width: 768px) {
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 1rem;
-    padding: 0.5rem;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
   }
-
-  @media (max-width: 480px) {
-    grid-template-columns: 1fr;
+  
+  @media (max-width: 576px) {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
   }
 `;
 
@@ -45,104 +52,104 @@ const ProductsGrid = styled.div`
 // Removed ResultsHeader styled component as we'll use Card components instead
 
 const SearchResults = () => {
-    const location = useLocation();
-    // eslint-disable-next-line no-unused-vars
-    const navigate = useNavigate(); // Will be used for future navigation
-    const [searchQuery, setSearchQuery] = useState('');
-    const [results, setResults] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
-    const [sortBy, setSortBy] = useState('relevance');
-    const { isOpen } = useSideBar();
-    const [accordion, setAccordion] = useState(false);
-    const { filters } = useFilters();
+  const location = useLocation();
+  // eslint-disable-next-line no-unused-vars
+  const navigate = useNavigate(); // Will be used for future navigation
+  const [searchQuery, setSearchQuery] = useState('');
+  const [results, setResults] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [sortBy, setSortBy] = useState('relevance');
+  const { isOpen } = useSideBar();
+  const [accordion, setAccordion] = useState(false);
+  const { filters } = useFilters();
 
-    useEffect(() => {
-        if (!isOpen) {
-            setTimeout(() => {
-                setAccordion(prev => !prev)
-            }, 350)
-        } else {
-            setTimeout(() => {
-                setAccordion(prev => !prev)
-            }, 0)
-        }
-    }, [isOpen]);
+  useEffect(() => {
+    if (!isOpen) {
+      setTimeout(() => {
+        setAccordion(prev => !prev)
+      }, 350)
+    } else {
+      setTimeout(() => {
+        setAccordion(prev => !prev)
+      }, 0)
+    }
+  }, [isOpen]);
 
-    const fetchSearchResults = useCallback(async (query) => {
-        if (!query) return;
-        
-        try {
-            setLoading(true);
-            
-            // Build query parameters with filters
-            const params = new URLSearchParams({
-                q: encodeURIComponent(query),
-                ...(filters.categories?.length > 0 && { category: filters.categories[0] }),
-                ...(filters.minRating > 0 && { minRating: filters.minRating }),
-                ...(filters.priceRange && {
-                    minPrice: filters.priceRange.min,
-                    maxPrice: filters.priceRange.max
-                })
-            });
+  const fetchSearchResults = useCallback(async (query) => {
+    if (!query) return;
 
-            const response = await fetch(`http://localhost:5050/product/search?${params.toString()}`);
-            const data = await response.json();
+    try {
+      setLoading(true);
 
-            if (!response.ok) {
-                throw new Error(data.error || 'Failed to fetch search results');
-            }
+      // Build query parameters with filters
+      const params = new URLSearchParams({
+        q: encodeURIComponent(query),
+        ...(filters.categories?.length > 0 && { category: filters.categories[0] }),
+        ...(filters.minRating > 0 && { minRating: filters.minRating }),
+        ...(filters.priceRange && {
+          minPrice: filters.priceRange.min,
+          maxPrice: filters.priceRange.max
+        })
+      });
 
-            setResults(data.products || []);
-            setError(null);
-        } catch (err) {
-            console.error('Error fetching search results:', err);
-            setError(err.message || 'An error occurred while searching');
-            setResults([]);
-        } finally {
-            setLoading(false);
-        }
-    }, [filters]);
+      const response = await fetch(`http://localhost:5050/product/search?${params.toString()}`);
+      const data = await response.json();
 
-    // Fetch search results when query changes or filters update
-    useEffect(() => {
-        const params = new URLSearchParams(location.search);
-        const query = params.get('q') || '';
-        setSearchQuery(query);
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to fetch search results');
+      }
 
-        if (query) {
-            fetchSearchResults(query);
-        } else {
-            setLoading(false);
-        }
-    }, [location.search, fetchSearchResults]);
+      setResults(data.products || []);
+      setError(null);
+    } catch (err) {
+      console.error('Error fetching search results:', err);
+      setError(err.message || 'An error occurred while searching');
+      setResults([]);
+    } finally {
+      setLoading(false);
+    }
+  }, [filters]);
 
-    // Search is handled via URL parameters, no need for separate submit handler
-    // navigate is already declared at the top of the component
+  // Fetch search results when query changes or filters update
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const query = params.get('q') || '';
+    setSearchQuery(query);
 
-    const sortResults = (results, sortBy) => {
-        const sortedResults = [...results];
-        switch (sortBy) {
-            case 'price_asc':
-                return sortedResults.sort((a, b) => a.price - b.price);
-            case 'price_desc':
-                return sortedResults.sort((a, b) => b.price - a.price);
-            case 'rating':
-                return sortedResults.sort((a, b) => (b.avg_rating || 0) - (a.avg_rating || 0));
-            case 'newest':
-                return sortedResults.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
-            default:
-                return results; // relevance
-        }
-    };
+    if (query) {
+      fetchSearchResults(query);
+    } else {
+      setLoading(false);
+    }
+  }, [location.search, fetchSearchResults]);
 
-    const sortedResults = sortResults(results, sortBy);
+  // Search is handled via URL parameters, no need for separate submit handler
+  // navigate is already declared at the top of the component
 
-    return (
-        <Container fluid className="py-4 px-0 px-md-3">
+  const sortResults = (results, sortBy) => {
+    const sortedResults = [...results];
+    switch (sortBy) {
+      case 'price_asc':
+        return sortedResults.sort((a, b) => a.price - b.price);
+      case 'price_desc':
+        return sortedResults.sort((a, b) => b.price - a.price);
+      case 'rating':
+        return sortedResults.sort((a, b) => (b.avg_rating || 0) - (a.avg_rating || 0));
+      case 'newest':
+        return sortedResults.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+      default:
+        return results; // relevance
+    }
+  };
+
+  const sortedResults = sortResults(results, sortBy);
+
+  return (
+    <Container fluid className="py-4 px-0 px-md-3">
       <Row className="position-relative">
         {/* Main Content */}
-        <ContentColumn 
+        <ContentColumn
           $isOpen={isOpen && accordion}
           lg={isOpen ? 9 : 12}
           className="px-0 px-md-3"
@@ -175,45 +182,45 @@ const SearchResults = () => {
             </Card.Header>
             <Card.Body className="p-0">
               {loading ? (
-            <div className="text-center py-5">
-              <Spinner animation="border" role="status">
-                <span className="visually-hidden">Loading...</span>
-              </Spinner>
-              <p className="mt-2">Searching for products...</p>
-            </div>
-          ) : error ? (
-            <Alert variant="danger" className="m-3">
-              {error}
-            </Alert>
-          ) : results.length === 0 ? (
-            <div className="text-center py-5">
-              <h5>No products found for "{searchQuery}"</h5>
-              <p className="text-muted">Try different keywords or check the spelling</p>
-            </div>
-            ) : (
-              <ProductsGrid className="p-3">
-                {sortedResults.map((product) => (
-                  <div key={product.id} className="d-flex">
-                    <ProductCard
-                      product={{
-                        ...product,
-                        discount: product.discount || 0,
-                        stock: product.stock || 10,
-                        category: product.category || 'Uncategorized',
-                        description: product.description || ''
-                      }}
-                      className="h-100 w-100"
-                    />
-                  </div>
-                ))}
-              </ProductsGrid>
-            )}
+                <div className="text-center py-5">
+                  <Spinner animation="border" role="status">
+                    <span className="visually-hidden">Loading...</span>
+                  </Spinner>
+                  <p className="mt-2">Searching for products...</p>
+                </div>
+              ) : error ? (
+                <Alert variant="danger" className="m-3">
+                  {error}
+                </Alert>
+              ) : results.length === 0 ? (
+                <div className="text-center py-5">
+                  <h5>No products found for "{searchQuery}"</h5>
+                  <p className="text-muted">Try different keywords or check the spelling</p>
+                </div>
+              ) : (
+                <ProductsGrid className="p-3">
+                  {sortedResults.map((product) => (
+                    <div key={product.id} className="d-flex">
+                      <ProductCard
+                        product={{
+                          ...product,
+                          discount: product.discount || 0,
+                          stock: product.stock || 10,
+                          category: product.category || 'Uncategorized',
+                          description: product.description || ''
+                        }}
+                        className="h-100 w-100"
+                      />
+                    </div>
+                  ))}
+                </ProductsGrid>
+              )}
             </Card.Body>
           </Card>
         </ContentColumn>
       </Row>
     </Container>
-    );
+  );
 };
 
 export default SearchResults;
