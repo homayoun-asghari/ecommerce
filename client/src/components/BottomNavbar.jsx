@@ -94,6 +94,7 @@ function BottomNavbar() {
             {(location.pathname === "/account" && userRole === "seller") && <SellerAccountTabs />}
             {(location.pathname === "/account" && userRole === "admin") && <AdminAccountTabs />}
             {(location.pathname === "/shop") && <FilterItems />}
+            {(location.pathname === "/search") && <FilterItems />}
             {(location.pathname !== "/account" && location.pathname !== "/shop") && <Accordion className="mt-3"><CategoryItems /></Accordion>}
           </div>
 

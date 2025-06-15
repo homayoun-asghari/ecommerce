@@ -12,16 +12,14 @@ function Categories() {
     }
     return (
         <div className="set category-wrapper">
-            <div className="accordion-trigger">
-                <Accordion>
-                    <Accordion.Item eventKey="0">
-                        <Accordion.Header id="all" onClick={handleClick}>All categories</Accordion.Header>
-                        <Accordion.Body className="accordion-dropdown">
-                            <CategoryItems />
-                        </Accordion.Body>
-                    </Accordion.Item>
-                </Accordion>
-            </div>
+            <Accordion>
+                <Accordion.Item eventKey="0">
+                    <Accordion.Header id="all" onClick={handleClick}>All categories</Accordion.Header>
+                    <Accordion.Body className="accordion-dropdown">
+                        <CategoryItems />
+                    </Accordion.Body>
+                </Accordion.Item>
+            </Accordion>
         </div>
     );
 }

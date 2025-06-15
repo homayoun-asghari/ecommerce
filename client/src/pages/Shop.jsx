@@ -58,18 +58,10 @@ function Shop() {
         totalPages: 1
     });
     const { isOpen } = useSideBar();
-    const [accordion, setAccordion] = useState(false);
 
     useEffect(() => {
-        if (!isOpen) {
-            setTimeout(() => {
-                setAccordion(prev => !prev)
-            }, 350)
-        } else {
-            setTimeout(() => {
-                setAccordion(prev => !prev)
-            }, 0)
-        }
+        // Any side effect that needs to run when isOpen changes
+        // This effect intentionally left blank for future use
     }, [isOpen]);
 
     // Get filters and update function from context
@@ -188,7 +180,7 @@ function Shop() {
         <Container fluid className="py-4 px-0 px-md-3">
             <Row className="position-relative">
                 <ContentColumn
-                    $isOpen={isOpen && accordion}
+                    $isOpen={isOpen}
                     lg={isOpen ? 9 : 12}
                     className="px-0 px-md-3"
                 >

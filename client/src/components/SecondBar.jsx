@@ -28,16 +28,6 @@ function ThirdBar() {
                     </Nav.Item>
                 </Nav>
             </div>
-
-            <div className="set">
-                <Nav.Item>
-                    <Nav.Link as={NavLink} to="/trendingproducts">Trending Products</Nav.Link>
-                </Nav.Item>
-                <Nav.Item>
-                    <Nav.Link as={NavLink} to="/sale">Almost Finished</Nav.Link>
-                </Nav.Item>
-            </div>
-
         </div>
     );
 }

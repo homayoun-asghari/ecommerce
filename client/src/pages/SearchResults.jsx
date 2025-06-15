@@ -4,6 +4,7 @@ import { Container, Row, Col, Spinner, Alert, Form, Card } from 'react-bootstrap
 import { useSideBar } from "../contexts/SideBarContext";
 import { useFilters } from "../contexts/FilterContext";
 import ProductCard from '../components/ProductCard';
+import FilterSideBar from '../components/FilterSideBar';
 import styled from 'styled-components';
 
 // Styled components for layout and animations
@@ -61,20 +62,7 @@ const SearchResults = () => {
   const [error, setError] = useState(null);
   const [sortBy, setSortBy] = useState('relevance');
   const { isOpen } = useSideBar();
-  const [accordion, setAccordion] = useState(false);
   const { filters } = useFilters();
-
-  useEffect(() => {
-    if (!isOpen) {
-      setTimeout(() => {
-        setAccordion(prev => !prev)
-      }, 350)
-    } else {
-      setTimeout(() => {
-        setAccordion(prev => !prev)
-      }, 0)
-    }
-  }, [isOpen]);
 
   const fetchSearchResults = useCallback(async (query) => {
     if (!query) return;
@@ -148,11 +136,10 @@ const SearchResults = () => {
   return (
     <Container fluid className="py-4 px-0 px-md-3">
       <Row className="position-relative">
-        {/* Main Content */}
-        <ContentColumn
-          $isOpen={isOpen && accordion}
-          lg={isOpen ? 9 : 12}
-          className="px-0 px-md-3"
+        <ContentColumn 
+          md={isOpen ? 9 : 12} 
+          className="content-col"
+          $isOpen={isOpen}
         >
           <Card className="mb-4 border-0 shadow-sm">
             <Card.Header className="d-flex justify-content-between align-items-center py-3">

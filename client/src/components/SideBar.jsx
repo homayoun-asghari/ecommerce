@@ -13,6 +13,8 @@ function SideBar() {
     return <AccountSideBar />;
   } else if (location.pathname === "/shop") {
     return <FilterSideBar />;
+  }else if (location.pathname === "/search") {
+    return <FilterSideBar />;
   } else {
     return <Categories />;
   }

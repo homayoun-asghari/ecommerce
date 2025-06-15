@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import Carousel from 'react-bootstrap/Carousel';
 import hero1 from "../assets/hero1.jpg";
 import hero2 from "../assets/hero2.jpg";
@@ -75,37 +75,25 @@ const SlideContent = styled.div`
 `;
 
 function CarouselItems() {
-    const {isOpen} = useSideBar();
-    const [accordion, setAccordion] = useState(false);
-
-    useEffect(() => {
-        if (!isOpen) {
-            setTimeout(() => {
-                setAccordion(prev => !prev)
-            }, 300)
-        } else {
-            setTimeout(() => {
-                setAccordion(prev => !prev)
-            }, 0)
-        }
-    }, [isOpen]);
+    const { isOpen } = useSideBar();
+    
     return (
         <Row className="mb-4 mx-0" style={{ minHeight: '500px', width: '100%' }}>
-            <Col xl={accordion ? 3 : 0} lg={accordion ? 4 : 0} className="p-0" style={{
+            <Col xl={isOpen ? 3 : 0} lg={isOpen ? 4 : 0} className="p-0" style={{
                 transition: 'all 0.3s ease-in-out',
-                opacity: accordion ? 1 : 0,
+                opacity: isOpen ? 1 : 0,
                 overflow: 'hidden',
-                maxWidth: accordion ? '25%' : '0',
-                flex: accordion ? '0 0 25%' : '0 0 0',
+                maxWidth: isOpen ? '25%' : '0',
+                flex: isOpen ? '0 0 25%' : '0 0 0',
                 padding: 0,
                 margin: 0
             }}>
             </Col>
-            <Col xl={accordion ? 9 : 12} lg={accordion ? 8 : 12} className="p-0" style={{
+            <Col xl={isOpen ? 9 : 12} lg={isOpen ? 8 : 12} className="p-0" style={{
                 transition: 'all 0.3s ease-in-out',
                 marginLeft: 'auto',
-                flex: accordion ? '0 0 75%' : '0 0 100%',
-                maxWidth: accordion ? '75%' : '100%'
+                flex: isOpen ? '0 0 75%' : '0 0 100%',
+                maxWidth: isOpen ? '75%' : '100%'
             }}>
                 <AnimatedCarousel fade>
                     <Carousel.Item interval={5000}>

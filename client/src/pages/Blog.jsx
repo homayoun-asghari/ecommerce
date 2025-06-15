@@ -78,9 +78,14 @@ function Blog() {
     }
 
     return (
-        <Row>
-            <Col lg={isOpen ? 3 : 0}></Col>
-            <Col lg={isOpen ? 9 : 12}>
+        <Row className="position-relative">
+            <Col lg={isOpen ? 9 : 12} className="p-0" style={{
+                transition: 'all 0.3s ease-in-out',
+                marginLeft: 'auto',
+                flex: isOpen ? '0 0 75%' : '0 0 100%',
+                maxWidth: isOpen ? '75%' : '100%',
+                padding: '0 15px'
+            }}>
                 {posts.length === 0 ? (
                     <div className="text-center py-5 my-5">
                         <i className="bi bi-newspaper" style={{ fontSize: '4rem', opacity: 0.2 }}></i>

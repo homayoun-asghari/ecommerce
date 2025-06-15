@@ -10,7 +10,7 @@ import AdminAccountTabs from "./AdminAccountTabs.jsx";
 
 function Categories() {
     const { setIsOpen } = useSideBar();
-    const { user} = useUser();
+    const { user } = useUser();
     const userName = user?.data?.name;
     const userRole = user?.data?.role;
 
@@ -20,23 +20,21 @@ function Categories() {
 
     return (
         <div className="set category-wrapper">
-            <div className="accordion-trigger">
-                <Accordion>
-                    <Accordion.Item eventKey="0">
-                        <Accordion.Header id="all" onClick={handleClose}>
-                            <div className="d-flex align-items-center gap-1">
-                                <PersonIcon style={{ fontSize: 20 }} />
-                                <p>{userName}</p>
-                            </div>
-                        </Accordion.Header>
-                        <Accordion.Body className="accordion-dropdown">
-                            {userRole === "buyer" && <AccountTabs />}
-                            {userRole === "seller" && <SellerAccountTabs />}
-                            {userRole === "admin" && <AdminAccountTabs />}
-                        </Accordion.Body>
-                    </Accordion.Item>
-                </Accordion>
-            </div>
+            <Accordion>
+                <Accordion.Item eventKey="0">
+                    <Accordion.Header id="all" onClick={handleClose}>
+                        <div className="d-flex align-items-center gap-1">
+                            <PersonIcon style={{ fontSize: 20 }} />
+                            <p>{userName}</p>
+                        </div>
+                    </Accordion.Header>
+                    <Accordion.Body className="accordion-dropdown">
+                        {userRole === "buyer" && <AccountTabs />}
+                        {userRole === "seller" && <SellerAccountTabs />}
+                        {userRole === "admin" && <AdminAccountTabs />}
+                    </Accordion.Body>
+                </Accordion.Item>
+            </Accordion>
         </div>
     );
 }
