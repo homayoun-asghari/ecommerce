@@ -59,16 +59,6 @@ const ProductsGrid = styled(Row)`
   }
 `;
 
-const StyledCard = styled(Card)`
-  transition: all 0.3s ease-in-out;
-  border: 1px solid rgba(0, 0, 0, 0.1);
-  
-  &:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
-  }
-`;
-
 function Shop() {
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -224,131 +214,126 @@ function Shop() {
                     $isOpen={accordion}
                     className="p-0"
                 >
-                    <StyledCard className="mb-4">
-                        <Card.Body className="p-3">
-                            <Row className="align-items-center">
-                                <Col xs={12} md={6}>
-                                    <h5 className="mb-0">
-                                        {pagination.total} {pagination.total === 1 ? 'Product' : 'Products'} Found
-                                    </h5>
-                                </Col>
-                                <Col xs={12} md={6} className="mt-2 mt-md-0">
-                                    <div className="d-flex justify-content-md-end">
-                                        <Stack direction="horizontal" gap={2} className="w-100" style={{ maxWidth: '300px' }}>
-                                            <Form.Label className="mb-0 text-nowrap">Sort by:</Form.Label>
-                                            <Form.Select
-                                                value={sortBy}
-                                                onChange={(e) => setSortBy(e.target.value)}
-                                                size="sm"
-                                                className="shadow-sm"
-                                            >
-                                                <option value="featured">Featured</option>
-                                                <option value="price-low">Price: Low to High</option>
-                                                <option value="price-high">Price: High to Low</option>
-                                                <option value="rating">Top Rated</option>
-                                                <option value="newest">Newest</option>
-                                            </Form.Select>
-                                        </Stack>
-                                    </div>
-                                </Col>
-                            </Row>
-                        </Card.Body>
-                    </StyledCard>
-
-                    {loading ? (
-                        <div className="text-center py-5">
-                            <Spinner animation="border" role="status">
-                                <span className="visually-hidden">Loading...</span>
-                            </Spinner>
-                        </div>
-                    ) : products.length > 0 ? (
-                        <>
-                            <ProductsGrid>
-                                {products.map((product) => (
-                                    <div key={product.id} className="d-flex">
-                                        <ProductCard
-                                            product={product}
-                                            className="h-100 w-100"
-                                        />
-                                    </div>
-                                ))}
-                            </ProductsGrid>
-                            
-                            {/* Pagination */}
-                            {pagination.totalPages > 1 && (
-                                <div className="d-flex justify-content-center mt-4">
-                                    <nav aria-label="Product pagination">
-                                        <ul className="pagination">
-                                            <li className={`page-item ${pagination.page === 1 ? 'disabled' : ''}`}>
-                                                <button 
-                                                    className="page-link" 
-                                                    onClick={() => handlePageChange(pagination.page - 1)}
-                                                    disabled={pagination.page === 1}
-                                                >
-                                                    Previous
-                                                </button>
-                                            </li>
-                                            
-                                            {Array.from({ length: Math.min(5, pagination.totalPages) }, (_, i) => {
-                                                // Calculate page numbers to show (max 5 at a time)
-                                                let pageNum;
-                                                if (pagination.totalPages <= 5) {
-                                                    pageNum = i + 1;
-                                                } else if (pagination.page <= 3) {
-                                                    pageNum = i + 1;
-                                                } else if (pagination.page >= pagination.totalPages - 2) {
-                                                    pageNum = pagination.totalPages - 4 + i;
-                                                } else {
-                                                    pageNum = pagination.page - 2 + i;
-                                                }
-                                                
-                                                return (
-                                                    <li key={pageNum} className={`page-item ${pagination.page === pageNum ? 'active' : ''}`}>
+                    <Card className="border-0 shadow-sm mb-4">
+                        <Card.Header className="border-bottom-0 py-3">
+                            <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center">
+                                <h5 className="mb-2 mb-md-0">
+                                    {pagination.total} {pagination.total === 1 ? 'Product' : 'Products'} Found
+                                </h5>
+                                <div className="w-100" style={{ maxWidth: '300px' }}>
+                                    <Stack direction="horizontal" gap={2} className="justify-content-md-end">
+                                        <Form.Label className="mb-0 text-nowrap">Sort by:</Form.Label>
+                                        <Form.Select
+                                            value={sortBy}
+                                            onChange={(e) => setSortBy(e.target.value)}
+                                            size="sm"
+                                            className="shadow-sm"
+                                        >
+                                            <option value="featured">Featured</option>
+                                            <option value="price-low">Price: Low to High</option>
+                                            <option value="price-high">Price: High to Low</option>
+                                            <option value="rating">Top Rated</option>
+                                            <option value="newest">Newest</option>
+                                        </Form.Select>
+                                    </Stack>
+                                </div>
+                            </div>
+                        </Card.Header>
+                        <Card.Body className="p-0">
+                            {loading ? (
+                                <div className="text-center py-5">
+                                    <Spinner animation="border" role="status">
+                                        <span className="visually-hidden">Loading...</span>
+                                    </Spinner>
+                                </div>
+                            ) : products.length > 0 ? (
+                                <>
+                                    <ProductsGrid className="p-3">
+                                        {products.map((product) => (
+                                            <div key={product.id} className="d-flex">
+                                                <ProductCard
+                                                    product={product}
+                                                    className="h-100 w-100"
+                                                />
+                                            </div>
+                                        ))}
+                                    </ProductsGrid>
+                                    
+                                    {/* Pagination */}
+                                    {pagination.totalPages > 1 && (
+                                        <div className="d-flex justify-content-center mt-4 mb-3">
+                                            <nav aria-label="Product pagination">
+                                                <ul className="pagination">
+                                                    <li className={`page-item ${pagination.page === 1 ? 'disabled' : ''}`}>
                                                         <button 
                                                             className="page-link" 
-                                                            onClick={() => handlePageChange(pageNum)}
+                                                            onClick={() => handlePageChange(pagination.page - 1)}
+                                                            disabled={pagination.page === 1}
                                                         >
-                                                            {pageNum}
+                                                            Previous
                                                         </button>
                                                     </li>
-                                                );
-                                            })}
-                                            
-                                            <li className={`page-item ${pagination.page === pagination.totalPages ? 'disabled' : ''}`}>
-                                                <button 
-                                                    className="page-link" 
-                                                    onClick={() => handlePageChange(pagination.page + 1)}
-                                                    disabled={pagination.page === pagination.totalPages}
-                                                >
-                                                    Next
-                                                </button>
-                                            </li>
-                                        </ul>
-                                    </nav>
+                                                    
+                                                    {Array.from({ length: Math.min(5, pagination.totalPages) }, (_, i) => {
+                                                        // Calculate page numbers to show (max 5 at a time)
+                                                        let pageNum;
+                                                        if (pagination.totalPages <= 5) {
+                                                            pageNum = i + 1;
+                                                        } else if (pagination.page <= 3) {
+                                                            pageNum = i + 1;
+                                                        } else if (pagination.page >= pagination.totalPages - 2) {
+                                                            pageNum = pagination.totalPages - 4 + i;
+                                                        } else {
+                                                            pageNum = pagination.page - 2 + i;
+                                                        }
+                                                        
+                                                        return (
+                                                            <li key={pageNum} className={`page-item ${pagination.page === pageNum ? 'active' : ''}`}>
+                                                                <button 
+                                                                    className="page-link" 
+                                                                    onClick={() => handlePageChange(pageNum)}
+                                                                >
+                                                                    {pageNum}
+                                                                </button>
+                                                            </li>
+                                                        );
+                                                    })}
+                                                    
+                                                    <li className={`page-item ${pagination.page === pagination.totalPages ? 'disabled' : ''}`}>
+                                                        <button 
+                                                            className="page-link" 
+                                                            onClick={() => handlePageChange(pagination.page + 1)}
+                                                            disabled={pagination.page === pagination.totalPages}
+                                                        >
+                                                            Next
+                                                        </button>
+                                                    </li>
+                                                </ul>
+                                            </nav>
+                                        </div>
+                                    )}
+                                </>
+                            ) : (
+                                <div className="text-center py-5">
+                                    <Card.Title className="mb-3">No products found</Card.Title>
+                                    <Card.Text className="text-muted mb-4">
+                                        We couldn't find any products matching your filters.
+                                    </Card.Text>
+                                    <Button
+                                        variant="outline-primary"
+                                        onClick={() => updateFilters({
+                                            categories: [],
+                                            minRating: 0,
+                                            priceRange: { min: 0, max: 1000 }
+                                        })}
+                                        className="px-4"
+                                    >
+                                        Clear All Filters
+                                    </Button>
                                 </div>
                             )}
-                        </>
-                    ) : (
-                        <Card className="text-center py-5 border-0 shadow-sm">
-                            <Card.Body>
-                                <Card.Title className="mb-3">No products found</Card.Title>
-                                <Card.Text className="text-muted mb-4">
-                                    We couldn't find any products matching your filters.
-                                </Card.Text>
-                                <Button
-                                    variant="outline-primary"
-                                    onClick={() => updateFilters({
-                                        categories: [],
-                                        minRating: 0,
-                                        priceRange: { min: 0, max: 1000 }
-                                    })}
-                                    className="px-4"
-                                >
-                                    Clear All Filters
-                                </Button>
-                            </Card.Body>
-                        </Card>
-                    )}
+                        </Card.Body>
+                    </Card>
                 </ContentColumn>
             </Row>
         </ShopContainer>
