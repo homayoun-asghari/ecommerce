@@ -4,11 +4,10 @@ import cartDark from "../assets/cart-dark.png";
 import { useTheme } from "../contexts/ThemeContext";
 import { useCart } from "../contexts/CartContext";
 import ProductCard from "../components/ProductCard";
-import { Col } from "react-bootstrap";
+
 import { useUser } from "../contexts/UserContext";
 import { Link } from 'react-router-dom';
-import { useNavigate, useLocation } from "react-router-dom";
-import { useSideBar } from "../contexts/SideBarContext";
+import { useNavigate } from "react-router-dom";
 import styled from 'styled-components';
 
 const ContentColumn = styled.div`
@@ -28,17 +27,24 @@ const CartContent = ({ isInTab = false }) => {
     const { cartItems } = useCart();
     const { user } = useUser();
     const userId = user?.data?.id;
-    const location = useLocation();
-    const isCartPage = location.pathname === '/cart';
-    const { isOpen } = useSideBar();
-    
-    // Determine the number of columns based on sidebar state
-    const getGridColumns = () => {
-        if (isOpen) {
-            return 'row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xl-4';
+    const ProductsGrid = styled.div`
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 1.5rem;
+        padding: 1rem 0;
+        width: 100%;
+        
+        @media (max-width: 768px) {
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
         }
-        return 'row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xl-5';
-    };
+        
+        @media (max-width: 576px) {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+        }
+    `;
 
     if (cartItems.length === 0) {
         return (
@@ -52,15 +58,13 @@ const CartContent = ({ isInTab = false }) => {
     return (
         <div className="d-flex flex-column w-100">
             <div className="scroll-wrapper w-100">
-                <div className={`row ${getGridColumns()} g-4`}>
-                    {cartItems.map((product) => (
-                        <div key={product.id} className="col">
-                            <div className="card-wrapper h-100">
-                                <ProductCard product={product} userId={userId} />
-                            </div>
+                <ProductsGrid>
+                    {cartItems.map((item, index) => (
+                        <div key={index} className="w-100">
+                            <ProductCard product={item} userId={userId} />
                         </div>
                     ))}
-                </div>
+                </ProductsGrid>
             </div>
             <div className="text-end mt-4">
                 <Link 
@@ -78,28 +82,28 @@ const CartContent = ({ isInTab = false }) => {
 function Cart() {
     const { user } = useUser();
     const navigate = useNavigate();
-    const location = useLocation();
-    const isCartPage = location.pathname === '/cart';
-    const { isOpen } = useSideBar();
-
+    const location = window.location.pathname;
+    const isCartPage = location === '/cart';
+    
     useEffect(() => {
         if (user && isCartPage) {
             navigate("/account?tab=cart");
         }
     }, [user, navigate, isCartPage]);
 
+    // If user is logged in and on cart page, show nothing (will redirect)
     if (user && isCartPage) {
-        return null; // Will be redirected by the effect
+        return null;
     }
 
-    // When in account tab, we don't need the ContentColumn wrapper
-    // as it's already wrapped by the Account page's ContentColumn
+    // If not on cart page (e.g., in account tab), just render the content
     if (!isCartPage) {
         return <CartContent isInTab={true} />;
     }
 
+    // For non-logged in users on cart page
     return (
-        <ContentColumn $isOpen={isOpen}>
+        <ContentColumn $isOpen={false}>
             <CartContent isInTab={false} />
         </ContentColumn>
     );

@@ -2,22 +2,13 @@ import React from "react";
 import ProductCard from "./ProductCard";
 import { useTheme } from "../contexts/ThemeContext";
 import { useWishList } from "../contexts/WishListContext";
-import { useSideBar } from "../contexts/SideBarContext";
 import cartLight from "../assets/cart-light.png";
 import cartDark from "../assets/cart-dark.png";
+import styled from 'styled-components';
 
 function WishList() {
     const { mode } = useTheme();
     const { wishList } = useWishList();
-    const { isOpen } = useSideBar();
-
-    // Determine the number of columns based on sidebar state
-    const getGridColumns = () => {
-        if (isOpen) {
-            return 'row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xl-4';
-        }
-        return 'row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xl-5';
-    };
 
     if (wishList.length === 0) {
         return (
@@ -28,18 +19,35 @@ function WishList() {
         );
     }
 
+    const ProductsGrid = styled.div`
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 1.5rem;
+        padding: 1rem 0;
+        width: 100%;
+        
+        @media (max-width: 768px) {
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+        }
+        
+        @media (max-width: 576px) {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+        }
+    `;
+
     return (
         <div className="d-flex flex-column w-100">
             <div className="scroll-wrapper w-100">
-                <div className={`row ${getGridColumns()} g-4`}>
+                <ProductsGrid>
                     {wishList.map((product, index) => (
-                        <div key={index} className="col">
-                            <div className="card-wrapper h-100">
-                                <ProductCard product={product} />
-                            </div>
+                        <div key={index} className="w-100">
+                            <ProductCard product={product} />
                         </div>
                     ))}
-                </div>
+                </ProductsGrid>
             </div>
         </div>
     );
