@@ -5,9 +5,23 @@ import Col from 'react-bootstrap/Col';
 import Button from 'react-bootstrap/Button';
 import { useCart } from "../contexts/CartContext";
 import { useUser } from "../contexts/UserContext";
+import { useSideBar } from "../contexts/SideBarContext";
 import { API_BASE_URL } from "../config";
 import AddresseCard from "../components/AddressCard";
 import Card from 'react-bootstrap/Card';
+import styled from 'styled-components';
+
+const ContentColumn = styled(Col)`
+  transition: all 0.3s ease-in-out;
+  margin-left: 0;
+  width: 100%;
+  padding: 0 15px;
+  
+  @media (min-width: 998px) {
+    margin-left: ${({ $isOpen }) => ($isOpen ? '300px' : '0')};
+    width: ${({ $isOpen }) => ($isOpen ? 'calc(100% - 300px)' : '100%')};
+  }
+`;
 
 function Checkout() {
     const [createAccount, setCreateAccount] = useState(false);
@@ -27,6 +41,7 @@ function Checkout() {
     const shippingRef = useRef(null);
     const paymentRef = useRef(null);
     const termsRef = useRef(null);
+    const { isOpen } = useSideBar();
 
     for (const item of cartItems) {
         totalCost += item.quantity * item.price;
@@ -105,8 +120,9 @@ function Checkout() {
 
 
     return (
-        <Row>
-            <Col lg={8}>
+        <ContentColumn $isOpen={isOpen}>
+            <Row>
+                <Col lg={8}>
                 {user && <Form id="checkout" onSubmit={handleSubmit}>
                     <AddresseCard address={address} />
                     <Form.Check type="checkbox" name="differentShipping" label="Ship to different address?" onChange={(e) => setDifferentShipping(e.target.checked)} />
@@ -264,9 +280,9 @@ function Checkout() {
                     </Card.Body>
                 </Card>
             </Col>
-
         </Row>
-    );
+    </ContentColumn>
+  );
 }
 
 export default Checkout;

@@ -2,8 +2,8 @@ import React, { useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import { useUser } from "../contexts/UserContext";
 import LoginRegister from "../components/LoginRegister";
-import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
+import styled from "styled-components";
 import Dashboard from "../components/Dashboard";
 import Orders from "../components/Orders";
 import WishList from "../components/WishList";
@@ -29,6 +29,18 @@ import AdminBlog from "../components/AdminBlog";
 import AdminSettings from "../components/AdminSettings";
 import AdminMessages from "../components/AdminMessages";
 
+const ContentColumn = styled(Col)`
+  transition: all 0.3s ease-in-out;
+  margin-left: 0;
+  width: 100%;
+  padding: 0 15px;
+  
+  @media (min-width: 998px) {
+    margin-left: ${({ $isOpen }) => ($isOpen ? '300px' : '0')};
+    width: ${({ $isOpen }) => ($isOpen ? 'calc(100% - 300px)' : '100%')};
+  }
+`;
+
 function Account() {
   const [searchParams] = useSearchParams();
   const resetPassword = searchParams.get("resetpassword");
@@ -50,54 +62,45 @@ function Account() {
 
   if (role === "buyer") {
     return (
-      <Row>
-        <Col lg={isOpen ? 3 : 0}></Col>
-        <Col lg={isOpen ? 9 : 12}>
-          {activeTab === "dashboard" && <Dashboard />}
-          {activeTab === "orders" && <Orders />}
-          {activeTab === "wishlist" && <WishList />}
-          {activeTab === "cart" && <Cart />}
-          {activeTab === "address" && <Addresses />}
-          {activeTab === "tickets" && <Tickets />}
-          {activeTab === "notifications" && <Notifications />}
-        </Col>
-      </Row>
+      <ContentColumn $isOpen={isOpen}>
+        {activeTab === "dashboard" && <Dashboard />}
+        {activeTab === "orders" && <Orders />}
+        {activeTab === "wishlist" && <WishList />}
+        {activeTab === "cart" && <Cart />}
+        {activeTab === "address" && <Addresses />}
+        {activeTab === "tickets" && <Tickets />}
+        {activeTab === "notifications" && <Notifications />}
+      </ContentColumn>
     );
   } else if (role === "seller") {
     return (
-      <Row>
-        <Col lg={isOpen ? 3 : 0}></Col>
-        <Col lg={isOpen ? 9 : 12}>
-          {activeTab === "dashboard" && <SellerDashboard />}
-          {activeTab === "products" && <AddProducts />}
-          {activeTab === "orders" && <SellerOrders />}
-          {activeTab === "payment" && <SellerPayment />}
-          {activeTab === "wishlist" && <WishList />}
-          {activeTab === "cart" && <Cart />}
-          {activeTab === "address" && <Addresses />}
-          {activeTab === "tickets" && <Tickets />}
-          {activeTab === "notifications" && <Notifications />}
-        </Col>
-      </Row>
+      <ContentColumn $isOpen={isOpen}>
+        {activeTab === "dashboard" && <SellerDashboard />}
+        {activeTab === "products" && <AddProducts />}
+        {activeTab === "orders" && <SellerOrders />}
+        {activeTab === "payment" && <SellerPayment />}
+        {activeTab === "wishlist" && <WishList />}
+        {activeTab === "cart" && <Cart />}
+        {activeTab === "address" && <Addresses />}
+        {activeTab === "tickets" && <Tickets />}
+        {activeTab === "notifications" && <Notifications />}
+      </ContentColumn>
     );
   } else if (role === "admin") {
     return (
-      <Row>
-        <Col lg={isOpen ? 3 : 0}></Col>
-        <Col lg={isOpen ? 9 : 12}>
-          {activeTab === "dashboard" && <AdminDashboard />}
-          {activeTab === "users" && <AdminUsers />}
-          {activeTab === "products" && <AdminProducts />}
-          {activeTab === "orders" && <AdminOrders />}
-          {activeTab === "payment" && <AdminPayments />}
-          {activeTab === "tickets" && <AdminTickets />}
-          {activeTab === "messages" && <AdminMessages />}
-          {activeTab === "reviews" && <AdminReviews />}
-          {activeTab === "blog" && <AdminBlog />}
-          {activeTab === "notifications" && <AdminNotifications />}
-          {activeTab === "setting" && <AdminSettings />}
-        </Col>
-      </Row>
+      <ContentColumn $isOpen={isOpen}>
+        {activeTab === "dashboard" && <AdminDashboard />}
+        {activeTab === "users" && <AdminUsers />}
+        {activeTab === "products" && <AdminProducts />}
+        {activeTab === "orders" && <AdminOrders />}
+        {activeTab === "payment" && <AdminPayments />}
+        {activeTab === "tickets" && <AdminTickets />}
+        {activeTab === "messages" && <AdminMessages />}
+        {activeTab === "reviews" && <AdminReviews />}
+        {activeTab === "blog" && <AdminBlog />}
+        {activeTab === "notifications" && <AdminNotifications />}
+        {activeTab === "setting" && <AdminSettings />}
+      </ContentColumn>
     );
   }
 
