@@ -151,20 +151,20 @@ export const getRelatedProducts = async (req, res) => {
 
 export const getSellersProducts = async (req, res) => {
     const { userId } = req.query;
-
+    
     if (!userId) {
-        return res.status(400).json({ error: "User ID is required" });
+        return res.status(400).json({ error: 'User ID is required' });
     }
 
     try {
-        const result = await db.query(`
-            SELECT *
-            FROM products
-            WHERE seller_id = $1`, [userId]);
+        const result = await db.query(
+            'SELECT * FROM products WHERE seller_id = $1 ORDER BY created_at DESC',
+            [userId]
+        );
         res.status(200).json(result.rows);
     } catch (err) {
-        console.error(err);
-        res.status(500).json({ error: "Failed to fetch sellers products" });
+        console.error('Error fetching products:', err);
+        res.status(500).json({ error: 'Failed to fetch products' });
     }
 }
 
@@ -219,6 +219,95 @@ export const addProduct = async (req, res) => {
         }
     }
 }
+
+export const updateProduct = async (req, res) => {
+    const { id } = req.params;
+    const { name, description, price, category, stock, discount } = req.body;
+
+    // Validate required fields
+    if (!name || !description || !price || !category || stock === undefined) {
+        return res.status(400).json({
+            error: "Missing required fields. Please provide name, description, price, category, and stock"
+        });
+    }
+
+    try {
+        // Check if product exists
+        const productCheck = await db.query('SELECT * FROM products WHERE id = $1', [id]);
+
+        if (productCheck.rows.length === 0) {
+            return res.status(404).json({ error: "Product not found" });
+        }
+
+        let imageUrl = productCheck.rows[0].image_url;
+        
+        // If a new image was uploaded
+        if (req.file) {
+            // Upload new image to Cloudinary
+            const b64 = Buffer.from(req.file.buffer).toString('base64');
+            const dataURI = "data:" + req.file.mimetype + ";base64," + b64;
+            const result = await cloudinary.uploader.upload(dataURI, {
+                folder: "products",
+            });
+            imageUrl = result.secure_url;
+            
+            // Optionally delete the old image from Cloudinary
+            // This requires parsing the public_id from the URL
+        }
+
+        // Update product in database
+        const updateResult = await db.query(
+            `UPDATE products 
+             SET name = $1, description = $2, price = $3, category = $4, 
+                 stock = $5, image_url = $6, discount = $7, updated_at = NOW()
+             WHERE id = $8
+             RETURNING *`,
+            [
+                name, 
+                description, 
+                price, 
+                category, 
+                stock, 
+                imageUrl, 
+                discount || null, 
+                id
+            ]
+        );
+
+        if (updateResult.rows.length === 0) {
+            return res.status(404).json({ error: "Failed to update product" });
+        }
+
+        res.status(200).json(updateResult.rows[0]);
+    } catch (err) {
+        console.error('Update product error:', err);
+        res.status(500).json({ error: "Failed to update product" });
+    }
+};
+
+export const deleteProduct = async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        // Check if product exists
+        const productCheck = await db.query('SELECT * FROM products WHERE id = $1', [id]);
+
+        if (productCheck.rows.length === 0) {
+            return res.status(404).json({ error: "Product not found" });
+        }
+
+        // Delete from database
+        await db.query('DELETE FROM products WHERE id = $1', [id]);
+        
+        // Optionally delete the image from Cloudinary
+        // This requires parsing the public_id from the URL
+        
+        res.status(200).json({ message: "Product deleted successfully" });
+    } catch (err) {
+        console.error('Delete product error:', err);
+        res.status(500).json({ error: "Failed to delete product" });
+    }
+};
 
 export const getShopProducts = async (req, res) => {
     const { 
