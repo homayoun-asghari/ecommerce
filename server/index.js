@@ -28,7 +28,8 @@ const port = process.env.PORT || 5050;
 const allowedOrigins = [
     "http://192.168.1.106:3000",
     "http://localhost:3000",
-    "http://127.0.0.1:3000"
+    "http://127.0.0.1:3000",
+    "http://172.20.10.3:3000"
 ];
 app.use(cors({
     origin: (origin, callback) => {
