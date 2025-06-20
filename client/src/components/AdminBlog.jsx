@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Button, Modal, Form, Card, Badge, Spinner, Alert } from 'react-bootstrap';
 import { Pencil, Trash, Plus } from 'react-bootstrap-icons';
+import { API_BASE_URL } from "../config";
 // Format date helper function
 const formatDate = (dateString) => {
   if (!dateString) return '';
@@ -31,7 +32,7 @@ const AdminBlog = () => {
   const fetchPosts = async () => {
     try {
       setLoading(true);
-      const response = await fetch('http://localhost:5050/admin/blog');
+      const response = await fetch(`${API_BASE_URL}/admin/blog`);
       if (!response.ok) throw new Error('Failed to fetch blog posts');
       const data = await response.json();
       setPosts(data.posts || []); // Set posts from the response data
@@ -62,8 +63,8 @@ const AdminBlog = () => {
     try {
       setLoading(true);
       const url = currentPost 
-        ? `http://localhost:5050/admin/blog/${currentPost.id}`
-        : 'http://localhost:5050/admin/blog';
+        ? `${API_BASE_URL}/admin/blog/${currentPost.id}`
+        : `${API_BASE_URL}/admin/blog`;
       
       const method = currentPost ? 'PUT' : 'POST';
       
@@ -91,7 +92,7 @@ const AdminBlog = () => {
     
     try {
       setLoading(true);
-      const response = await fetch(`http://localhost:5050/admin/blog/${id}`, {
+      const response = await fetch(`${API_BASE_URL}/admin/blog/${id}`, {
         method: 'DELETE'
       });
 

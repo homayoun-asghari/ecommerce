@@ -13,6 +13,7 @@ import Countdown from "../components/Countdown";
 import ProductCard from "../components/ProductCard";
 import { useCart } from "../contexts/CartContext";
 import { useWishList } from "../contexts/WishListContext";
+import { API_BASE_URL } from "../config";
 
 
 function Product() {
@@ -28,7 +29,7 @@ function Product() {
     useEffect(() => {
         async function fetchProduct() {
             try {
-                const response = await fetch(`http://192.168.1.106:5050/product?id=${id}`);
+                const response = await fetch(`${API_BASE_URL}/product?id=${id}`);
                 const data = await response.json();
                 setProduct(data[0]);
             } catch (err) {
@@ -43,7 +44,7 @@ function Product() {
     useEffect(() => {
         async function fetchReviews() {
             try {
-                const response = await fetch(`http://192.168.1.106:5050/review?id=${id}`);
+                const response = await fetch(`${API_BASE_URL}/review?id=${id}`);
                 const data = await response.json();
                 setReviews(data);
             } catch (err) {
@@ -58,7 +59,7 @@ function Product() {
     useEffect(() => {
         async function fetchRelated() {
             try {
-                const response = await fetch(`http://192.168.1.106:5050/product/related?category=${category}`);
+                const response = await fetch(`${API_BASE_URL}/product/related?category=${category}`);
                 const data = await response.json();
                 setRelated(data);
             } catch (err) {

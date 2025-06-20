@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Table, Button, Modal, Form, Alert, Badge } from 'react-bootstrap';
 import { FaReply, FaTrash, FaCheck, FaTimes } from 'react-icons/fa';
 import {useUser} from "../contexts/UserContext";
+import { API_BASE_URL } from "../config";
 
 const AdminMessages = () => {
   const [messages, setMessages] = useState([]);
@@ -18,7 +19,7 @@ const AdminMessages = () => {
   useEffect(() => {
     const fetchMessages = async () => {
       try {
-        const response = await fetch('http://localhost:5050/admin/messages');
+        const response = await fetch(`${API_BASE_URL}/admin/messages`);
         if (!response.ok) {
           throw new Error('Failed to fetch messages');
         }
@@ -50,7 +51,7 @@ const AdminMessages = () => {
         throw new Error('User not authenticated');
       }
 
-      const response = await fetch('http://localhost:5050/admin/messages/reply', {
+      const response = await fetch(`${API_BASE_URL}/admin/messages/reply`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -99,7 +100,7 @@ const AdminMessages = () => {
   const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this message?')) {
       try {
-        const response = await fetch(`http://localhost:5050/admin/messages/${id}`, {
+        const response = await fetch(`${API_BASE_URL}/admin/messages/${id}`, {
           method: 'DELETE',
         });
 

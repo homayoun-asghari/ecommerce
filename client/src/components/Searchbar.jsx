@@ -3,6 +3,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { Form, InputGroup, Button, ListGroup } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import { Search } from 'react-bootstrap-icons';
+import { API_BASE_URL } from "../config";
 import "../styles/Searchbar.css";
 
 function Searchbar({ width, placeholder = 'Search products...', onSearch }) {
@@ -29,7 +30,7 @@ function Searchbar({ width, placeholder = 'Search products...', onSearch }) {
     const fetchSearchResults = async (query) => {
         setIsLoading(true);
         try {
-            const response = await fetch(`http://localhost:5050/product/search?q=${encodeURIComponent(query)}`);
+            const response = await fetch(`${API_BASE_URL}/product/search?q=${encodeURIComponent(query)}`);
             const data = await response.json();
             setSearchResults(data.products || []);
             setShowResults(true);

@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, useRef } from "react";
 import { useUser } from "./UserContext";
+import { API_BASE_URL } from "../config";
 
 const CartContext = createContext();
 
@@ -35,7 +36,7 @@ export function CartProvider({ children }) {
         if (!userId || hasSyncedRef.current) return;
 
         try {
-            const res = await fetch(`http://localhost:5050/cart/getDBCart?userId=${userId}`);
+            const res = await fetch(`${API_BASE_URL}/cart/getDBCart?userId=${userId}`);
             const dbCart = await res.json();
 
             const mergedCart = [...cartItems];
@@ -71,7 +72,7 @@ export function CartProvider({ children }) {
     async function updateDBCart(updatedCart) {
         if (userId) {
             try {
-                await fetch("http://localhost:5050/cart/updateDBCart", {
+                await fetch(`${API_BASE_URL}/cart/updateDBCart`, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ userId, cartItems: updatedCart }),

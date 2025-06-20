@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { useUser } from "./UserContext";
+import { API_BASE_URL } from "../config";
 
 const NotificationContext = createContext();
 
@@ -14,7 +15,7 @@ export function NotificationProvider({ children }) {
             return;
         }
         async function fetchNotifications() {
-            const res = await fetch(`http://localhost:5050/notification?userId=${userId}`);
+            const res = await fetch(`${API_BASE_URL}/notification?userId=${userId}`);
             const data = await res.json();
             setNotifications(data);
         }
@@ -22,7 +23,7 @@ export function NotificationProvider({ children }) {
     }, [userId]);
 
     async function makeRead(id) {
-        await fetch(`http://localhost:5050/notification/${id}/read`, { method: "PUT" });
+        await fetch(`${API_BASE_URL}/notification/${id}/read`, { method: "PUT" });
         setNotifications(prev => prev.map(n => n.id === id ? { ...n, is_read: true } : n));
     };
 

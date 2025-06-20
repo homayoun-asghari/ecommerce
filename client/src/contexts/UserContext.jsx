@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
+import { API_BASE_URL } from "../config";
 
 const UserContext = createContext();
 
@@ -24,7 +25,7 @@ export function UserProvider({ children }) {
       if (!token) return;
 
       try {
-        const response = await fetch("http://localhost:5050/user/account", {
+        const response = await fetch(`${API_BASE_URL}/user/account`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },

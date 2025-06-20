@@ -5,6 +5,7 @@ import Col from 'react-bootstrap/Col';
 import Button from 'react-bootstrap/Button';
 import { useCart } from "../contexts/CartContext";
 import { useUser } from "../contexts/UserContext";
+import { API_BASE_URL } from "../config";
 import AddresseCard from "../components/AddressCard";
 import Card from 'react-bootstrap/Card';
 
@@ -49,7 +50,7 @@ function Checkout() {
         formDataObj.shipping = selectedShipping || null;
 
         try {
-            const response = await fetch("http://localhost:5050/cart/checkout", {
+            const response = await fetch(`${API_BASE_URL}/cart/checkout`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
@@ -74,7 +75,7 @@ function Checkout() {
 
     useEffect(() => {
         const fetchAddresses = async () => {
-            const response = await fetch(`http://localhost:5050/address?userId=${userId}`);
+            const response = await fetch(`${API_BASE_URL}/address?userId=${userId}`);
             const data = await response.json();
             if (response.ok) {
                 setAddresses(data);

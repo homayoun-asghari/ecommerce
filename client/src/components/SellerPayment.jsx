@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { ListGroup, Card } from 'react-bootstrap';
 import { useUser } from "../contexts/UserContext.jsx"
+import { API_BASE_URL } from "../config";
 
 const SellerPayment = () => {
     const [payments, setPayments] = useState([]);
@@ -14,7 +15,7 @@ const SellerPayment = () => {
             setLoading(true);
             setError(null);
             try {
-                const response = await fetch(`http://localhost:5050/payment?userId=${userId}`);
+                const response = await fetch(`${API_BASE_URL}/payment?userId=${userId}`);
                 if (!response.ok) {
                     throw new Error('Failed to fetch payments');
                 }

@@ -21,6 +21,7 @@ import {
     BsXCircle,
     BsCurrencyDollar
 } from 'react-icons/bs';
+import { API_BASE_URL } from '../config';
 
 const AdminOrders = () => {
     // State for orders data and UI
@@ -63,7 +64,7 @@ const AdminOrders = () => {
                 search: searchTerm
             });
 
-            const response = await fetch(`http://localhost:5050/admin/orders?${params}`);
+            const response = await fetch(`${API_BASE_URL}/admin/orders?${params}`);
 
             if (!response.ok) {
                 throw new Error('Failed to fetch orders');
@@ -97,7 +98,7 @@ const AdminOrders = () => {
     // Fetch order details
     const fetchOrderDetails = useCallback(async (orderId) => {
         try {
-            const response = await fetch(`http://localhost:5050/admin/orders/${orderId}`);
+            const response = await fetch(`${API_BASE_URL}/admin/orders/${orderId}`);
 
             if (!response.ok) {
                 throw new Error('Failed to fetch order details');
@@ -165,7 +166,7 @@ const AdminOrders = () => {
         setError('');
 
         try {
-            const response = await fetch(`http://localhost:5050/admin/orders/${selectedOrder.id}/status`, {
+            const response = await fetch(`${API_BASE_URL}/admin/orders/${selectedOrder.id}/status`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',

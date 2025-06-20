@@ -4,6 +4,7 @@ import {
   XAxis, YAxis, CartesianGrid, Tooltip, Legend
 } from "recharts";
 import Card from 'react-bootstrap/Card';
+import { API_BASE_URL } from "../config";
 
 function AdminSalesChart() {
   const [deliveredData, setDeliveredData] = useState([]);
@@ -23,7 +24,7 @@ function AdminSalesChart() {
       setPendingData([]);
       setTotalSales(0);
 
-      const res = await fetch(`http://localhost:5050/admin/monthly-orders?month=${month}&year=${year}`);
+      const res = await fetch(`${API_BASE_URL}/admin/monthly-orders?month=${month}&year=${year}`);
       const raw = await res.json();
 
       if (res.ok) {

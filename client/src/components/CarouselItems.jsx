@@ -48,13 +48,29 @@ const AnimatedCarousel = styled(Carousel)`
     width: 100%;
     padding-top: 40%; /* Standard hero aspect ratio */
     max-height: 600px; /* Maximum height for larger screens */
+    min-height: 300px; /* Minimum height to prevent it from becoming too small */
+    
+    @media (max-width: 1200px) {
+      padding-top: 45%;
+    }
     
     @media (max-width: 992px) {
-      padding-top: 50%; /* Slightly taller on medium screens */
+      padding-top: 55%;
     }
     
     @media (max-width: 768px) {
-      padding-top: 60%; /* Taller on mobile */
+      padding-top: 70%;
+      min-height: 350px; /* Taller minimum height for tablets */
+    }
+    
+    @media (max-width: 576px) {
+      padding-top: 100%; /* Square aspect ratio for mobile */
+      min-height: 400px; /* Even taller minimum height for mobile */
+    }
+    
+    @media (max-width: 400px) {
+      padding-top: 120%; /* Taller aspect ratio for very small devices */
+      min-height: 450px;
     }
   }
   
@@ -99,7 +115,7 @@ const AnimatedCarousel = styled(Carousel)`
     transition: all 0.3s ease;
     
     &:hover {
-        transform: translateY(-50%) scale(1.1);
+        transform: translateY(-50%);
     }
     
     @media (max-width: 576px) {

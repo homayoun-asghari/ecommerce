@@ -7,6 +7,7 @@ import { Row, Col } from "react-bootstrap";
 import Form from 'react-bootstrap/Form';
 import InputGroup from 'react-bootstrap/InputGroup';
 import { Send } from "react-bootstrap-icons";
+import { API_BASE_URL } from "../config";
 
 function TicketCard({ ticket }) {
     const [expanded, setExpanded] = useState(false);
@@ -16,7 +17,7 @@ function TicketCard({ ticket }) {
 
     async function handleClick() {
         if (!expanded) {
-            const response = await fetch(`http://localhost:5050/ticket/ticktMessage?ticketId=${ticket.id}`);
+            const response = await fetch(`${API_BASE_URL}/ticket/ticktMessage?ticketId=${ticket.id}`);
             const data = await response.json();
             if (response.ok) setMessages(data);
         }
@@ -30,7 +31,7 @@ function TicketCard({ ticket }) {
         formData.append("senderId", userId);
         formData.append("senderType", user.data.role);
 
-        const response = await fetch(`http://localhost:5050/ticket/addTicketMessage`, {
+        const response = await fetch(`${API_BASE_URL}/ticket/addTicketMessage`, {
             method: "POST",
             body: formData,
         });
@@ -45,7 +46,7 @@ function TicketCard({ ticket }) {
     }
 
     async function handleClose(){
-        const response = await fetch(`http://localhost:5050/ticket/closeticket?userId=${userId}&ticketId=${ticket.id}`);
+        const response = await fetch(`${API_BASE_URL}/ticket/closeticket?userId=${userId}&ticketId=${ticket.id}`);
         if(response.ok){
             window.location.reload();
         }

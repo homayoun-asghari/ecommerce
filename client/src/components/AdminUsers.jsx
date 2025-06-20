@@ -11,6 +11,7 @@ import {
   Spinner
 } from 'react-bootstrap';
 import { BsSearch, BsEye, BsFilterLeft, BsArrowLeft, BsArrowRight } from 'react-icons/bs';
+import { API_BASE_URL } from '../config';
 
 const AdminUsers = () => {
   const [users, setUsers] = useState([]);
@@ -41,7 +42,7 @@ const AdminUsers = () => {
           limit: itemsPerPage
         }).toString();
 
-        const response = await fetch(`http://localhost:5050/admin/users?${queryParams}`);
+        const response = await fetch(`${API_BASE_URL}/admin/users?${queryParams}`);
         if (!response.ok) {
           throw new Error('Failed to fetch users');
         }
@@ -71,7 +72,7 @@ const AdminUsers = () => {
   // Fetch user details
   const fetchUserDetails = async (userId) => {
     try {
-      const response = await fetch(`http://localhost:5050/admin/users/${userId}/stats`);
+      const response = await fetch(`${API_BASE_URL}/admin/users/${userId}/stats`);
       if (!response.ok) {
         throw new Error('Failed to fetch user stats');
       }

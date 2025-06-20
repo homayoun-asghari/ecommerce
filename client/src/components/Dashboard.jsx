@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import { useUser } from "../contexts/UserContext";
+import { API_BASE_URL } from "../config";
 
 function Dashboard() {
     const {user} = useUser()
@@ -32,7 +33,7 @@ function Dashboard() {
             newData.password = formDataObj.password;
             newData.confirmPassword = formDataObj.confirmPassword;
         }
-        const response = await fetch("http://localhost:5050/user/updateuser", {
+        const response = await fetch(`${API_BASE_URL}/user/updateuser`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"

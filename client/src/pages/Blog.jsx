@@ -3,8 +3,9 @@ import { Container, Row, Col, Card, Spinner, Button } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import { format } from 'date-fns';
 import { useTheme } from '../contexts/ThemeContext';
+import { useSideBar } from '../contexts/SideBarContext';
+import { API_BASE_URL } from '../config';
 import '../styles/Blog.css';
-import { useSideBar } from "../contexts/SideBarContext";
 
 function Blog() {
     const [posts, setPosts] = useState([]);
@@ -20,7 +21,7 @@ function Blog() {
         const fetchPosts = async () => {
             try {
                 setLoading(true);
-                const response = await fetch(`http://localhost:5050/admin/blog?page=${page}&limit=${postsPerPage}`);
+                const response = await fetch(`${API_BASE_URL}/admin/blog?page=${page}&limit=${postsPerPage}`);
 
                 if (!response.ok) {
                     throw new Error('Failed to fetch blog posts');

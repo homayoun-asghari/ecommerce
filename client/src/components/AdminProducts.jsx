@@ -20,6 +20,7 @@ import {
     BsTrash,
     BsEye
 } from 'react-icons/bs';
+import { API_BASE_URL } from '../config';
 
 const AdminProducts = () => {
     const [products, setProducts] = useState([]);
@@ -64,7 +65,7 @@ const AdminProducts = () => {
                     status: filters.status === 'all' ? '' : filters.status
                 }).toString();
 
-                const response = await fetch(`http://localhost:5050/admin/products?${queryParams}`);
+                const response = await fetch(`${API_BASE_URL}/admin/products?${queryParams}`);
                 if (!response.ok) {
                     throw new Error('Failed to fetch products');
                 }
@@ -118,7 +119,7 @@ const AdminProducts = () => {
 
         try {
             if (action === 'delete') {
-                const response = await fetch(`http://localhost:5050/admin/product/${selectedProduct.id}`, {
+                const response = await fetch(`${API_BASE_URL}/admin/product/${selectedProduct.id}`, {
                     method: 'DELETE'
                 });
 
@@ -130,7 +131,7 @@ const AdminProducts = () => {
                 setProducts(products.filter(p => p.id !== selectedProduct.id));
             } else {
                 const status = action === 'approve' ? 'approved' : 'rejected';
-                const response = await fetch(`http://localhost:5050/admin/product/${selectedProduct.id}`, {
+                const response = await fetch(`${API_BASE_URL}/admin/product/${selectedProduct.id}`, {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ status })

@@ -3,6 +3,7 @@ import { Row, Col } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import ProductCard from "./ProductCard";
 import { useUser } from "../contexts/UserContext";
+import { API_BASE_URL } from "../config";
 
 function NewArrivals() {
     const [products, setProducts] = useState([]);
@@ -12,7 +13,7 @@ function NewArrivals() {
     useEffect(() => {
         async function fetchProducts() {
             try {
-                const response = await fetch("http://192.168.1.106:5050/product/bestsellers");
+                const response = await fetch(`${API_BASE_URL}/product/bestsellers`);
                 const data = await response.json();
                 setProducts(data);
             } catch (err) {

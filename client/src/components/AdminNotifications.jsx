@@ -1,4 +1,7 @@
 import React, { useState, useEffect } from 'react';
+import { useTheme } from '../contexts/ThemeContext';
+import { useSideBar } from '../contexts/SideBarContext';
+import { API_BASE_URL } from '../config';
 import {
   Card,
   Button,
@@ -72,7 +75,7 @@ const AdminNotifications = () => {
         search: searchTerm
       });
 
-      const response = await fetch(`http://localhost:5050/admin/notifications?${params}`);
+      const response = await fetch(`${API_BASE_URL}/admin/notifications?${params}`);
       if (!response.ok) {
         throw new Error('Failed to fetch notifications');
       }
@@ -121,7 +124,7 @@ const handleCreateNotification = async (e) => {
         : []
     };
 
-    const response = await fetch('http://localhost:5050/admin/notifications', {
+    const response = await fetch(`${API_BASE_URL}/admin/notifications`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -156,7 +159,7 @@ const handleCreateNotification = async (e) => {
     try {
       setLoading(true);
       
-      const response = await fetch(`http://localhost:5050/admin/notifications/${selectedNotification.id}`, {
+      const response = await fetch(`${API_BASE_URL}/admin/notifications/${selectedNotification.id}`, {
         method: 'DELETE'
       });
 
@@ -178,7 +181,7 @@ const handleCreateNotification = async (e) => {
   // Toggle read status
   const toggleReadStatus = async (notification) => {
     try {
-      const response = await fetch(`http://localhost:5050/admin/notifications/${notification.id}/status`, {
+      const response = await fetch(`${API_BASE_URL}/admin/notifications/${notification.id}/status`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

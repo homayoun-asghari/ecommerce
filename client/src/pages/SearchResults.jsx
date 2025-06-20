@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { Container, Row, Col, Spinner, Alert, Form, Card } from 'react-bootstrap';
 import { useSideBar } from "../contexts/SideBarContext";
 import { useFilters } from "../contexts/FilterContext";
+import { API_BASE_URL } from "../config";
 import ProductCard from '../components/ProductCard';
 import FilterSideBar from '../components/FilterSideBar';
 import styled from 'styled-components';
@@ -81,7 +82,7 @@ const SearchResults = () => {
         })
       });
 
-      const response = await fetch(`http://localhost:5050/product/search?${params.toString()}`);
+      const response = await fetch(`${API_BASE_URL}/product/search?${params.toString()}`);
       const data = await response.json();
 
       if (!response.ok) {

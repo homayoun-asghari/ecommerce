@@ -13,6 +13,7 @@ import styled from 'styled-components';
 import ProductCard from '../components/ProductCard';
 import { useSideBar } from '../contexts/SideBarContext';
 import { useFilters } from '../contexts/FilterContext';
+import { API_BASE_URL } from "../config";
 
 const ContentColumn = styled(Col)`
   transition: all 0.3s ease-in-out;
@@ -93,7 +94,7 @@ function Shop() {
                 params.append('minRating', filters.minRating);
             }
 
-            const url = `http://localhost:5050/product/shop?${params.toString()}`;
+            const url = `${API_BASE_URL}/product/shop?${params.toString()}`;
             console.log('Fetching products from:', url);
 
             const response = await fetch(url);

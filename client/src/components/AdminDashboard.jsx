@@ -1,7 +1,7 @@
-// client/src/components/AdminDashboard.jsx
 import React, { useState, useEffect } from 'react';
 import { Card } from 'react-bootstrap';
 import AdminSalesChart from './AdminSalesChart';
+import { API_BASE_URL } from '../config';
 
 const AdminDashboard = () => {
     const [data, setData] = useState(null);
@@ -13,7 +13,7 @@ const AdminDashboard = () => {
         const fetchOverview = async () => {
             try {
                 setLoading(true);
-                const response = await fetch('http://localhost:5050/admin/overview');
+                const response = await fetch(`${API_BASE_URL}/admin/overview`);
                 if (!response.ok) {
                     const errorData = await response.json();
                     throw new Error(errorData.error || 'Failed to fetch overview data');
@@ -35,7 +35,7 @@ const AdminDashboard = () => {
     // Function to fetch monthly orders
     const fetchMonthlyOrders = async (month) => {
         try {
-            const url = new URL('http://localhost:5050/admin/monthly-orders');
+            const url = new URL(`${API_BASE_URL}/admin/monthly-orders`);
             if (month) {
                 url.searchParams.append('month', month);
             }

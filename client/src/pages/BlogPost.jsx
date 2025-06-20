@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { API_BASE_URL } from '../config';
 import { Container, Row, Col, Card, Spinner, Button, Badge } from 'react-bootstrap';
 import { format } from 'date-fns';
 import { useTheme } from '../contexts/ThemeContext';
@@ -22,7 +23,7 @@ function BlogPost() {
                 setLoading(true);
 
                 // Fetch the current post
-                const postResponse = await fetch(`http://localhost:5050/admin/blog?id=${id}`);
+                const postResponse = await fetch(`${API_BASE_URL}/admin/blog?id=${id}`);
                 if (!postResponse.ok) {
                     throw new Error('Post not found');
                 }
@@ -33,7 +34,7 @@ function BlogPost() {
                 setPost(post);
 
                 // Fetch related posts (by the same author or similar tags)
-                const relatedResponse = await fetch(`http://localhost:5050/admin/blog?author_id=${post.author_id}&limit=3`);
+                const relatedResponse = await fetch(`${API_BASE_URL}/admin/blog?author_id=${post.author_id}&limit=3`);
                 if (relatedResponse.ok) {
                     const relatedData = await relatedResponse.json();
                     // Filter out the current post from related posts

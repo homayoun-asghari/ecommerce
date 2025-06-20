@@ -5,6 +5,7 @@ import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import Form from 'react-bootstrap/Form';
 import { useUser } from "../contexts/UserContext";
+import { API_BASE_URL } from "../config";
 
 function Tickets() {
     const [activeTab, setActiveTab] = useState('open');
@@ -23,7 +24,7 @@ function Tickets() {
         formData.append("userId", userId);
         formData.append("userRole", user.data.role);
 
-        const response = await fetch(`http://localhost:5050/ticket/addTicket`, {
+        const response = await fetch(`${API_BASE_URL}/ticket/addTicket`, {
             method: "POST",
             body: formData,
         });
@@ -38,7 +39,7 @@ function Tickets() {
 
     useEffect(() => {
         async function fetchTickets() {
-            const response = await fetch(`http://localhost:5050/ticket?userId=${userId}&status=${activeTab}`);
+            const response = await fetch(`${API_BASE_URL}/ticket?userId=${userId}&status=${activeTab}`);
             const data = await response.json();
             if (response.ok) {
                 setTickets(data);
@@ -49,7 +50,7 @@ function Tickets() {
 
     useEffect(() => {
             async function getOrders() {
-                const response = await fetch(`http://localhost:5050/order?userId=${userId}`);
+                const response = await fetch(`${API_BASE_URL}/order?userId=${userId}`);
                 const data = await response.json();
                 setOrders(data);
             }

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { API_BASE_URL } from '../config';
 import { Container, Row, Col, Form, Button, Alert } from 'react-bootstrap';
 
 const Contact = () => {
@@ -41,7 +42,7 @@ const Contact = () => {
       setIsLoading(true);
       
       // Send form data to the backend using fetch
-      const response = await fetch('http://localhost:5050/contacts', {
+      const response = await fetch(`${API_BASE_URL}/contacts`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

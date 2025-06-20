@@ -4,6 +4,7 @@ import {
     XAxis, YAxis, CartesianGrid, Tooltip, Legend
 } from "recharts";
 import { useUser } from "../contexts/UserContext";
+import { API_BASE_URL } from "../config";
 import Card from 'react-bootstrap/Card';
 import Col from "react-bootstrap/Col";
 
@@ -29,7 +30,7 @@ function SalesChart() {
             setPendingData([]);
             setTotalSales(0);
 
-            const res = await fetch(`http://localhost:5050/order/saleStats?userId=${userId}&month=${month}&year=${year}`);
+            const res = await fetch(`${API_BASE_URL}/order/saleStats?userId=${userId}&month=${month}&year=${year}`);
             const raw = await res.json();
 
             if (res.ok) {

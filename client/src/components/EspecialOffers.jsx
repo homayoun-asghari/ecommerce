@@ -5,6 +5,7 @@ import "../styles/EspecialOffers.css";
 import Countdown from "./Countdown";
 import { Link } from "react-router-dom";
 import { useUser } from "../contexts/UserContext";
+import { API_BASE_URL } from "../config";
 
 
 function EspecialOffers() {
@@ -16,7 +17,7 @@ function EspecialOffers() {
     useEffect(() => {
         async function fetchProducts() {
             try {
-                const response = await fetch(`http://192.168.1.106:5050/product/especialoffers?discount=${discount}`);
+                const response = await fetch(`${API_BASE_URL}/product/especialoffers?discount=${discount}`);
                 const data = await response.json();
                 setProducts(data);
             } catch (err) {

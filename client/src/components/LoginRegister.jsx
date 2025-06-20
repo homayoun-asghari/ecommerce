@@ -7,6 +7,7 @@ import { Google } from "react-bootstrap-icons";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import {useTheme} from "../contexts/ThemeContext"
+import { API_BASE_URL } from "../config";
 
 function LoginRegister(props) {
     const [activeTab, setActiveTab] = useState('login');
@@ -28,7 +29,7 @@ function LoginRegister(props) {
 
         const formDataObj = Object.fromEntries(formData.entries());
 
-        const response = await fetch("http://192.168.1.106:5050/auth/register", {
+        const response = await fetch(`${API_BASE_URL}/auth/register`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -58,7 +59,7 @@ function LoginRegister(props) {
             setPassword(formDataObj.password);
         }
 
-        const response = await fetch("http://192.168.1.106:5050/auth/login", {
+        const response = await fetch(`${API_BASE_URL}/auth/login`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -81,7 +82,7 @@ function LoginRegister(props) {
 
         const formDataObj = Object.fromEntries(formData.entries());
 
-        const response = await fetch("http://192.168.1.106:5050/auth/forgetpassword", {
+        const response = await fetch(`${API_BASE_URL}/auth/forgetpassword`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -101,7 +102,7 @@ function LoginRegister(props) {
         e.preventDefault();
         const formData = new FormData(e.target);
         const formDataObj = Object.fromEntries(formData.entries());
-        const response = await fetch(`http://localhost:5050/user/updaterole?id=${props.id}`, {
+        const response = await fetch(`${API_BASE_URL}/user/updaterole?id=${props.id}`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -123,7 +124,7 @@ function LoginRegister(props) {
 
         const formDataObj = Object.fromEntries(formData.entries());
 
-        const response = await fetch(`http://192.168.1.106:5050/auth/resetpassword?token=${props.reset}`, {
+        const response = await fetch(`${API_BASE_URL}/auth/resetpassword?token=${props.reset}`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -224,7 +225,7 @@ function LoginRegister(props) {
                                 Submit
                             </Button>
 
-                            <Link className={mode ? "btn btn-dark" : "btn btn-light"} to="http://localhost:5050/auth/google">
+                            <Link className={mode ? "btn btn-dark" : "btn btn-light"} to={`${API_BASE_URL}/auth/google`}>
                                 <Google size={24} /> Continue with Google
                             </Link>
                         </Form>
@@ -268,7 +269,7 @@ function LoginRegister(props) {
                                 Submit
                             </Button>
 
-                            <Link className={mode ? "btn btn-dark" : "btn btn-light"}  to="http://localhost:5050/auth/google">
+                            <Link className={mode ? "btn btn-dark" : "btn btn-light"}  to={`${API_BASE_URL}/auth/google`}>
                                 <Google size={24} /> Continue with Google
                             </Link>
                         </Form>
