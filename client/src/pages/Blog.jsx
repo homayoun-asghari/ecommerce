@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Row, Col, Card, Spinner, Button } from 'react-bootstrap';
-import { Link } from 'react-router-dom';
-import { format } from 'date-fns';
+import { Container, Row, Col, Spinner, Button } from 'react-bootstrap';
 import { useTheme } from '../contexts/ThemeContext';
 import { useSideBar } from '../contexts/SideBarContext';
 import { API_BASE_URL } from '../config';
+import BlogPostCard from '../components/BlogPostCard';
 import '../styles/Blog.css';
 
 function Blog() {
@@ -100,55 +99,24 @@ function Blog() {
                         </Button>
                     </div>
                 ) : (
-                    <>
-                        <Row xs={1} md={2} lg={3} className="g-4 mb-4">
-                            {posts.map((post) => (
-                                <Col key={post.id}>
-                                    <Card className="h-100 shadow-sm">
-                                        {post.image_url && (
-                                            <Card.Img
-                                                variant="top"
-                                                src={post.image_url}
-                                                alt={post.title}
-                                                style={{ height: '200px', objectFit: 'cover' }}
-                                            />
-                                        )}
-                                        <Card.Body className="d-flex flex-column">
-                                            <Card.Subtitle className="mb-2 text-muted">
-                                                {format(new Date(post.created_at), 'MMMM d, yyyy')}
-                                            </Card.Subtitle>
-                                            <Card.Title>{post.title}</Card.Title>
-                                            <Card.Text className="text-truncate-3">
-                                                {post.content.replace(/<[^>]*>?/gm, '').substring(0, 150)}...
-                                            </Card.Text>
-                                            <div className="mt-auto">
-                                                <Button
-                                                    as={Link}
-                                                    to={`/blog/${post.id}`}
-                                                    variant={mode === 'dark' ? 'outline-light' : 'outline-primary'}
-                                                    className="w-100"
-                                                >
-                                                    Read More
-                                                </Button>
-                                            </div>
-                                        </Card.Body>
-                                    </Card>
-                                </Col>
-                            ))}
-                        </Row>
-
-                        {hasMore && (
-                            <div className="text-center mt-4">
-                                <Button
-                                    onClick={loadMore}
-                                    disabled={loading}
-                                    variant={mode === 'dark' ? 'outline-light' : 'outline-primary'}
-                                >
-                                    {loading ? 'Loading...' : 'Load More'}
-                                </Button>
-                            </div>
-                        )}
-                    </>
+                    <Row xs={1} md={2} lg={3} className="g-4 mb-4">
+                        {posts.map((post) => (
+                            <Col key={post.id}>
+                                <BlogPostCard post={post} mode={mode} />
+                            </Col>
+                        ))}
+                    </Row>
+                )}
+                {hasMore && (
+                    <div className="text-center mt-4">
+                        <Button
+                            onClick={loadMore}
+                            disabled={loading}
+                            variant={mode === 'dark' ? 'outline-light' : 'outline-primary'}
+                        >
+                            {loading ? 'Loading...' : 'Load More'}
+                        </Button>
+                    </div>
                 )}
             </Col>
         </Row>
