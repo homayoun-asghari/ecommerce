@@ -1,14 +1,13 @@
-import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import React, { useEffect, useState, useCallback } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Rating from '@mui/material/Rating';
 import Badge from 'react-bootstrap/Badge';
 import Card from 'react-bootstrap/Card';
 import { Link } from 'react-router-dom';
-import { Cart, Heart, Wallet, ShieldCheck, HeartFill } from "react-bootstrap-icons";
-import IosShareIcon from '@mui/icons-material/IosShare';
-import CompareIcon from '@mui/icons-material/Compare';
+import { Cart, Heart, HeartFill, Wallet, ShieldCheck, Share, ArrowLeftRight, Check2, ArrowRight } from 'react-bootstrap-icons';
+import { useCompare } from '../contexts/CompareContext';
 import styled from 'styled-components';
 import Countdown from "../components/Countdown";
 import ProductCard from "../components/ProductCard";
@@ -108,6 +107,138 @@ function Product() {
 
 
     const { isOpen } = useSideBar();
+    const [shareSuccess, setShareSuccess] = useState(false);
+    const { addToCompare, isInCompare } = useCompare();
+    const [compareSuccess, setCompareSuccess] = useState(false);
+    const navigate = useNavigate();
+
+    // Format price helper function with better null/undefined handling
+    const formatPrice = (price) => {
+        if (price === null || price === undefined) return 'N/A';
+        const numPrice = Number(price);
+        return isNaN(numPrice) ? 'N/A' : `$${numPrice.toFixed(2)}`;
+    };
+    
+    // Helper function to safely calculate discounted price
+    const getDiscountedPrice = (price, discount) => {
+        if (price === null || price === undefined) return 'N/A';
+        const numPrice = Number(price);
+        const numDiscount = Number(discount) || 0;
+        if (isNaN(numPrice)) return 'N/A';
+        const finalPrice = numPrice - (numPrice * numDiscount / 100);
+        return `$${finalPrice.toFixed(2)}`;
+    };
+
+    const handleShare = useCallback(async () => {
+        const shareData = {
+            title: name,
+            text: `Check out ${name} on our store - ${description.substring(0, 100)}...`,
+            url: window.location.href,
+        };
+
+        try {
+            if (navigator.share) {
+                await navigator.share(shareData);
+            } else {
+                // Fallback for browsers that don't support Web Share API
+                await navigator.clipboard.writeText(window.location.href);
+                setShareSuccess(true);
+                setTimeout(() => setShareSuccess(false), 2000);
+                
+                // Show a toast notification
+                const toast = document.createElement('div');
+                toast.textContent = 'Link copied to clipboard!';
+                toast.style.position = 'fixed';
+                toast.style.bottom = '20px';
+                toast.style.left = '50%';
+                toast.style.transform = 'translateX(-50%)';
+                toast.style.backgroundColor = '#28a745';
+                toast.style.color = 'white';
+                toast.style.padding = '10px 20px';
+                toast.style.borderRadius = '4px';
+                toast.style.zIndex = '9999';
+                document.body.appendChild(toast);
+                setTimeout(() => {
+                    document.body.removeChild(toast);
+                }, 2000);
+            }
+        } catch (err) {
+            console.error('Error sharing:', err);
+        }
+    }, [name, description]);
+
+    const handleCompare = useCallback(() => {
+        // Create toast element
+        const toast = document.createElement('div');
+        toast.style.position = 'fixed';
+        toast.style.bottom = '20px';
+        toast.style.left = '50%';
+        toast.style.transform = 'translateX(-50%)';
+        toast.style.padding = '10px 20px';
+        toast.style.borderRadius = '4px';
+        toast.style.zIndex = '9999';
+        
+        try {
+            // Ensure all number values are properly converted
+            const productToCompare = {
+                id: String(id),
+                name: String(name || 'Unnamed Product'),
+                description: String(description || ''),
+                price: Number(price) || 0,
+                discount: Number(discount) || 0,
+                category: String(category || 'Uncategorized'),
+                image_url: String(image_url || ''),
+                stock: Number(stock) || 0,
+                avg_rating: Number(avg_rating) || 0,
+                review_count: Number(reviews?.length) || 0,
+                attributes: {
+                    'Category': String(category || 'Uncategorized'),
+                    'In Stock': Number(stock) > 0 ? 'Yes' : 'No',
+                    'Rating': `${Number(avg_rating) || 0}/5`,
+                    'Reviews': Number(reviews?.length) || 0,
+                    'SKU': String(id)
+                }
+            };
+            
+            console.log('Adding to compare:', productToCompare);
+            addToCompare(productToCompare);
+            setCompareSuccess(true);
+            
+            // Show success toast
+            toast.textContent = 'Added to compare!';
+            toast.style.backgroundColor = '#0d6efd';
+            toast.style.color = 'white';
+            
+        } catch (error) {
+            console.error('Error adding to compare:', {
+                error,
+                productData: { id, name, price, discount, stock }
+            });
+            
+            // Show error toast
+            toast.textContent = 'Failed to add to comparison';
+            toast.style.backgroundColor = '#dc3545';
+            toast.style.color = 'white';
+            
+            document.body.appendChild(toast);
+            setTimeout(() => {
+                document.body.removeChild(toast);
+            }, 3000);
+            return;
+        }
+        
+        // Show success toast
+        document.body.appendChild(toast);
+        setTimeout(() => {
+            document.body.removeChild(toast);
+            setCompareSuccess(false);
+        }, 2000);
+    }, [id, name, description, price, discount, category, image_url, stock, avg_rating, reviews.length, addToCompare]);
+    
+    const handleViewComparison = useCallback((e) => {
+        e.preventDefault();
+        navigate('/compare');
+    }, [navigate]);
 
     return (
         <ContentColumn $isOpen={isOpen} className="py-4">
@@ -143,9 +274,14 @@ function Product() {
                         <Badge bg="light" text="dark">{review_count} reviews</Badge>
                     </div>
                     <p>{description}</p>
-                    <p className="text-muted">{(price - (price * discount / 100)).toFixed(2)}&nbsp;&nbsp;&nbsp;{discount > 0 && (
-                        <span style={{ textDecoration: "line-through" }}>{price}</span>
-                    )}</p>
+                    <p className="text-muted">
+                      {getDiscountedPrice(price, discount)}
+                      {discount > 0 && (
+                        <span className="ms-2 text-muted" style={{ textDecoration: "line-through" }}>
+                          {formatPrice(price)}
+                        </span>
+                      )}
+                    </p>
 
                     {discount > 0 && <div className="w-100 d-flex flex-column justify-content-center align-items-center  especial-offers-card py-3 rounded">
                         <h6 className="text-nowrap">Special Offers: </h6><Countdown />
@@ -171,8 +307,45 @@ function Product() {
 
                     <div className="d-flex flex-row justify-content-center align-items-center gap-1">
                         <Link onClick={handleClick} className="btn btn-outline-danger text-nowrap">{wishList.some(item => item.id === id) === true ? <HeartFill size={24} /> : <Heart size={24} />} Add To Wish List</Link>
-                        <Link to="/shop" className="btn btn-outline-primary text-nowrap"><IosShareIcon size={24} /> Share</Link>
-                        <Link to="/shop" className="btn btn-outline-primary text-nowrap"><CompareIcon size={24} /> Compare</Link>
+                        <button 
+                            onClick={handleShare} 
+                            className="btn btn-outline-primary text-nowrap d-flex align-items-center gap-1"
+                            disabled={shareSuccess}
+                        >
+                            {shareSuccess ? (
+                                <>
+                                    <Check2 size={24} /> Copied!
+                                </>
+                            ) : (
+                                <>
+                                    <Share size={24} /> Share
+                                </>
+                            )}
+                        </button>
+                        {isInCompare(product.id) ? (
+                            <button 
+                                onClick={handleViewComparison}
+                                className="btn btn-primary text-nowrap d-flex align-items-center gap-1"
+                            >
+                                <ArrowRight size={24} /> View Comparison
+                            </button>
+                        ) : (
+                            <button 
+                                onClick={handleCompare}
+                                className="btn btn-outline-primary text-nowrap d-flex align-items-center gap-1"
+                                disabled={compareSuccess}
+                            >
+                                {compareSuccess ? (
+                                    <>
+                                        <Check2 size={24} /> Added!
+                                    </>
+                                ) : (
+                                    <>
+                                        <ArrowLeftRight size={24} /> Compare
+                                    </>
+                                )}
+                            </button>
+                        )}
                     </div>
 
                 </Col>
