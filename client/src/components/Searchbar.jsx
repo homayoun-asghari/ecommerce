@@ -30,13 +30,18 @@ function Searchbar({ width, placeholder = 'Search products...', onSearch }) {
     const fetchSearchResults = async (query) => {
         setIsLoading(true);
         try {
-            const response = await fetch(`${API_BASE_URL}/product/search?q=${encodeURIComponent(query)}`);
+            const response = await fetch(`${API_BASE_URL}/product/search?q=${encodeURIComponent(query.trim())}`);
+            if (!response.ok) {
+                throw new Error('Failed to fetch search results');
+            }
             const data = await response.json();
-            setSearchResults(data.products || []);
-            setShowResults(true);
+            const results = data.products || [];
+            setSearchResults(results);
+            setShowResults(results.length > 0);
         } catch (error) {
             console.error('Error fetching search results:', error);
             setSearchResults([]);
+            setShowResults(false);
         } finally {
             setIsLoading(false);
         }
@@ -51,11 +56,12 @@ function Searchbar({ width, placeholder = 'Search products...', onSearch }) {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        if (searchQuery.trim()) {
-            navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
+        const query = searchQuery.trim();
+        if (query) {
+            navigate(`/search?q=${encodeURIComponent(query)}`);
             setShowResults(false);
             setSearchQuery(''); // Clear the search input
-            if (onSearch) onSearch(searchQuery.trim());
+            if (onSearch) onSearch(query);
         }
     };
 

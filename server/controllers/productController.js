@@ -10,25 +10,31 @@ export const searchProducts = async (req, res) => {
     }
 
     try {
-        const searchTerm = `%${q}%`;
+        // First try exact match, then partial match
+        const exactMatchTerm = q.trim();
+        const partialMatchTerm = `%${exactMatchTerm}%`;
+        
         const result = await db.query(`
             SELECT 
                 p.*, 
                 COALESCE(AVG(r.rating), 0) AS avg_rating,
-                COUNT(r.id) AS review_count
+                COUNT(r.id) AS review_count,
+                -- Add a relevance score to prioritize matches
+                CASE 
+                    WHEN p.name ILIKE $1 THEN 1  -- Exact match
+                    WHEN p.name ILIKE $2 THEN 2  -- Starts with
+                    WHEN p.name ILIKE $3 OR p.description ILIKE $3 THEN 3  -- Contains in name or description
+                    ELSE 4
+                END as relevance
             FROM products p
             LEFT JOIN reviews r ON p.id = r.product_id
-            WHERE p.name ILIKE $1 OR p.description ILIKE $1
+            WHERE p.name ILIKE $3 OR p.description ILIKE $3
             GROUP BY p.id
             ORDER BY 
-                CASE 
-                    WHEN p.name ILIKE $1 THEN 1
-                    WHEN p.description ILIKE $1 THEN 2
-                    ELSE 3
-                END,
+                relevance,
                 p.name
             LIMIT 10;
-        `, [searchTerm]);
+        `, [exactMatchTerm, `${exactMatchTerm}%`, partialMatchTerm]);
 
         res.status(200).json({
             products: result.rows.map(p => ({

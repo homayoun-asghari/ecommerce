@@ -70,27 +70,36 @@ const SearchResults = () => {
 
     try {
       setLoading(true);
+      setError(null);
 
       // Build query parameters with filters
-      const params = new URLSearchParams({
-        q: encodeURIComponent(query),
-        ...(filters.categories?.length > 0 && { category: filters.categories[0] }),
-        ...(filters.minRating > 0 && { minRating: filters.minRating }),
-        ...(filters.priceRange && {
-          minPrice: filters.priceRange.min,
-          maxPrice: filters.priceRange.max
-        })
-      });
-
-      const response = await fetch(`${API_BASE_URL}/product/search?${params.toString()}`);
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || 'Failed to fetch search results');
+      const params = new URLSearchParams();
+      params.append('q', query); // Don't encode here, let the URLSearchParams handle it
+      
+      if (filters.categories?.length > 0) {
+        params.append('category', filters.categories[0]);
+      }
+      if (filters.minRating > 0) {
+        params.append('minRating', filters.minRating);
+      }
+      if (filters.priceRange) {
+        params.append('minPrice', filters.priceRange.min);
+        params.append('maxPrice', filters.priceRange.max);
       }
 
+      const response = await fetch(`${API_BASE_URL}/product/search?${params.toString()}`);
+      
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || 'Failed to fetch search results');
+      }
+
+      const data = await response.json();
       setResults(data.products || []);
-      setError(null);
+      
+      if (data.products && data.products.length === 0) {
+        setError('No products found matching your search.');
+      }
     } catch (err) {
       console.error('Error fetching search results:', err);
       setError(err.message || 'An error occurred while searching');
