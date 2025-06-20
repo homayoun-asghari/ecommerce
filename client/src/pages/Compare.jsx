@@ -26,7 +26,6 @@ const CompareContainer = styled.div`
       }
       
       th {
-        background-color: #f8f9fa;
         font-weight: 600;
         text-align: left;
       }
@@ -131,20 +130,36 @@ const Compare = () => {
     return null; // Will redirect immediately
   }
 
-  // Get all unique attributes from all products
+  // Get all unique attributes from all products, excluding those we're already showing
   const allAttributes = new Set();
+  const excludedAttributes = ['Category', 'In Stock', 'Rating', 'Reviews', 'SKU'];
+  
   items.forEach(product => {
     if (product.attributes) {
       Object.keys(product.attributes).forEach(attr => {
-        allAttributes.add(attr);
+        if (!excludedAttributes.includes(attr)) {
+          allAttributes.add(attr);
+        }
       });
     }
   });
 
   const attributeRows = Array.from(allAttributes).map(attr => ({
     name: attr,
-    values: items.map(product => product.attributes?.[attr] || '—')
+    values: items.map(product => {
+      const value = product.attributes?.[attr];
+      return value !== undefined ? value : '—';
+    })
   }));
+  
+  // Add SKU row manually since it's a common attribute
+  const hasSKU = items.some(p => p.id);
+  if (hasSKU) {
+    attributeRows.unshift({
+      name: 'SKU',
+      values: items.map(p => p.id || '—')
+    });
+  }
 
   return (
     <CompareContainer>
@@ -181,14 +196,15 @@ const Compare = () => {
                 <tr>
                   <th>Product</th>
                   {items.map(product => (
-                    <th key={product.id} className="product-cell">
+                    <th key={product.id} className="product-cell position-relative">
                       <Button 
                         variant="link" 
-                        className="remove-btn p-0" 
+                        className="remove-btn position-absolute top-0 end-0 m-2 p-0 bg-white rounded-circle d-flex align-items-center justify-content-center" 
+                        style={{ width: '24px', height: '24px', zIndex: 1 }}
                         onClick={() => removeFromCompare(product.id)}
                         title="Remove from compare"
                       >
-                        <Trash size={16} />
+                        <Trash size={14} />
                       </Button>
                       <Card className="h-100 border-0">
                         <div className="d-flex justify-content-center mb-2" style={{ height: '150px' }}>
@@ -272,6 +288,9 @@ const Compare = () => {
                             </span>
                           ))}
                         </div>
+                        <small className="text-muted ms-2">
+                          ({product.review_count || 0} reviews)
+                        </small>
                       </div>
                     </td>
                   ))}
