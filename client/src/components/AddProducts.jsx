@@ -18,12 +18,20 @@ import { useUser } from "../contexts/UserContext";
 // Styled Components
 const ProductsGrid = styled.div`
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
     gap: 1.5rem;
     padding: 1rem 0;
     
+    @media (max-width: 1200px) {
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    }
+    
     @media (max-width: 768px) {
-        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    }
+    
+    @media (max-width: 400px) {
+        grid-template-columns: 1fr;
     }
     
     @media (max-width: 576px) {
@@ -327,7 +335,7 @@ const AddProducts = () => {
     };
 
     return (
-        <div className="container py-4">
+        <>
             {/* Header with Add Product Button */}
             <div className="d-flex justify-content-between align-items-center mb-4">
                 <h2 className="mb-0">My Products</h2>
@@ -607,7 +615,7 @@ const AddProducts = () => {
                     </Form>
                 </Modal.Body>
             </Modal>
-        </div>
+        </>
     );
 };
 
