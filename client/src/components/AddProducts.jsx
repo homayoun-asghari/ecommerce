@@ -113,7 +113,6 @@ const AddProducts = () => {
         if (!userId) return;
         
         try {
-            console.log(userId);
             setLoading(true);
             const response = await fetch(`http://localhost:5050/product/sellersproducts?userId=${userId}`);
             if (!response.ok) {
