@@ -1,6 +1,7 @@
 import db from "../config/db.js";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
+import dotenv from "dotenv";
 
 const saltRounds = 10;
 export const register = async (req, res) => {
@@ -80,7 +81,7 @@ export const forgetPassword = async (req, res) => {
 
         if (result.rows.length > 0) {
             const token = jwt.sign({ userId: result.rows[0].id }, process.env.JWT_SECRET, { expiresIn: '1h' });
-            const link = `http://localhost:3000/account?resetpassword=${token}`;
+            const link = `${process.env.FRONTEND_URL}/account?resetpassword=${token}`;
             console.log(link);
             const transporter = nodemailer.createTransport({
                 host: process.env.EMAIL_SMTP,
@@ -145,9 +146,9 @@ export const googleCallbackHandler = async (req, res) => {
         );
 
         if (!role) {
-            res.redirect(`http://localhost:3000/account?id=${req.user.id}`);
+            res.redirect(`${process.env.FRONTEND_URL}/account?id=${req.user.id}`);
         } else {
-            res.redirect(`http://localhost:3000/account?token=${token}`);
+            res.redirect(`${process.env.FRONTEND_URL}/account?token=${token}`);
         }
     } catch (err) {
         console.error(err);
