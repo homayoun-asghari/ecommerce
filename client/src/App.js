@@ -2,6 +2,8 @@ import './styles/App.css';
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation, useNavigationType } from 'react-router-dom';
 import { useLayoutEffect } from 'react';
+import { I18nextProvider } from 'react-i18next';
+import i18n from './i18n';
 import Container from 'react-bootstrap/Container';
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
@@ -43,9 +45,9 @@ if ('scrollRestoration' in window.history) {
 
 function App() {
   return (
-    <Router>
-      <ContextProvider>
-        
+    <I18nextProvider i18n={i18n}>
+      <Router>
+        <ContextProvider>
           <ScrollToTop />
           <div className="app-wrapper">
             <Navbar />
@@ -73,9 +75,9 @@ function App() {
               <BottomNavbar />
             </div>
           </div>
-        
-      </ContextProvider>
-    </Router>
+        </ContextProvider>
+      </Router>
+    </I18nextProvider>
   );
 }
 export default App;

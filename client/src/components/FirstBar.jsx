@@ -4,6 +4,7 @@ import logo from "../assets/logo.png";
 import logoDark from "../assets/logo-dark.png";
 import { Row, Col, Container } from 'react-bootstrap';
 import ModeSwitch from "./ModeSwitch";
+import LanguageSwitcher from "./LanguageSwitcher";
 import Searchbar from "./Searchbar";
 import { Search } from 'react-bootstrap-icons';
 import { useTheme } from "../contexts/ThemeContext";
@@ -23,36 +24,67 @@ function SecondBar() {
     const { wishList } = useWishList();
     const {notifications} = useNotification();
     return (
-        <Container fluid>
-            <Row className="align-items-center justify-content-between g-3 py-2">
-                <Col lg={8} xl={9} className="d-flex justify-content-center align-items-center gap-3">
-                    <img src={mode ? logo : logoDark} alt="logo" className="img-fluid" style={{ maxHeight: '40px' }} />
-                    <Searchbar button={<Search />} placeholder="Search Products" />
+        <Container fluid className="px-3 px-md-4">
+            <Row className="align-items-center py-2 gx-2 gx-md-3">
+                {/* Logo */}
+                <Col xs="auto" className="pe-0 pe-md-2">
+                    <img 
+                        src={mode ? logo : logoDark} 
+                        alt="logo" 
+                        className="img-fluid" 
+                        style={{ 
+                            height: '40px',
+                            width: 'auto',
+                            maxWidth: '120px',
+                            objectFit: 'contain' 
+                        }} 
+                    />
                 </Col>
 
-                <Col lg={4} xl={3} className="d-flex align-items-center justify-content-end gap-3">
-                    <Nav.Link href="/account" className="d-flex align-items-end">
-                        {/* <PersonIcon style={{ fontSize: 35 }} /> */}
-                        <span className="text-nowrap">Hello <br /> <span style={{ fontWeight: "bold" }}>Account</span></span>
+                {/* Search Bar */}
+                <Col className="px-0 px-md-2" style={{ minWidth: 0 }}> {/* minWidth: 0 prevents overflow */}
+                    <div style={{ maxWidth: '800px', margin: '0 auto' }}>
+                        <Searchbar 
+                            button={<Search size={18} />} 
+                            placeholder="Search Products" 
+                            className="w-100"
+                        />
+                    </div>
+                </Col>
+
+                {/* Icons */}
+                <Col xs="auto" className="d-flex align-items-center justify-content-end gap-2 gap-md-3 ps-2 ps-md-3">
+                    {/* Account - Hidden on smallest screens */}
+                    <Nav.Link href="/account" className="d-none d-md-flex align-items-center text-nowrap">
+                        <span>Hello<br/><span className="fw-bold">Account</span></span>
                     </Nav.Link>
-                    <Nav.Link href="/account?tab=wishlist" className="d-flex align-items-end">
+                    
+                    {/* Wishlist */}
+                    <Nav.Link href="/account?tab=wishlist" className="d-flex align-items-center">
                         <Badge badgeContent={wishList.length}>
                             <FavoriteIcon style={{ fontSize: 30 }} />
                         </Badge>
                     </Nav.Link>
 
-                    <Nav.Link href="/cart" className="d-flex align-items-end">
-                        <Badge badgeContent={cartItems.length} >
+                    {/* Cart */}
+                    <Nav.Link href="/cart" className="d-flex align-items-center">
+                        <Badge badgeContent={cartItems.length}>
                             <ShoppingCartIcon style={{ fontSize: 30 }} />
                         </Badge>
                     </Nav.Link>
 
-                    <Nav.Link href="/account?tab=notifications" className="d-flex align-items-end">
-                        <Badge badgeContent={notifications.filter(n => n.is_read === false).length} >
+                    {/* Notifications - Hidden on small screens */}
+                    <Nav.Link href="/account?tab=notifications" className="d-none d-md-flex align-items-center">
+                        <Badge badgeContent={notifications.filter(n => !n.is_read).length}>
                             <NotificationsIcon style={{ fontSize: 30 }} />
                         </Badge>
                     </Nav.Link>
-                    <ModeSwitch />
+                    
+                    {/* Theme and Language Switchers */}
+                    <div className="d-flex align-items-center gap-1 gap-md-2">
+                    <LanguageSwitcher />
+                        <ModeSwitch />
+                    </div>
                 </Col>
             </Row>
         </Container>

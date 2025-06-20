@@ -24,6 +24,7 @@ import NotificationsIcon from '@mui/icons-material/Notifications';
 import SellerAccountTabs from "./SellerAccountTabs.jsx";
 import AdminAccountTabs from "./AdminAccountTabs.jsx";
 import FilterItems from "./FilterItems.jsx"
+import LanguageSwitcher from "./LanguageSwitcher";
 
 function BottomNavbar() {
   const { mode } = useTheme();
@@ -82,7 +83,10 @@ function BottomNavbar() {
               <NotificationsIcon style={{ fontSize: 30 }} />
             </Badge>
           </Nav.Link>
-          <Offcanvas.Title><ModeSwitch /></Offcanvas.Title>
+          <Offcanvas.Title className="d-flex gap-2">
+            <LanguageSwitcher />
+            <ModeSwitch />
+          </Offcanvas.Title>
         </Offcanvas.Header>
 
         <Offcanvas.Body className="d-flex flex-column">
@@ -100,7 +104,7 @@ function BottomNavbar() {
 
           <div className="offcanvas-footer mt-4 d-flex align-items-center justify-content-between flex-wrap gap-3">
             <Nav className="d-flex gap-3">
-            <Nav.Link href="/shop" onClick={handleClose}>Shop</Nav.Link>
+              <Nav.Link href="/shop" onClick={handleClose}>Shop</Nav.Link>
               <Nav.Link href="/blog" onClick={handleClose}>Blog</Nav.Link>
               <Nav.Link href="/contact" onClick={handleClose}>Contact</Nav.Link>
               <Nav.Link href="/about" onClick={handleClose}>About</Nav.Link>
