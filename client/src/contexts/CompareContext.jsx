@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useReducer, useCallback } from 'react';
 
+export const MAX_COMPARE_ITEMS = 4;
 const CompareContext = createContext();
 
 export const useCompare = () => {
@@ -13,9 +14,12 @@ const compareReducer = (state, action) => {
       if (state.items.some(item => item.id === action.payload.id)) {
         return state;
       }
-      // Limit to 4 products for comparison
-      if (state.items.length >= 4) {
-        return { ...state, error: 'You can compare up to 4 products at a time' };
+      // Limit to MAX_COMPARE_ITEMS products for comparison
+      if (state.items.length >= MAX_COMPARE_ITEMS) {
+        return { 
+          ...state, 
+          error: `You can compare up to ${MAX_COMPARE_ITEMS} products at a time` 
+        };
       }
       return { ...state, items: [...state.items, action.payload], error: null };
     
@@ -69,7 +73,9 @@ export const CompareProvider = ({ children }) => {
     removeFromCompare,
     clearCompare,
     clearError,
-    isInCompare
+    isInCompare,
+    maxItems: MAX_COMPARE_ITEMS,
+    remainingItems: MAX_COMPARE_ITEMS - compare.items.length
   };
 
   return (

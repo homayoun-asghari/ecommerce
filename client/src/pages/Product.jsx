@@ -108,7 +108,13 @@ function Product() {
 
     const { isOpen } = useSideBar();
     const [shareSuccess, setShareSuccess] = useState(false);
-    const { addToCompare, isInCompare } = useCompare();
+    const { 
+      addToCompare, 
+      isInCompare, 
+      items: compareItems, 
+      maxItems: MAX_COMPARE_ITEMS,
+      remainingItems 
+    } = useCompare();
     const [compareSuccess, setCompareSuccess] = useState(false);
     const navigate = useNavigate();
 
@@ -327,24 +333,35 @@ function Product() {
                                 onClick={handleViewComparison}
                                 className="btn btn-primary text-nowrap d-flex align-items-center gap-1"
                             >
-                                <ArrowRight size={24} /> View Comparison
+                                <ArrowRight size={24} /> View Comparison ({compareItems.length}/{MAX_COMPARE_ITEMS})
                             </button>
                         ) : (
-                            <button 
-                                onClick={handleCompare}
-                                className="btn btn-outline-primary text-nowrap d-flex align-items-center gap-1"
-                                disabled={compareSuccess}
-                            >
-                                {compareSuccess ? (
-                                    <>
-                                        <Check2 size={24} /> Added!
-                                    </>
-                                ) : (
-                                    <>
-                                        <ArrowLeftRight size={24} /> Compare
-                                    </>
+                            <div className="position-relative">
+                                <button 
+                                    onClick={handleCompare}
+                                    className="btn btn-outline-primary text-nowrap d-flex align-items-center gap-1"
+                                    disabled={compareSuccess || remainingItems <= 0}
+                                    title={remainingItems <= 0 
+                                      ? `Maximum ${MAX_COMPARE_ITEMS} products can be compared` 
+                                      : `Add to compare (${remainingItems} more ${remainingItems === 1 ? 'item' : 'items'} allowed)`}
+                                >
+                                    {compareSuccess ? (
+                                        <>
+                                            <Check2 size={24} /> Added!
+                                        </>
+                                    ) : (
+                                        <>
+                                            <ArrowLeftRight size={24} /> 
+                                            <span>Compare {compareItems.length > 0 && `(${compareItems.length}/${MAX_COMPARE_ITEMS})`}</span>
+                                        </>
+                                    )}
+                                </button>
+                                {compareItems.length >= MAX_COMPARE_ITEMS && (
+                                    <div className="position-absolute top-100 start-50 translate-middle-x mt-1 small text-muted">
+                                        Max {MAX_COMPARE_ITEMS} products
+                                    </div>
                                 )}
-                            </button>
+                            </div>
                         )}
                     </div>
 
