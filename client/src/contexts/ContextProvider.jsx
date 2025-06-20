@@ -7,6 +7,7 @@ import { WishListProvider } from "./WishListContext";
 import { NotificationProvider } from "./NotificationContext";
 import { AccountTabProvider } from "./AccountTabContext";
 import { FilterProvider } from './FilterContext';
+import { CompareProvider } from "./CompareContext";
 
 export default function ContextProviders({ children }) {
   return (
@@ -18,7 +19,9 @@ export default function ContextProviders({ children }) {
               <ThemeProvider>
                 <SideBarProvider>
                   <AccountTabProvider>
-                    {children}
+                    <CompareProvider>
+                      {children}
+                    </CompareProvider>
                   </AccountTabProvider>
                 </SideBarProvider>
               </ThemeProvider>

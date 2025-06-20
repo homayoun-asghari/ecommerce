@@ -16,7 +16,6 @@ import SearchResults from './pages/SearchResults.jsx';
 import Blog from './pages/Blog.jsx';
 import BlogPost from './pages/BlogPost.jsx';
 import ContextProvider from "./contexts/ContextProvider";
-import { CompareProvider } from "./contexts/CompareContext";
 import Contact from './pages/Contact.jsx';
 import About from './pages/About.jsx';
 import Compare from './pages/Compare.jsx';
@@ -46,7 +45,7 @@ function App() {
   return (
     <Router>
       <ContextProvider>
-        <CompareProvider>
+        
           <ScrollToTop />
           <div className="app-wrapper">
             <Navbar />
@@ -74,7 +73,7 @@ function App() {
               <BottomNavbar />
             </div>
           </div>
-        </CompareProvider>
+        
       </ContextProvider>
     </Router>
   );
