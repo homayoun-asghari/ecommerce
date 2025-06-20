@@ -9,11 +9,37 @@ import { Link } from 'react-router-dom';
 import { Cart, Heart, Wallet, ShieldCheck, HeartFill } from "react-bootstrap-icons";
 import IosShareIcon from '@mui/icons-material/IosShare';
 import CompareIcon from '@mui/icons-material/Compare';
+import styled from 'styled-components';
 import Countdown from "../components/Countdown";
 import ProductCard from "../components/ProductCard";
 import { useCart } from "../contexts/CartContext";
 import { useWishList } from "../contexts/WishListContext";
+import { useSideBar } from "../contexts/SideBarContext";
 import { API_BASE_URL } from "../config";
+
+const ContentColumn = styled(Col)`
+  transition: all 0.3s ease-in-out;
+  margin-left: 0;
+  width: 100%;
+  padding: 0 15px;
+  
+  @media (min-width: 998px) {
+    margin-left: ${({ $isOpen }) => ($isOpen ? '300px' : '0')};
+    width: ${({ $isOpen }) => ($isOpen ? 'calc(100% - 300px)' : '100%')};
+  }
+`;
+
+const ProductsGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.5rem;
+  padding: 1rem 0;
+  width: 100%;
+  
+  @media (max-width: 768px) {
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  }
+`;
 
 
 function Product() {
@@ -81,10 +107,12 @@ function Product() {
     }
 
 
+    const { isOpen } = useSideBar();
+
     return (
-        <Row className="d-flex justify-content-center align-items-center gap-5">
-            <Row>
-                <Col lg={6} md={12} className="d-flex flex-column justify-content-center align-items-center gap-3">
+        <ContentColumn $isOpen={isOpen} className="py-4">
+            <Row className="gx-4">
+                <Col lg={6} md={12} className="d-flex flex-column justify-content-center align-items-center gap-3 mb-4 mb-lg-0">
                     <Card style={{ width: "100%" }}>
                         <Card.Img variant="top" src={image_url} style={{ width: "100%", height: "500px", objectFit: "cover" }} />
                         <Card.ImgOverlay className="d-flex justify-content-between align-items-start">
@@ -95,7 +123,7 @@ function Product() {
                         </Card.ImgOverlay>
                     </Card>
                 </Col>
-                <Col lg={6} md={12} className="d-flex flex-column justify-content-center align-items-start gap-3">
+                <Col lg={6} md={12} className="d-flex flex-column justify-content-center gap-3">
                     <h1>{name}</h1>
                     <div className="d-flex flex-row justify-content-start align-items-center gap-2">
                         <Rating
@@ -183,18 +211,17 @@ function Product() {
                 <div>
                     <h5 style={{ marginBottom: "0px", padding: "var(--space-xs) 0" }}>Related Products</h5>
                 </div>
-                <Col className="scroll-wrapper">
-                    {related.map((product) => (
-                        <Col key={product.id} >
-                            <div className="card-wrapper">
+                <Col>
+                    <ProductsGrid>
+                        {related.map((product) => (
+                            <div key={product.id} className="card-wrapper">
                                 <ProductCard product={product} />
                             </div>
-                        </Col>
-                    ))}
+                        ))}
+                    </ProductsGrid>
                 </Col>
             </Row>}
-
-        </Row>
+        </ContentColumn>
     );
 }
 
