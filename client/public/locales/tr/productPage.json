@@ -1,0 +1,34 @@
+{
+  "reviews": {
+    "title": "Yorumlar",
+    "count": "{{count}} yorum",
+    "count_plural": "{{count}} yorum"
+  },
+  "addToCart": "Sepete Ekle",
+  "addToWishlist": "İstek Listesine Ekle",
+  "inWishlist": "İstek Listesinde",
+  "share": "Paylaş",
+  "copied": "Kopyalandı!",
+  "compare": {
+    "add": "Karşılaştır",
+    "added": "Eklendi!",
+    "view": "Karşılaştırmayı Görüntüle ({{current}}/{{max}})",
+    "maxItems": "Maksimum {{count}} ürün",
+    "itemsLeft": "{{count}} ürün daha eklenebilir",
+    "item": "ürün",
+    "items": "ürün"
+  },
+  "payment": {
+    "title": "Ödeme",
+    "description": "Teslimatta ödeme, Bölümde kart ile ödeme, Google Pay, Çevrimiçi kart, -%5 indirimli ödeme durumunda"
+  },
+  "warranty": {
+    "title": "Garanti",
+    "description": "Tüketiciyi Koruma Kanunu, bu ürünün iade edilmesini öngörmez."
+  },
+  "specialOffers": "Özel Teklifler",
+  "relatedProducts": "İlgili Ürünler",
+  "inStock": "Stokta Var",
+  "outOfStock": "Stokta Yok",
+  "discount": "%{{discount}} İndirim"
+}

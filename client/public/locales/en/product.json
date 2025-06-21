@@ -1,0 +1,8 @@
+{
+  "reviews": "{{count}} review",
+  "reviews_plural": "{{count}} reviews",
+  "addToCart": "Add to Cart",
+  "inStock": "In Stock",
+  "outOfStock": "Out of Stock",
+  "discount": "{{discount}}% OFF"
+}

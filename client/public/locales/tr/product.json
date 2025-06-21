@@ -1,0 +1,8 @@
+{
+  "reviews": "{{count}} yorum",
+  "reviews_plural": "{{count}} yorum",
+  "addToCart": "Sepete Ekle",
+  "inStock": "Stokta Var",
+  "outOfStock": "Stokta Yok",
+  "discount": "%{{discount}} İndirim"
+}

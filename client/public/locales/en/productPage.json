@@ -1,0 +1,34 @@
+{
+  "reviews": {
+    "title": "Reviews",
+    "count": "{{count}} review",
+    "count_plural": "{{count}} reviews"
+  },
+  "addToCart": "Add to Cart",
+  "addToWishlist": "Add to Wishlist",
+  "inWishlist": "In Wishlist",
+  "share": "Share",
+  "copied": "Copied!",
+  "compare": {
+    "add": "Compare",
+    "added": "Added!",
+    "view": "View Comparison ({{current}}/{{max}})",
+    "maxItems": "Max {{count}} products",
+    "itemsLeft": "{{count}} more {{items}} allowed",
+    "item": "item",
+    "items": "items"
+  },
+  "payment": {
+    "title": "Payment",
+    "description": "Payment upon receipt of goods, Payment by card in the department, Google Pay, Online card, -5% discount in case of payment"
+  },
+  "warranty": {
+    "title": "Warranty",
+    "description": "The Consumer Protection Act does not provide for the return of this product of proper quality."
+  },
+  "specialOffers": "Special Offers",
+  "relatedProducts": "Related Products",
+  "inStock": "In Stock",
+  "outOfStock": "Out of Stock",
+  "discount": "{{discount}}% OFF"
+}

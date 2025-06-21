@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from 'react-i18next';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Card from 'react-bootstrap/Card';
@@ -54,9 +55,11 @@ const WishlistButton = styled(Link)`
 `;
 
 function ProductCard({ product }) {
+    const { t } = useTranslation(['product', 'common']);
     const { id, name, description, price, stock, category, image_url, discount, avg_rating, review_count } = product;
-    const {wishList, addToWishList, removeFromWishList} = useWishList();
+    const { wishList, addToWishList, removeFromWishList } = useWishList();
     const { addToCart, isInCart, increment, decrement, getQty } = useCart();
+    const isOutOfStock = stock <= 0;
 
     function letterCont(str, num) {
         return str.slice(0, num) + " ...";
@@ -90,9 +93,18 @@ function ProductCard({ product }) {
                             />
                             <Card.ImgOverlay className="d-flex justify-content-between align-items-start p-2">
                                 {discount > 0 && (
-                                    <Badge bg="danger" className="shadow-sm">{discount}%</Badge>
+                                    <Badge bg="danger" className="shadow-sm">
+                                        {t('discount', { discount })}
+                                    </Badge>
                                 )}
-                                <Badge bg="success" className="shadow-sm">{letterCont(category, letterLimit)}</Badge>
+                                <Badge bg="success" className="shadow-sm">
+                                    {letterCont(category, letterLimit)}
+                                </Badge>
+                                {isOutOfStock && (
+                                    <Badge bg="secondary" className="shadow-sm ms-1">
+                                        {t('outOfStock')}
+                                    </Badge>
+                                )}
                             </Card.ImgOverlay>
                         </Card>
                         <Card.Body className="position-relative">
@@ -130,7 +142,9 @@ function ProductCard({ product }) {
                                         }
                                     }}
                                 />
-                                <Badge bg="light" text="dark" className="shadow-sm">{review_count} reviews</Badge>
+                                <Badge bg="light" text="dark" className="shadow-sm">
+                                    {t('reviews', { count: review_count, defaultValue: '{{count}} reviews' })}
+                                </Badge>
                             </div>
                             <Card.Text className="mb-3">
                                 <span className="h5 fw-bold">${(price - (price * discount / 100)).toFixed(2)}</span>
@@ -148,9 +162,10 @@ function ProductCard({ product }) {
                                             e.stopPropagation();
                                             addToCart(product);
                                         }}
+                                        disabled={isOutOfStock}
                                     >
                                         <Cart size={18} />
-                                        <span>Add to Cart</span>
+                                        <span>{t('addToCart')}</span>
                                     </button>
                                 ) : (
                                     <div className="qty-controls d-flex justify-content-center gap-1">

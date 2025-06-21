@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { useTranslation } from 'react-i18next';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Rating from '@mui/material/Rating';
@@ -117,6 +118,7 @@ function Product() {
     } = useCompare();
     const [compareSuccess, setCompareSuccess] = useState(false);
     const navigate = useNavigate();
+    const { t } = useTranslation(['productPage', 'common']);
 
     // Format price helper function with better null/undefined handling
     const formatPrice = (price) => {
@@ -277,7 +279,9 @@ function Product() {
                                 }
                             }}
                         />
-                        <Badge bg="light" text="dark">{review_count} reviews</Badge>
+                        <Badge bg="light" text="dark">
+                      {t('reviews.count', { count: review_count, defaultValue: '{{count}} reviews' })}
+                    </Badge>
                     </div>
                     <p>{description}</p>
                     <p className="text-muted">
@@ -289,78 +293,137 @@ function Product() {
                       )}
                     </p>
 
-                    {discount > 0 && <div className="w-100 d-flex flex-column justify-content-center align-items-center  especial-offers-card py-3 rounded">
-                        <h6 className="text-nowrap">Special Offers: </h6><Countdown />
-                    </div>}
-
-                    {!isInCart(product.id) ? (
-                        <Link className="btn btn-outline-success" onClick={() => addToCart(product)}><Cart size={24} /> Add To Cart</Link>
-                    ) : (
-                        <div className="qty-controls">
-                            <Link className="btn btn-outline-success" onClick={() => decrement(product.id)}>-</Link>
-                            <Link className="btn btn-outline-success" style={{ cursor: "default" }}>{getQty(product.id)}</Link>
-                            <Link className="btn btn-outline-success" onClick={() => getQty(id) < stock && increment(id)}>+</Link>
-                        </div>
+                    {discount > 0 && (
+                      <div className="w-100 d-flex flex-column justify-content-center align-items-center especial-offers-card py-3 rounded">
+                        <h6 className="text-nowrap">{t('specialOffers')}: </h6>
+                        <Countdown />
+                      </div>
                     )}
 
-                    <div>
-                        <Card body ><Wallet size={24} /> <span style={{ fontWeight: "bold" }}>Payment.</span> Payment upon receipt of goods, Payment by card in the department, Google Pay,
-                            Online card, -5% discount in case of payment</Card>
+                    {!isInCart(product.id) ? (
+                      <Link 
+                        className="btn btn-outline-success d-flex align-items-center justify-content-center gap-2" 
+                        onClick={() => addToCart(product)}
+                        disabled={stock <= 0}
+                      >
+                        <Cart size={24} />
+                        {stock > 0 ? t('addToCart') : t('outOfStock')}
+                      </Link>
+                    ) : (
+                      <div className="qty-controls d-flex justify-content-center gap-1">
+                        <button 
+                          className="btn btn-outline-success" 
+                          onClick={() => decrement(product.id)}
+                          style={{ width: '40px' }}
+                        >
+                          -
+                        </button>
+                        <div 
+                          className="d-flex align-items-center justify-content-center" 
+                          style={{ 
+                            width: '40px', 
+                            border: '1px solid #198754',
+                            borderRadius: '0.375rem'
+                          }}
+                        >
+                          {getQty(product.id)}
+                        </div>
+                        <button 
+                          className="btn btn-outline-success" 
+                          onClick={() => getQty(id) < stock && increment(id)}
+                          disabled={getQty(id) >= stock}
+                          style={{ width: '40px' }}
+                        >
+                          +
+                        </button>
+                      </div>
+                    )}
 
-                        <Card body ><ShieldCheck size={24} /> <span style={{ fontWeight: "bold" }}>Warranty.</span> The Consumer Protection Act does not provide for the return of this product of proper
-                            quality.</Card>
+                    <div className="d-grid gap-2">
+                      <Card body className="d-flex align-items-start gap-2">
+                        <Wallet size={24} className="flex-shrink-0 mt-1" />
+                        <div>
+                          <strong>{t('payment.title')}.</strong> {t('payment.description')}
+                        </div>
+                      </Card>
+
+                      <Card body className="d-flex align-items-start gap-2">
+                        <ShieldCheck size={24} className="flex-shrink-0 mt-1" />
+                        <div>
+                          <strong>{t('warranty.title')}.</strong> {t('warranty.description')}
+                        </div>
+                      </Card>
                     </div>
 
-                    <div className="d-flex flex-row justify-content-center align-items-center gap-1">
-                        <Link onClick={handleClick} className="btn btn-outline-danger text-nowrap">{wishList.some(item => item.id === id) === true ? <HeartFill size={24} /> : <Heart size={24} />} Add To Wish List</Link>
-                        <button 
-                            onClick={handleShare} 
-                            className="btn btn-outline-primary text-nowrap d-flex align-items-center gap-1"
-                            disabled={shareSuccess}
+                    <div className="d-flex flex-row flex-wrap justify-content-center align-items-center gap-2">
+                        <Link 
+                          onClick={handleClick} 
+                          className="btn btn-outline-danger text-nowrap d-flex align-items-center gap-1"
                         >
-                            {shareSuccess ? (
-                                <>
-                                    <Check2 size={24} /> Copied!
-                                </>
-                            ) : (
-                                <>
-                                    <Share size={24} /> Share
-                                </>
-                            )}
+                          {wishList.some(item => item.id === id) ? (
+                            <HeartFill size={24} className="text-danger" />
+                          ) : (
+                            <Heart size={24} />
+                          )}
+                          {wishList.some(item => item.id === id) ? t('inWishlist') : t('addToWishlist')}
+                        </Link>
+                        <button 
+                          onClick={handleShare} 
+                          className="btn btn-outline-primary text-nowrap d-flex align-items-center gap-1"
+                          disabled={shareSuccess}
+                        >
+                          {shareSuccess ? (
+                            <>
+                              <Check2 size={24} /> {t('copied')}
+                            </>
+                          ) : (
+                            <>
+                              <Share size={24} /> {t('share')}
+                            </>
+                          )}
                         </button>
                         {isInCompare(product.id) ? (
                             <button 
-                                onClick={handleViewComparison}
-                                className="btn btn-primary text-nowrap d-flex align-items-center gap-1"
+                              onClick={handleViewComparison}
+                              className="btn btn-primary text-nowrap d-flex align-items-center gap-1"
                             >
-                                <ArrowRight size={24} /> View Comparison ({compareItems.length}/{MAX_COMPARE_ITEMS})
+                              <ArrowRight size={24} /> {t('compare.view', { 
+                                current: compareItems.length, 
+                                max: MAX_COMPARE_ITEMS 
+                              })}
                             </button>
                         ) : (
                             <div className="position-relative">
-                                <button 
-                                    onClick={handleCompare}
-                                    className="btn btn-outline-primary text-nowrap d-flex align-items-center gap-1"
-                                    disabled={compareSuccess || remainingItems <= 0}
-                                    title={remainingItems <= 0 
-                                      ? `Maximum ${MAX_COMPARE_ITEMS} products can be compared` 
-                                      : `Add to compare (${remainingItems} more ${remainingItems === 1 ? 'item' : 'items'} allowed)`}
-                                >
-                                    {compareSuccess ? (
-                                        <>
-                                            <Check2 size={24} /> Added!
-                                        </>
-                                    ) : (
-                                        <>
-                                            <ArrowLeftRight size={24} /> 
-                                            <span>Compare {compareItems.length > 0 && `(${compareItems.length}/${MAX_COMPARE_ITEMS})`}</span>
-                                        </>
-                                    )}
-                                </button>
-                                {compareItems.length >= MAX_COMPARE_ITEMS && (
-                                    <div className="position-absolute top-100 start-50 translate-middle-x mt-1 small text-muted">
-                                        Max {MAX_COMPARE_ITEMS} products
-                                    </div>
+                              <button 
+                                onClick={handleCompare}
+                                className="btn btn-outline-primary text-nowrap d-flex align-items-center gap-1"
+                                disabled={compareSuccess || remainingItems <= 0}
+                                title={remainingItems <= 0 
+                                  ? t('compare.maxItems', { count: MAX_COMPARE_ITEMS })
+                                  : t('compare.itemsLeft', { 
+                                      count: remainingItems,
+                                      items: t(`compare.${remainingItems === 1 ? 'item' : 'items'}`)
+                                    })}
+                              >
+                                {compareSuccess ? (
+                                  <>
+                                    <Check2 size={24} /> {t('compare.added')}
+                                  </>
+                                ) : (
+                                  <>
+                                    <ArrowLeftRight size={24} />
+                                    <span>
+                                      {t('compare.add')}
+                                      {compareItems.length > 0 && ` (${compareItems.length}/${MAX_COMPARE_ITEMS})`}
+                                    </span>
+                                  </>
                                 )}
+                              </button>
+                              {compareItems.length >= MAX_COMPARE_ITEMS && (
+                                <div className="position-absolute top-100 start-50 translate-middle-x mt-1 small text-muted">
+                                  {t('compare.maxItems', { count: MAX_COMPARE_ITEMS })}
+                                </div>
+                              )}
                             </div>
                         )}
                     </div>
@@ -370,7 +433,9 @@ function Product() {
 
             <Row className="py-5">
                 <Col>
-                    <h5 style={{ marginBottom: "0px", padding: "var(--space-xs) 0" }}>Reviews({reviews.length}) </h5>
+                    <h5 style={{ marginBottom: "0px", padding: "var(--space-xs) 0" }}>
+                      {t('reviews.title')} ({reviews.length})
+                    </h5>
                     {reviews.map((review) => {
                         return (
                             <div key={review.id}>
@@ -399,7 +464,9 @@ function Product() {
 
             {related.length > 0 && <Row className="py-5">
                 <div>
-                    <h5 style={{ marginBottom: "0px", padding: "var(--space-xs) 0" }}>Related Products</h5>
+                  <h5 style={{ marginBottom: "0px", padding: "var(--space-xs) 0" }}>
+                    {t('relatedProducts')}
+                  </h5>
                 </div>
                 <Col>
                     <ProductsGrid>
