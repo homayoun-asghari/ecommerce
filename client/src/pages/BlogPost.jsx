@@ -36,14 +36,35 @@ function BlogPost() {
                 setLoading(true);
 
                 // Fetch the current post
+                console.log('Fetching post with ID:', id);
                 const postResponse = await fetch(`${API_BASE_URL}/admin/blog?id=${id}`);
                 if (!postResponse.ok) {
-                    throw new Error('Post not found');
+                    const errorData = await postResponse.text();
+                    console.error('Error response:', errorData);
+                    throw new Error(`Failed to fetch post: ${postResponse.status} ${postResponse.statusText}`);
                 }
                 const postData = await postResponse.json();
-                // Get the first post from the array since we're querying by ID
-                const [post] = postData.posts || [];
-                if (!post) throw new Error('Post not found');
+                console.log('Received post data:', postData);
+                
+                // Handle different possible response structures
+                let post;
+                if (Array.isArray(postData)) {
+                    // If the response is an array, take the first item
+                    [post] = postData;
+                } else if (postData.posts && Array.isArray(postData.posts)) {
+                    // If the response has a posts array
+                    [post] = postData.posts;
+                } else if (postData.id) {
+                    // If the response is the post object directly
+                    post = postData;
+                }
+                
+                if (!post) {
+                    console.error('Post not found in response:', postData);
+                    throw new Error('Post not found in the response');
+                }
+                
+                console.log('Setting post:', post);
                 setPost(post);
 
                 // Fetch related posts (by the same author or similar tags)

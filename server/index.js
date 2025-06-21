@@ -24,22 +24,21 @@ app.use(passport.initialize());
 
 const port = process.env.PORT || 5050;
 
-// CORS setup
-const allowedOrigins = [
-    "http://192.168.1.106:3000",
-    "http://localhost:3000",
-    "http://127.0.0.1:3000",
-    "http://172.20.10.3:3000"
-];
+// CORS setup - permissive for development
+console.log('Setting up CORS with permissive settings for development');
 app.use(cors({
-    origin: (origin, callback) => {
-        if (!origin || allowedOrigins.includes(origin)) {
-            callback(null, true);
-        } else {
-            callback(new Error("Not allowed by CORS"));
-        }
-    }
+    origin: true, // Allow all origins in development
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    exposedHeaders: ['Content-Range', 'X-Total-Count']
 }));
+
+// Log all incoming requests for debugging
+app.use((req, res, next) => {
+    console.log(`[${new Date().toISOString()}] ${req.method} ${req.originalUrl}`);
+    next();
+});
 
 // Routes
 app.use("/product", productRoutes);

@@ -15,7 +15,6 @@ function Home() {
             <EspecialOffers/>
             <HotCards />
             <BestSellers />
-            <HotCards />
             <NewArrivals/>
             
         </Row>

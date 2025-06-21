@@ -1712,15 +1712,42 @@ export const deleteNotificationsBatch = async (req, res) => {
 
 // Blog Management
 
-// Get all blog posts with pagination
+// Get all blog posts with pagination or a single post by ID
 export const getBlogPosts = async (req, res) => {
   try {
-    const { page = 1, limit = 10 } = req.query;
+    const { id, author_id, page = 1, limit = 10 } = req.query;
     const offset = (page - 1) * limit;
     
+    // If ID is provided, fetch a single post
+    if (id) {
+      const query = `
+        SELECT b.*, u.name as author_name 
+        FROM blog b
+        LEFT JOIN users u ON b.author_id = u.id
+        WHERE b.id = $1
+      `;
+      
+      const result = await db.query(query, [id]);
+      
+      if (result.rows.length === 0) {
+        return res.status(404).json({ error: 'Blog post not found' });
+      }
+      
+      return res.json(result.rows[0]);
+    }
+    
+    // If author_id is provided, fetch posts by author
+    let whereClause = '';
+    const queryParams = [];
+    
+    if (author_id) {
+      whereClause = 'WHERE b.author_id = $1';
+      queryParams.push(author_id);
+    }
+    
     // Get total count
-    const countQuery = 'SELECT COUNT(*) FROM blog';
-    const countResult = await db.query(countQuery);
+    const countQuery = `SELECT COUNT(*) FROM blog b ${whereClause}`;
+    const countResult = await db.query(countQuery, queryParams);
     const total = parseInt(countResult.rows[0].count);
     
     // Get paginated posts with author names
@@ -1728,11 +1755,12 @@ export const getBlogPosts = async (req, res) => {
       SELECT b.*, u.name as author_name 
       FROM blog b
       LEFT JOIN users u ON b.author_id = u.id
+      ${whereClause}
       ORDER BY b.created_at DESC
-      LIMIT $1 OFFSET $2
+      LIMIT $${queryParams.length + 1} OFFSET $${queryParams.length + 2}
     `;
     
-    const result = await db.query(query, [limit, offset]);
+    const result = await db.query(query, [...queryParams, limit, offset]);
     
     res.json({
       posts: result.rows,
