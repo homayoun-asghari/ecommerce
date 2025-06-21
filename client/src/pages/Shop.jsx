@@ -92,16 +92,24 @@ function Shop() {
                 sort: sortBy === 'best-sellers' ? 'sold' : sortBy // Map 'best-sellers' to 'sold' for the backend
             });
 
-            // Add filters
-            if (filters?.categories?.length > 0) {
+            // Add filters from URL or context
+            const categoryFromUrl = searchParams.get('category');
+            if (categoryFromUrl) {
+                params.append('category', categoryFromUrl);
+            } else if (filters?.categories?.length > 0) {
                 params.append('category', filters.categories[0]);
             }
-            if (filters?.priceRange?.min > 0) {
-                params.append('minPrice', filters.priceRange.min);
+            
+            const minPrice = searchParams.get('minPrice') || (filters?.priceRange?.min > 0 ? filters.priceRange.min : null);
+            if (minPrice) {
+                params.append('minPrice', minPrice);
             }
-            if (filters?.priceRange?.max < 1000) {
-                params.append('maxPrice', filters.priceRange.max);
+            
+            const maxPrice = searchParams.get('maxPrice') || (filters?.priceRange?.max < 1000 ? filters.priceRange.max : null);
+            if (maxPrice) {
+                params.append('maxPrice', maxPrice);
             }
+            
             if (filters?.minRating > 0) {
                 params.append('minRating', filters.minRating);
             }
@@ -131,7 +139,7 @@ function Shop() {
         } finally {
             setLoading(false);
         }
-    }, [filters, pagination.limit, sortBy]);
+    }, [filters, pagination.limit, sortBy, searchParams]);
 
     // Set initial sort from URL on component mount
     useEffect(() => {
