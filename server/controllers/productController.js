@@ -33,7 +33,9 @@ export const searchProducts = async (req, res) => {
             WHERE p.name ILIKE $3 OR p.description ILIKE $3
             GROUP BY p.id
             ORDER BY 
-                ${sort === 'best-sellers' ? 'total_quantity_sold DESC' : 'relevance, p.name'}
+                ${sort === 'best-sellers' ? 'total_quantity_sold DESC' : 
+                  sort === 'discount' ? 'p.discount DESC NULLS LAST' : 
+                  'relevance, p.name'}
             LIMIT 10;
         `, [exactMatchTerm, `${exactMatchTerm}%`, partialMatchTerm]);
 
@@ -388,6 +390,9 @@ export const getShopProducts = async (req, res) => {
             case 'best-sellers':
             case 'sold':
                 query += ` ORDER BY total_quantity_sold DESC`;
+                break;
+            case 'discount':
+                query += ` ORDER BY p.discount DESC NULLS LAST`;
                 break;
             case 'featured': // For now, treat 'featured' same as 'newest' since we don't have a featured column
             default:
