@@ -69,7 +69,7 @@ const AdminPayments = () => {
         ...filters
       });
 
-      const response = await fetch(`${API_BASE_URL}/payments?${params}`);
+      const response = await fetch(`${ADMIN_API_URL}/payments?${params}`);
       
       if (!response.ok) {
         throw new Error('Failed to fetch payments');
@@ -104,7 +104,7 @@ const AdminPayments = () => {
         ...filters
       });
 
-      const response = await fetch(`${API_BASE_URL}/payouts?${params}`);
+      const response = await fetch(`${ADMIN_API_URL}/payouts?${params}`);
       
       if (!response.ok) {
         throw new Error('Failed to fetch payouts');
