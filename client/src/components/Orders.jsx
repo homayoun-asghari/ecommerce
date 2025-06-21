@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import Nav from 'react-bootstrap/Nav';
 import OrderCard from "./OrderCard";
 import { useUser } from "../contexts/UserContext";
+import { API_BASE_URL } from "../config";
 
 function Orders() {
     const [activeTab, setActiveTab] = useState('pending');
@@ -11,7 +12,7 @@ function Orders() {
 
     useEffect(() => {
         async function getOrders() {
-            const response = await fetch(`http://localhost:5050/order?userId=${userId}&status=${activeTab}`);
+            const response = await fetch(`${API_BASE_URL}/order?userId=${userId}&status=${activeTab}`);
             const data = await response.json();
             setOrders(data);
         }

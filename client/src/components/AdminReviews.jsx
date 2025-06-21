@@ -13,6 +13,7 @@ import {
   ButtonGroup,
   Stack
 } from 'react-bootstrap';
+import { API_BASE_URL } from '../config';
 import { 
   StarFill, 
   Star,
@@ -56,7 +57,7 @@ const AdminReviews = () => {
         ...(searchTerm && { search: searchTerm })
       });
 
-      const response = await fetch(`http://localhost:5050/admin/reviews?${params}`);
+      const response = await fetch(`${API_BASE_URL}/admin/reviews?${params}`);
       if (!response.ok) {
         throw new Error('Failed to fetch reviews');
       }
@@ -85,7 +86,7 @@ const AdminReviews = () => {
   // Handle review deletion
   const handleDeleteReview = async () => {
     try {
-      const response = await fetch(`http://localhost:5050/admin/reviews/${selectedReview.id}`, {
+      const response = await fetch(`${API_BASE_URL}/admin/reviews/${selectedReview.id}`, {
         method: 'DELETE'
       });
       

@@ -15,9 +15,10 @@ import {
   CheckCircleFill,
   ClockFill
 } from 'react-bootstrap-icons';
+import { API_BASE_URL } from '../config';
 
-// API base URL
-const API_BASE_URL = 'http://localhost:5050/admin';
+// API base URL for admin endpoints
+const ADMIN_API_URL = `${API_BASE_URL}/admin`;
 
 
 
@@ -57,20 +58,17 @@ const AdminPayments = () => {
   const [selectedPayout, setSelectedPayout] = useState(null);
 
   // Fetch payments from API
-  const fetchPayments = useCallback(async (page = 1) => {
-    setLoading(true);
-    setError(null);
-    
+  const fetchPayments = useCallback(async (page = 1, filters = {}) => {
     try {
-      // Build query params
+      setLoading(true);
+      setError(null);
+      
       const params = new URLSearchParams({
         page,
         limit: pagination.limit,
-        ...Object.fromEntries(
-          Object.entries(filters).filter(([_, value]) => value !== '')
-        )
+        ...filters
       });
-      
+
       const response = await fetch(`${API_BASE_URL}/payments?${params}`);
       
       if (!response.ok) {
@@ -95,20 +93,17 @@ const AdminPayments = () => {
   }, [filters, pagination.limit, setPagination]);
 
   // Fetch payouts from API
-  const fetchPayouts = useCallback(async (page = 1) => {
-    setLoading(true);
-    setError(null);
-    
+  const fetchPayouts = useCallback(async (page = 1, filters = {}) => {
     try {
-      // Build query params
+      setLoading(true);
+      setError(null);
+      
       const params = new URLSearchParams({
         page,
         limit: pagination.limit,
-        ...Object.fromEntries(
-          Object.entries(filters).filter(([_, value]) => value !== '')
-        )
+        ...filters
       });
-      
+
       const response = await fetch(`${API_BASE_URL}/payouts?${params}`);
       
       if (!response.ok) {
@@ -290,7 +285,7 @@ const AdminPayments = () => {
     try {
       setLoading(true);
       
-      const response = await fetch(`http://localhost:5050/admin/payouts/${selectedPayout.id}/status`, {
+      const response = await fetch(`${ADMIN_API_URL}/payouts/${selectedPayout.id}/status`, {
         method: 'PUT',
         headers: { 
           'Content-Type': 'application/json',

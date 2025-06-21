@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { useUser } from "../contexts/UserContext";
+import { API_BASE_URL } from "../config";
 
 const WishListContext = createContext();
 
@@ -16,7 +17,7 @@ export function WishListProvider({ children }) {
 
         async function fetchWishList() {
             try {
-                const response = await fetch(`http://localhost:5050/wishlist?userId=${userId}`);
+                const response = await fetch(`${API_BASE_URL}/wishlist?userId=${userId}`);
                 const data = await response.json();
                 if (response.ok) setWishList(data);
             } catch (err) {
@@ -30,7 +31,7 @@ export function WishListProvider({ children }) {
     async function addToWishList(productId) {
         if (wishList.some(item => item.id === productId)) return;
         try {
-            const response = await fetch("http://localhost:5050/wishlist", {
+            const response = await fetch(`${API_BASE_URL}/wishlist`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ productId, userId }),
@@ -47,7 +48,7 @@ export function WishListProvider({ children }) {
 
     async function removeFromWishList(productId) {
         try {
-            const response = await fetch("http://localhost:5050/wishlist", {
+            const response = await fetch(`${API_BASE_URL}/wishlist`, {
                 method: "DELETE",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ productId, userId }),

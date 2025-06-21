@@ -7,6 +7,7 @@ import { Rating } from '@mui/material';
 import Form from 'react-bootstrap/Form';
 import { useUser } from "../contexts/UserContext";
 import { Link } from 'react-router-dom';
+import { API_BASE_URL } from "../config";
 
 function OrderCard({ order }) {
     const { user } = useUser();
@@ -23,7 +24,7 @@ function OrderCard({ order }) {
         const formData = new FormData(Event.target);
         const formDataObj = Object.fromEntries(formData.entries());
         console.log(formDataObj);
-        const response = await fetch(`http://localhost:5050/review/updatereview?userId=${userId}&productId=${productId}`, {
+        const response = await fetch(`${API_BASE_URL}/review/updatereview?userId=${userId}&productId=${productId}`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"

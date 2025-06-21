@@ -13,6 +13,7 @@ import {
   Spinner,
   Alert
 } from 'react-bootstrap';
+import { API_BASE_URL } from '../config';
 import { 
   ChatLeftText, 
   CheckCircle, 
@@ -80,7 +81,7 @@ const AdminTickets = () => {
         ...(searchTerm && { search: searchTerm })
       });
       
-      const response = await fetch(`http://localhost:5050/admin/tickets?${params}`);
+      const response = await fetch(`${API_BASE_URL}/admin/tickets?${params}`);
       
       if (!response.ok) {
         throw new Error('Failed to fetch tickets');
@@ -119,7 +120,7 @@ const AdminTickets = () => {
   // Fetch ticket details by ID
   const fetchTicketDetails = async (ticketId) => {
     try {
-      const response = await fetch(`http://localhost:5050/admin/tickets/${ticketId}`);
+      const response = await fetch(`${API_BASE_URL}/admin/tickets/${ticketId}`);
       if (!response.ok) {
         throw new Error('Failed to fetch ticket details');
       }
@@ -134,7 +135,7 @@ const AdminTickets = () => {
   const handleViewTicket = async (ticket) => {
     try {
       setLoading(true);
-      const response = await fetch(`http://localhost:5050/admin/tickets/${ticket.id}`);
+      const response = await fetch(`${API_BASE_URL}/admin/tickets/${ticket.id}`);
       if (!response.ok) {
         throw new Error('Failed to fetch ticket details');
       }
@@ -157,7 +158,7 @@ const AdminTickets = () => {
   const updateTicketStatus = async (ticketId, newStatus) => {
     try {
       setLoading(true);
-      const response = await fetch(`http://localhost:5050/admin/tickets/${ticketId}/status`, {
+      const response = await fetch(`${API_BASE_URL}/admin/tickets/${ticketId}/status`, {
         method: 'PUT',
         headers: { 
           'Content-Type': 'application/json',
@@ -200,7 +201,7 @@ const AdminTickets = () => {
     try {
       setLoading(true);
       const apiResponse = await fetch(
-        `http://localhost:5050/admin/tickets/${selectedTicket.id}/respond`,
+        `${API_BASE_URL}/admin/tickets/${selectedTicket.id}/respond`,
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },

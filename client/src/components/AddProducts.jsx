@@ -15,6 +15,7 @@ import { Pencil, Trash, Search, Plus } from 'react-bootstrap-icons';
 // Remove UserContext import as we don't need authentication
 import styled from 'styled-components';
 import { useUser } from "../contexts/UserContext";
+import { API_BASE_URL } from "../config";
 // Styled Components
 const ProductsGrid = styled.div`
     display: grid;
@@ -114,7 +115,7 @@ const AddProducts = () => {
         
         try {
             setLoading(true);
-            const response = await fetch(`http://localhost:5050/product/sellersproducts?userId=${userId}`);
+            const response = await fetch(`${API_BASE_URL}/product/sellersproducts?userId=${userId}`);
             if (!response.ok) {
                 throw new Error('Failed to fetch products');
             }
@@ -218,7 +219,7 @@ const AddProducts = () => {
             let response;
             if (editingProductId) {
                 // Update existing product
-                response = await fetch(`http://localhost:5050/product/${editingProductId}`, {
+                response = await fetch(`${API_BASE_URL}/product/${editingProductId}`, {
                     method: 'PUT',
                     headers: {
                         'Authorization': `Bearer ${token}`
@@ -232,7 +233,7 @@ const AddProducts = () => {
                     setIsSubmitting(false);
                     return;
                 }
-                response = await fetch('http://localhost:5050/product', {
+                response = await fetch(`${API_BASE_URL}/product`, {
                     method: 'POST',
                     body: formDataToSend
                 });
@@ -277,7 +278,7 @@ const AddProducts = () => {
             try {
                 setLoading(true);
                 const token = localStorage.getItem('token');
-                const response = await fetch(`http://localhost:5050/product/${productId}`, {
+                const response = await fetch(`${API_BASE_URL}/product/${productId}`, {
                     method: 'DELETE',
                     headers: {
                         'Authorization': `Bearer ${token}`,

@@ -4,13 +4,14 @@ import Card from 'react-bootstrap/Card';
 import { useUser } from "../contexts/UserContext";
 import Button from 'react-bootstrap/Button';
 import { Trash } from "react-bootstrap-icons";
+import { API_BASE_URL } from "../config";
 
 function AddressCard({ address, mode }) {
     const { user } = useUser();
     const userId = user?.data?.id;
     const setDefaultAddress = async (addressId) => {
         try {
-            const response = await fetch("http://localhost:5050/address/setdefaultaddress", {
+            const response = await fetch(`${API_BASE_URL}/address/setdefaultaddress`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -30,7 +31,7 @@ function AddressCard({ address, mode }) {
 
     const handleDelete = async () => {
         try {
-            const response = await fetch(`http://localhost:5050/address/deleteaddress?addressId=${address.id}`);
+            const response = await fetch(`${API_BASE_URL}/address/deleteaddress?addressId=${address.id}`);
             const data = await response.json();
             if (response.ok) {
                 alert(data.message);

@@ -5,6 +5,7 @@ import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import { GoogleMap, LoadScript, Marker } from '@react-google-maps/api';
+import { API_BASE_URL } from "../config";
 
 function Addresses() {
     const { user } = useUser();
@@ -27,7 +28,7 @@ function Addresses() {
 
     useEffect(() => {
         const fetchAddresses = async () => {
-            const response = await fetch(`http://localhost:5050/address?userId=${userId}`);
+            const response = await fetch(`${API_BASE_URL}/address?userId=${userId}`);
             const data = await response.json();
             if (response.ok) {
                 setAddresses(data);
@@ -75,7 +76,7 @@ function Addresses() {
         const formDataObj = Object.fromEntries(formData.entries());
         if (formDataObj.is_default === "on") formDataObj.is_default = true;
 
-        const response = await fetch(`http://localhost:5050/address?userId=${userId}`, {
+        const response = await fetch(`${API_BASE_URL}/address?userId=${userId}`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(formDataObj)

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Button, Form, Tabs, Tab, Spinner, Alert, Card } from 'react-bootstrap';
 import { Gear, FileEarmarkText, Save, ExclamationTriangle } from 'react-bootstrap-icons';
+import { API_BASE_URL } from '../config';
 
 const AdminSettings = () => {
   const [activeTab, setActiveTab] = useState('general');
@@ -36,7 +37,7 @@ const AdminSettings = () => {
       try {
         setLoading(true);
         // Fetch settings
-        const settingsRes = await fetch('http://localhost:5050/admin/settings');
+        const settingsRes = await fetch(`${API_BASE_URL}/admin/settings`);
         if (settingsRes.ok) {
           const settingsData = await settingsRes.json();
           // The backend already returns an object with key-value pairs
@@ -50,7 +51,7 @@ const AdminSettings = () => {
         }
 
         // Fetch documents
-        const docsRes = await fetch('http://localhost:5050/admin/documents');
+        const docsRes = await fetch(`${API_BASE_URL}/admin/documents`);
         if (docsRes.ok) {
           const docsData = await docsRes.json();
           const docsObj = { terms: { content: '' }, privacy_policy: { content: '' } };
@@ -119,7 +120,7 @@ const AdminSettings = () => {
         { key: 'itemsPerPage', value: settings.itemsPerPage }
       ];
 
-      const response = await fetch('http://localhost:5050/admin/settings', {
+      const response = await fetch(`${API_BASE_URL}/admin/settings`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(settingsToSave)
@@ -151,7 +152,7 @@ const AdminSettings = () => {
 
       const doc = documents[type];
       
-      const response = await fetch('http://localhost:5050/admin/documents', {
+      const response = await fetch(`${API_BASE_URL}/admin/documents`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -194,7 +195,7 @@ const AdminSettings = () => {
 
       const templateData = emailTemplates[template];
       
-      const response = await fetch('http://localhost:5050/admin/email-templates', {
+      const response = await fetch(`${API_BASE_URL}/admin/email-templates`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

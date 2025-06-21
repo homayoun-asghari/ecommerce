@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { ListGroup, Card, Button } from 'react-bootstrap';
-import { useUser } from "../contexts/UserContext.jsx"
+import { useUser } from "../contexts/UserContext.jsx";
+import { API_BASE_URL } from '../config';
 
 const SellerOrders = () => {
   const [orders, setOrders] = useState([]);
@@ -14,7 +15,7 @@ const SellerOrders = () => {
       setLoading(true);
       setError(null);
       try {
-        const response = await fetch(`http://localhost:5050/order/sellerorders?userId=${userId}`);
+        const response = await fetch(`${API_BASE_URL}/order/sellerorders?userId=${userId}`);
         if (!response.ok) {
           throw new Error('Failed to fetch orders');
         }
