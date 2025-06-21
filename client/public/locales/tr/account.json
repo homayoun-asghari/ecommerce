@@ -1,0 +1,25 @@
+{
+  "tabs": {
+    "dashboard": "Gösterge Paneli",
+    "orders": "Siparişlerim",
+    "wishlist": "İstek Listesi",
+    "cart": "Sepetim",
+    "address": "Adreslerim",
+    "tickets": "Destek Talepleri",
+    "notifications": "Bildirimler",
+    "logout": "Çıkış Yap",
+    "products": "Ürünler",
+    "payment": "Ödemeler",
+    "users": "Kullanıcılar",
+    "messages": "Mesajlar",
+    "reviews": "Değerlendirmeler",
+    "blog": "Blog",
+    "setting": "Ayarlar"
+  },
+  "seller": {
+    "payment": "Ödeme & Ödemeler"
+  },
+  "admin": {
+    "payment": "Ödeme & Ödemeler"
+  }
+}

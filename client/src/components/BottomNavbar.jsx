@@ -23,8 +23,9 @@ import { useNotification } from "../contexts/NotificationContext";
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import SellerAccountTabs from "./SellerAccountTabs.jsx";
 import AdminAccountTabs from "./AdminAccountTabs.jsx";
-import FilterItems from "./FilterItems.jsx"
+import FilterItems from "./FilterItems.jsx";
 import LanguageSwitcher from "./LanguageSwitcher";
+import { useTranslation } from 'react-i18next';
 
 function BottomNavbar() {
   const { mode } = useTheme();
@@ -37,6 +38,7 @@ function BottomNavbar() {
   const { user } = useUser();
   const userRole = user?.data?.role;
   const { notifications } = useNotification();
+  const { t } = useTranslation('navbar');
 
   useEffect(() => {
     const handleResize = () => {
@@ -57,20 +59,20 @@ function BottomNavbar() {
           <Nav.Link onClick={handleShow}>
             <img src={mode ? logo : logoDark} alt="logo" className="img-fluid" style={{ maxHeight: '24px' }} />
           </Nav.Link>
-          <Nav.Link href="/cart">
+          <Nav.Link href="/cart" title={t('cart')}>
             <Badge badgeContent={cartItems.length}>
               <ShoppingCartIcon />
             </Badge>
           </Nav.Link>
-          <Nav.Link href="/">
+          <Nav.Link href="/" title={t('home')}>
             <HomeIcon style={{ fontSize: 30 }} />
           </Nav.Link>
-          <Nav.Link href="/account?tab=wishlist">
+          <Nav.Link href="/account?tab=wishlist" title={t('wishlist')}>
             <Badge badgeContent={wishList.length}>
               <FavoriteIcon />
             </Badge>
           </Nav.Link>
-          <Nav.Link href="/account">
+          <Nav.Link href="/account" title={t('account')}>
             <PersonIcon style={{ fontSize: 30 }} />
           </Nav.Link>
         </Nav>
@@ -78,8 +80,8 @@ function BottomNavbar() {
 
       <Offcanvas show={show} onHide={handleClose} placement="start" >
         <Offcanvas.Header className="d-flex gap-3" closeButton>
-          <Nav.Link href="/account?tab=notifications" className="d-flex align-items-end">
-            <Badge badgeContent={notifications.filter(n => n.is_read === false).length} >
+          <Nav.Link href="/account?tab=notifications" className="d-flex align-items-end" title={t('notifications')}>
+            <Badge badgeContent={notifications.filter(n => n.is_read === false).length}>
               <NotificationsIcon style={{ fontSize: 30 }} />
             </Badge>
           </Nav.Link>
@@ -92,7 +94,7 @@ function BottomNavbar() {
         <Offcanvas.Body className="d-flex flex-column">
           {/* Scrollable Main Content */}
           <div className="flex-grow-1 overflow-auto">
-            <Searchbar button={<Search />} placeholder="Search Products" />
+            <Searchbar button={<Search />} placeholder={t('searchPlaceholder')} />
 
             {(location.pathname === "/account" && userRole === "buyer") && <AccountTabs />}
             {(location.pathname === "/account" && userRole === "seller") && <SellerAccountTabs />}
@@ -103,11 +105,11 @@ function BottomNavbar() {
           </div>
 
           <div className="offcanvas-footer mt-4 d-flex align-items-center justify-content-between flex-wrap gap-3">
-            <Nav className="d-flex gap-3">
-              <Nav.Link href="/shop" onClick={handleClose}>Shop</Nav.Link>
-              <Nav.Link href="/blog" onClick={handleClose}>Blog</Nav.Link>
-              <Nav.Link href="/contact" onClick={handleClose}>Contact</Nav.Link>
-              <Nav.Link href="/about" onClick={handleClose}>About</Nav.Link>
+            <Nav className="d-flex gap-1">
+              <Nav.Link href="/shop" onClick={handleClose}>{t('shop')}</Nav.Link>
+              <Nav.Link href="/blog" onClick={handleClose}>{t('blog')}</Nav.Link>
+              <Nav.Link href="/contact" onClick={handleClose}>{t('contact')}</Nav.Link>
+              <Nav.Link href="/about" onClick={handleClose}>{t('about')}</Nav.Link>
             </Nav>
           </div>
         </Offcanvas.Body>

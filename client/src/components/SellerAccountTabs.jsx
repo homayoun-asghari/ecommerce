@@ -1,36 +1,56 @@
 import "../styles/Categories.css";
 import React from "react";
+import { useTranslation } from 'react-i18next';
 import Nav from "react-bootstrap/Nav";
 import { useAccountTab } from "../contexts/AccountTabContext";
 import { useUser } from "../contexts/UserContext";
 import { useNavigate } from "react-router-dom";
 
 function SellerAccountTabs() {
+    const { t } = useTranslation('account');
     const { activeTab, setActiveTab } = useAccountTab();
     const { logout } = useUser();
     const navigate = useNavigate();
 
-    function handleClick(tab) {
+    const handleClick = (tab) => {
         setActiveTab(tab);
-    }
+    };
+
+    const tabs = [
+        { key: 'dashboard' },
+        { key: 'products' },
+        { key: 'orders' },
+        { key: 'payment' },
+        { key: 'wishlist' },
+        { key: 'cart' },
+        { key: 'address' },
+        { key: 'tickets' },
+        { key: 'notifications' }
+    ];
+
+    const getTabLabel = (key) => {
+        if (key === 'payment') {
+            return t('seller.payment');
+        }
+        return t(`tabs.${key}`);
+    };
 
     return (
-
         <Nav className="flex-column" variant="underline" activeKey={activeTab}>
-            <Nav.Link eventKey="dashboard" onClick={() => handleClick("dashboard")}>Dashboard</Nav.Link>
-            <Nav.Link eventKey="products" onClick={() => handleClick("products")}>Products</Nav.Link>
-            <Nav.Link eventKey="orders" onClick={() => handleClick("orders")}>Orders</Nav.Link>
-            <Nav.Link eventKey="cart" onClick={() => handleClick("payment")}>Payment</Nav.Link>
-            <Nav.Link eventKey="wishlist" onClick={() => handleClick("wishlist")}>Wish List</Nav.Link>
-            <Nav.Link eventKey="cart" onClick={() => handleClick("cart")}>Cart</Nav.Link>
-            <Nav.Link eventKey="address" onClick={() => handleClick("address")}>Addresses</Nav.Link>
-            <Nav.Link eventKey="tickets" onClick={() => handleClick("tickets")}>Tickets</Nav.Link>
-            <Nav.Link eventKey="notifications" onClick={() => handleClick("notifications")}>Notifications</Nav.Link>
-            <Nav.Link onClick={() => { logout(); navigate("/"); }}>Log Out</Nav.Link>
+            {tabs.map(tab => (
+                <Nav.Link 
+                    key={tab.key}
+                    eventKey={tab.key}
+                    onClick={() => handleClick(tab.key)}
+                >
+                    {getTabLabel(tab.key)}
+                </Nav.Link>
+            ))}
+            <Nav.Link onClick={() => { logout(); navigate("/"); }}>
+                {t('tabs.logout')}
+            </Nav.Link>
         </Nav>
-
     );
 }
 
-
-export default SellerAccountTabs;
+export default React.memo(SellerAccountTabs);

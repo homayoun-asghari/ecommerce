@@ -1,0 +1,25 @@
+{
+  "tabs": {
+    "dashboard": "Dashboard",
+    "orders": "Orders",
+    "wishlist": "Wish List",
+    "cart": "Cart",
+    "address": "Addresses",
+    "tickets": "Tickets",
+    "notifications": "Notifications",
+    "logout": "Log Out",
+    "products": "Products",
+    "payment": "Payment",
+    "users": "Users",
+    "messages": "Messages",
+    "reviews": "Reviews",
+    "blog": "Blog",
+    "setting": "Setting"
+  },
+  "seller": {
+    "payment": "Payment & Payouts"
+  },
+  "admin": {
+    "payment": "Payment & Payouts"
+  }
+}
