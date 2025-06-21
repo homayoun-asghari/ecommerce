@@ -1,0 +1,31 @@
+{
+  "loading": "Pano yükleniyor...",
+  "errorLoading": "Hata: {{error}}",
+  "noDataAvailable": "Veri bulunamadı",
+  "cards": {
+    "users": {
+      "title": "Kullanıcılar",
+      "total": "Toplam: {{count}}",
+      "buyers": "Alıcılar: {{count}}",
+      "sellers": "Satıcılar: {{count}}"
+    },
+    "products": {
+      "title": "Ürünler",
+      "total": "Toplam: {{count}}"
+    },
+    "orders": {
+      "title": "Siparişler",
+      "total": "Toplam: {{count}}",
+      "revenue": "Gelir: {{amount}} TL"
+    },
+    "pending": {
+      "title": "Bekleyenler",
+      "tickets": "Destek Talepleri: {{count}}",
+      "reviews": "İncelemeler: {{count}}"
+    }
+  },
+  "errors": {
+    "fetchOverview": "Genel bakış verileri alınamadı",
+    "fetchMonthlyOrders": "Aylık siparişler alınamadı"
+  }
+}

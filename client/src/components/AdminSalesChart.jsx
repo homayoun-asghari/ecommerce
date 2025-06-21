@@ -1,22 +1,38 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import {
   ResponsiveContainer, LineChart, Line,
   XAxis, YAxis, CartesianGrid, Tooltip, Legend
 } from "recharts";
 import Card from 'react-bootstrap/Card';
 import { API_BASE_URL } from "../config";
+import { useTranslation } from 'react-i18next';
 
 function AdminSalesChart() {
+  const { t, i18n } = useTranslation('adminSalesChart');
   const [deliveredData, setDeliveredData] = useState([]);
   const [pendingData, setPendingData] = useState([]);
   const [totalSales, setTotalSales] = useState(0);
   const [month, setMonth] = useState(new Date().getMonth() + 1);
-  const [year, setYear] = useState(new Date().getFullYear());
+  const [year] = useState(new Date().getFullYear());
 
-  const months = [
-    "January", "February", "March", "April", "May", "June",
-    "July", "August", "September", "October", "November", "December"
-  ];
+  // Get months from translation or fallback to English
+  const getMonths = useCallback(() => {
+    try {
+      const translatedMonths = t('months', { returnObjects: true });
+      if (Array.isArray(translatedMonths) && translatedMonths.length === 12) {
+        return translatedMonths;
+      }
+    } catch (e) {
+      console.warn('Error loading translated months:', e);
+    }
+    // Fallback to English months
+    return [
+      'January', 'February', 'March', 'April', 'May', 'June',
+      'July', 'August', 'September', 'October', 'November', 'December'
+    ];
+  }, [t]);
+
+  const months = getMonths();
 
   useEffect(() => {
     async function fetchChartData() {
@@ -54,11 +70,22 @@ function AdminSalesChart() {
   return (
     <Card>
       <Card.Header className="d-flex justify-content-between align-items-center">
-        <h5>Total Sales: ${totalSales.toFixed(2)}</h5>
-        <select value={month} onChange={e => setMonth(Number(e.target.value))}>
-          {months.map((name, i) => (
-            <option key={i} value={i + 1}>{name}</option>
-          ))}
+        <h5>{t('totalSales', { amount: totalSales.toFixed(2) })}</h5>
+        <select 
+          value={month} 
+          onChange={e => setMonth(Number(e.target.value))}
+          className="form-select form-select-sm"
+          style={{ width: 'auto' }}
+        >
+          {months && months.length > 0 ? (
+            months.map((name, i) => (
+              <option key={i} value={i + 1}>{name}</option>
+            ))
+          ) : (
+            <option value={month}>
+              {new Date(year, month - 1).toLocaleString(i18n.language, { month: 'long' })}
+            </option>
+          )}
         </select>
       </Card.Header>
       <Card.Body>
@@ -69,8 +96,20 @@ function AdminSalesChart() {
             <YAxis allowDecimals={false} />
             <Tooltip />
             <Legend />
-            <Line data={deliveredData} type="monotone" dataKey="orders" stroke="#28a745" name="Delivered Orders" />
-            <Line data={pendingData} type="monotone" dataKey="orders" stroke="#ffc107" name="Pending Orders" />
+            <Line 
+              data={deliveredData} 
+              type="monotone" 
+              dataKey="orders" 
+              stroke="#28a745" 
+              name={t('chart.deliveredOrders')} 
+            />
+            <Line 
+              data={pendingData} 
+              type="monotone" 
+              dataKey="orders" 
+              stroke="#ffc107" 
+              name={t('chart.pendingOrders')} 
+            />
           </LineChart>
         </ResponsiveContainer>
       </Card.Body>

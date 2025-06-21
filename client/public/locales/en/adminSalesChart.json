@@ -1,0 +1,11 @@
+{
+  "totalSales": "Total Sales: {{amount}}",
+  "months": [
+    "January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December"
+  ],
+  "chart": {
+    "deliveredOrders": "Delivered Orders",
+    "pendingOrders": "Pending Orders"
+  }
+}

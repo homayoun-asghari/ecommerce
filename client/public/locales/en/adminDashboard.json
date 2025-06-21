@@ -1,0 +1,31 @@
+{
+  "loading": "Loading dashboard...",
+  "errorLoading": "Error: {{error}}",
+  "noDataAvailable": "No data available",
+  "cards": {
+    "users": {
+      "title": "Users",
+      "total": "Total: {{count}}",
+      "buyers": "Buyers: {{count}}",
+      "sellers": "Sellers: {{count}}"
+    },
+    "products": {
+      "title": "Products",
+      "total": "Total: {{count}}"
+    },
+    "orders": {
+      "title": "Orders",
+      "total": "Total: {{count}}",
+      "revenue": "Revenue: ${{amount}}"
+    },
+    "pending": {
+      "title": "Pending",
+      "tickets": "Tickets: {{count}}",
+      "reviews": "Reviews: {{count}}"
+    }
+  },
+  "errors": {
+    "fetchOverview": "Failed to fetch overview data",
+    "fetchMonthlyOrders": "Failed to fetch monthly orders"
+  }
+}

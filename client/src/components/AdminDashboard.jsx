@@ -1,9 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Card } from 'react-bootstrap';
 import AdminSalesChart from './AdminSalesChart';
 import { API_BASE_URL } from '../config';
+import { useTranslation } from 'react-i18next';
 
 const AdminDashboard = () => {
+    const { t } = useTranslation('adminDashboard');
     const [data, setData] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -16,7 +18,7 @@ const AdminDashboard = () => {
                 const response = await fetch(`${API_BASE_URL}/admin/overview`);
                 if (!response.ok) {
                     const errorData = await response.json();
-                    throw new Error(errorData.error || 'Failed to fetch overview data');
+                    throw new Error(errorData.error || t('errors.fetchOverview'));
                 }
                 const result = await response.json();
                 setData(prev => ({ ...prev, ...result }));
@@ -30,10 +32,10 @@ const AdminDashboard = () => {
         };
 
         fetchOverview();
-    }, []);
+    }, [t]); // Added t as a dependency
 
-    // Function to fetch monthly orders
-    const fetchMonthlyOrders = async (month) => {
+    // Memoized function to fetch monthly orders
+    const fetchMonthlyOrdersMemoized = useCallback(async (month) => {
         try {
             const url = new URL(`${API_BASE_URL}/admin/monthly-orders`);
             if (month) {
@@ -43,7 +45,7 @@ const AdminDashboard = () => {
             const response = await fetch(url);
             if (!response.ok) {
                 const errorData = await response.json();
-                throw new Error(errorData.error || 'Failed to fetch monthly orders');
+                throw new Error(errorData.error || t('errors.fetchMonthlyOrders'));
             }
             return await response.json();
         } catch (err) {
@@ -51,20 +53,20 @@ const AdminDashboard = () => {
             setError(err.message);
             return [];
         }
-    };
+    }, [t]);
 
     useEffect(() => {
         const fetchMonthlyOrdersData = async () => {
-            const monthlyOrders = await fetchMonthlyOrders();
+            const monthlyOrders = await fetchMonthlyOrdersMemoized();
             setData(prev => ({ ...prev, ordersPerMonth: monthlyOrders }));
         };
 
         fetchMonthlyOrdersData();
-    }, []);
+    }, [fetchMonthlyOrdersMemoized]);
 
-    if (loading) return <div>Loading dashboard...</div>;
-    if (error) return <div>Error: {error}</div>;
-    if (!data) return <div>No data available</div>;
+    if (loading) return <div>{t('loading')}</div>;
+    if (error) return <div>{t('errorLoading', { error })}</div>;
+    if (!data) return <div>{t('noDataAvailable')}</div>;
 
     return (
         <div className="p-3">
@@ -77,12 +79,12 @@ const AdminDashboard = () => {
                 {/* Users Card */}
                 <div className="col-md-6 col-lg-3">
                     <Card style={{ height: "10rem" }}>
-                        <Card.Header>Users</Card.Header>
+                        <Card.Header>{t('cards.users.title')}</Card.Header>
                         <Card.Body>
                             <Card.Text>
-                                Total: {data.users.total || 0} <br />
-                                Buyers: {data.users.buyers || 0} <br />
-                                Sellers: {data.users.sellers || 0}
+                                {t('cards.users.total', { count: data.users.total || 0 })} <br />
+                                {t('cards.users.buyers', { count: data.users.buyers || 0 })} <br />
+                                {t('cards.users.sellers', { count: data.users.sellers || 0 })}
                             </Card.Text>
                         </Card.Body>
                     </Card>
@@ -91,9 +93,9 @@ const AdminDashboard = () => {
                 {/* Products Card */}
                 <div className="col-md-6 col-lg-3">
                     <Card style={{ height: "10rem" }}>
-                        <Card.Header>Products</Card.Header>
+                        <Card.Header>{t('cards.products.title')}</Card.Header>
                         <Card.Body>
-                            <Card.Text>Total: {data.products || 0}</Card.Text>
+                            <Card.Text>{t('cards.products.total', { count: data.products || 0 })}</Card.Text>
                         </Card.Body>
                     </Card>
                 </div>
@@ -101,11 +103,11 @@ const AdminDashboard = () => {
                 {/* Orders Card */}
                 <div className="col-md-6 col-lg-3">
                     <Card style={{ height: "10rem" }}>
-                        <Card.Header>Orders</Card.Header>
+                        <Card.Header>{t('cards.orders.title')}</Card.Header>
                         <Card.Body>
                             <Card.Text>
-                                Total: {data.orders.total || 0} <br />
-                                Revenue: ${(data.orders.revenue || 0).toFixed(2)}
+                                {t('cards.orders.total', { count: data.orders.total || 0 })} <br />
+                                {t('cards.orders.revenue', { amount: (data.orders.revenue || 0).toFixed(2) })}
                             </Card.Text>
                         </Card.Body>
                     </Card>
@@ -114,11 +116,11 @@ const AdminDashboard = () => {
                 {/* Pending Items Card */}
                 <div className="col-md-6 col-lg-3">
                     <Card style={{ height: "10rem" }}>
-                        <Card.Header>Pending</Card.Header>
+                        <Card.Header>{t('cards.pending.title')}</Card.Header>
                         <Card.Body>
                             <Card.Text>
-                                Tickets: {data.pending.tickets || 0} <br />
-                                Reviews: {data.pending.reviews || 0}
+                                {t('cards.pending.tickets', { count: data.pending.tickets || 0 })} <br />
+                                {t('cards.pending.reviews', { count: data.pending.reviews || 0 })}
                             </Card.Text>
                         </Card.Body>
                     </Card>

@@ -1,0 +1,11 @@
+{
+  "totalSales": "Toplam Satış: {{amount}} TL",
+  "months": [
+    "Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran",
+    "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık"
+  ],
+  "chart": {
+    "deliveredOrders": "Teslim Edilen Siparişler",
+    "pendingOrders": "Bekleyen Siparişler"
+  }
+}
