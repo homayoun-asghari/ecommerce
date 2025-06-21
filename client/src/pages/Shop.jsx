@@ -227,28 +227,49 @@ function Shop() {
                 >
                     <Card className="border-0 shadow-sm mb-4">
                         <Card.Header className="border-bottom-0 py-3">
-                            <div className="d-flex flex-column flex-md-row justify-content-center justify-content-md-between align-items-center">
+                            <div className="d-flex flex-column flex-md-row justify-content-center justify-content-md-between align-items-center w-100">
                                 <h5 className="mb-3 mb-md-0 text-center text-md-start">
                                     {pagination.total} {pagination.total === 1 ? 'Product' : 'Products'} Found
                                 </h5>
-                                <div style={{ maxWidth: '300px', width: '100%' }}>
-                                    <Stack direction="horizontal" gap={2} className="justify-content-center justify-content-md-end">
-                                        <Form.Label className="mb-0 text-nowrap">Sort by:</Form.Label>
-                                        <Form.Select
-                                            size="sm"
-                                            style={{ minWidth: '180px' }}
-                                            value={sortBy}
-                                            onChange={(e) => setSortBy(e.target.value)}
-                                        >
-                                            <option value="featured">Featured</option>
-                                            <option value="price-low">Price: Low to High</option>
-                                            <option value="price-high">Price: High to Low</option>
-                                            <option value="rating">Top Rated</option>
-                                            <option value="newest">Newest</option>
-                                            <option value="best-sellers">Best Sellers</option>
-                                            <option value="discount">Top Discount</option>
-                                        </Form.Select>
-                                    </Stack>
+                                <div className="d-flex align-items-center gap-2" style={{ maxWidth: '500px', width: '100%' }}>
+                                    <Button
+                                        variant="outline-secondary"
+                                        size="sm"
+                                        onClick={() => {
+                                            // Clear all filters
+                                            updateFilters({
+                                                categories: [],
+                                                priceRange: { min: 0, max: 1000 },
+                                                minRating: 0
+                                            });
+                                            // Clear URL parameters
+                                            setSearchParams({});
+                                        }}
+                                        disabled={!filters.categories?.length && !filters.minRating && 
+                                                filters.priceRange?.min === 0 && filters.priceRange?.max === 1000}
+                                        className="me-2"
+                                    >
+                                        Clear All Filters
+                                    </Button>
+                                    <div style={{ minWidth: '180px' }}>
+                                        <Stack direction="horizontal" gap={2} className="justify-content-center justify-content-md-end">
+                                            <Form.Label className="mb-0 text-nowrap">Sort by:</Form.Label>
+                                            <Form.Select
+                                                size="sm"
+                                                style={{ minWidth: '180px' }}
+                                                value={sortBy}
+                                                onChange={(e) => setSortBy(e.target.value)}
+                                            >
+                                                <option value="featured">Featured</option>
+                                                <option value="price-low">Price: Low to High</option>
+                                                <option value="price-high">Price: High to Low</option>
+                                                <option value="rating">Top Rated</option>
+                                                <option value="newest">Newest</option>
+                                                <option value="best-sellers">Best Sellers</option>
+                                                <option value="discount">Top Discount</option>
+                                            </Form.Select>
+                                        </Stack>
+                                    </div>
                                 </div>
                             </div>
                         </Card.Header>
