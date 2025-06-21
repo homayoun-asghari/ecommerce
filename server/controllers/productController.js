@@ -75,14 +75,15 @@ export const getProduct = async (req, res) => {
 export const getNewArrivals = async (req, res) => {
     try {
         const result = await db.query(`
-            SELECT p.*, 
-                AVG(r.rating) AS avg_rating, 
-                COUNT(r.id) AS review_count
-            FROM products p
-            LEFT JOIN reviews r ON p.id = r.product_id
-            GROUP BY p.id
-            ORDER BY p.created_at DESC
-            LIMIT 10;
+            SELECT 
+    p.*, 
+    AVG(r.rating) AS avg_rating, 
+    COUNT(r.id) AS review_count
+FROM products p
+LEFT JOIN reviews r ON p.id = r.product_id
+GROUP BY p.id, p.name, p.description, p.price, p.stock, p.category, p.image_url, p.created_at, p.updated_at, p.seller_id, p.discount
+ORDER BY p.created_at DESC
+LIMIT 10;
         `);
 
         res.status(200).json(result.rows);
@@ -387,6 +388,8 @@ export const getShopProducts = async (req, res) => {
                 query += ` ORDER BY avg_rating DESC`;
                 break;
             case 'newest':
+                query += ` ORDER BY p.created_at DESC`;
+                break;
             case 'best-sellers':
             case 'sold':
                 query += ` ORDER BY total_quantity_sold DESC`;

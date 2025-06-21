@@ -31,7 +31,7 @@ function NewArrivals() {
                     <h5>Best Sellers</h5>
                 </Col>
                 <Col className="text-end">
-                    <Link to="/shop" className="btn btn-outline-primary text-nowrap">
+                    <Link to="/shop?sort=best-sellers" className="btn btn-outline-primary text-nowrap">
                         View All
                     </Link>
                 </Col>

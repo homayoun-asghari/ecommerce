@@ -35,7 +35,7 @@ function EspecialOffers() {
                     <h2>Special Offers</h2>
                 </div>
                 <Countdown />
-                <Link to="/products/especialoffers" className="btn btn-outline-dark text-nowrap">
+                <Link to="/shop?sort=discount" className="btn btn-outline-dark text-nowrap">
                     View All
                 </Link>
             </Col>

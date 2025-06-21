@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
     Container,
     Row,
@@ -14,6 +14,7 @@ import ProductCard from '../components/ProductCard';
 import { useSideBar } from '../contexts/SideBarContext';
 import { useFilters } from '../contexts/FilterContext';
 import { API_BASE_URL } from "../config";
+import { useSearchParams } from 'react-router-dom';
 
 const ContentColumn = styled(Col)`
   transition: all 0.3s ease-in-out;
@@ -50,8 +51,19 @@ function Shop() {
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [categories, setCategories] = useState([]);
-    const [sortBy, setSortBy] = useState('featured');
+    const [searchParams, setSearchParams] = useSearchParams();
+    const [sortBy, setSortBy] = useState(searchParams.get('sort') || 'featured');
+    
+    // Update URL when sort changes
+    useEffect(() => {
+        const params = new URLSearchParams(searchParams);
+        if (sortBy === 'featured') {
+            params.delete('sort');
+        } else {
+            params.set('sort', sortBy);
+        }
+        setSearchParams(params, { replace: true });
+    }, [sortBy, searchParams, setSearchParams]);
     const [pagination, setPagination] = useState({
         page: 1,
         limit: 12,
@@ -69,7 +81,7 @@ function Shop() {
     const { filters, updateFilters } = useFilters();
 
     // Fetch products with filters, sorting, and pagination
-    const fetchProducts = async (page = 1) => {
+    const fetchProducts = useCallback(async (page = 1) => {
         try {
             setLoading(true);
 
@@ -101,36 +113,38 @@ function Shop() {
             const data = await response.json();
 
             if (!response.ok) {
-                throw new Error(data.error || 'Failed to fetch products');
+                throw new Error(data.message || 'Failed to fetch products');
             }
 
-            setProducts(data.products);
+            setProducts(data.products || []);
             setPagination({
-                ...pagination,
-                page: data.pagination.current_page,
-                total: data.pagination.total,
-                totalPages: data.pagination.total_pages
+                page: data.page || 1,
+                limit: data.limit || 12,
+                total: data.total || 0,
+                totalPages: data.totalPages || 1
             });
-
-            // Update categories if not already set
-            if (categories.length === 0) {
-                const uniqueCategories = [...new Set(data.products.map(p => p.category))];
-                setCategories(uniqueCategories);
-            }
-
+            setError(null);
         } catch (err) {
             console.error('Error fetching products:', err);
-            setError(err.message);
+            setError(err.message || 'Failed to load products. Please try again later.');
+            setProducts([]);
         } finally {
             setLoading(false);
         }
-    };
+    }, [filters, pagination.limit, sortBy]);
 
-    // Initial fetch and when filters/sort change
+    // Set initial sort from URL on component mount
+    useEffect(() => {
+        const sortParam = searchParams.get('sort');
+        if (sortParam) {
+            setSortBy(sortParam);
+        }
+    }, [searchParams]);
+
+    // Fetch products when filters, sort, or fetchProducts changes
     useEffect(() => {
         fetchProducts(1);
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [filters, sortBy]); // fetchProducts is stable and doesn't need to be in deps
+    }, [filters, sortBy, fetchProducts]);
 
     // Handle page change
     const handlePageChange = (newPage) => {
@@ -195,16 +209,18 @@ function Shop() {
                                     <Stack direction="horizontal" gap={2} className="justify-content-center justify-content-md-end">
                                         <Form.Label className="mb-0 text-nowrap">Sort by:</Form.Label>
                                         <Form.Select
+                                            size="sm"
+                                            style={{ minWidth: '180px' }}
                                             value={sortBy}
                                             onChange={(e) => setSortBy(e.target.value)}
-                                            size="sm"
                                         >
                                             <option value="featured">Featured</option>
-                                            <option value="best-sellers">Best Sellers</option>
                                             <option value="price-low">Price: Low to High</option>
                                             <option value="price-high">Price: High to Low</option>
                                             <option value="rating">Top Rated</option>
                                             <option value="newest">Newest</option>
+                                            <option value="best-sellers">Best Sellers</option>
+                                            <option value="discount">Top Discount</option>
                                         </Form.Select>
                                     </Stack>
                                 </div>

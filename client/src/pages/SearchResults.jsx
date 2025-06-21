@@ -178,6 +178,7 @@ const SearchResults = () => {
                 >
                   <option value="relevance">Relevance</option>
                   <option value="best-sellers">Best Sellers</option>
+                  <option value="discount">Top Discount</option>
                   <option value="price_asc">Price: Low to High</option>
                   <option value="price_desc">Price: High to Low</option>
                   <option value="rating">Top Rated</option>
