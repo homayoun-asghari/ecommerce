@@ -2,7 +2,6 @@ import React, { useCallback, useState} from 'react';
 import Accordion from 'react-bootstrap/Accordion';
 import {
     Form,
-    Button,
     Stack,
     InputGroup,
     Row,
@@ -58,12 +57,6 @@ function AccordionItems() {
         });
     }, [filters, updateFilters]);
 
-    const handleClearRating = useCallback(() => {
-        updateFilters({
-            ...filters,
-            minRating: 0
-        });
-    }, [filters, updateFilters]);
 
     return (
         <div>
@@ -145,15 +138,6 @@ function AccordionItems() {
                                     className="px-2 py-1 rounded hover-bg-light"
                                 />
                             ))}
-                            <Button
-                                variant="outline-secondary"
-                                size="sm"
-                                className="mt-2"
-                                onClick={handleClearRating}
-                                disabled={!filters.minRating}
-                            >
-                                Clear Rating
-                            </Button>
                         </Stack>
                     </Accordion.Body>
                 </Accordion.Item>
