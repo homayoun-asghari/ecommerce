@@ -1,0 +1,25 @@
+{
+  "title": "Hesap Panosu",
+  "form": {
+    "fullName": "Tam Adı",
+    "fullNamePlaceholder": "Tam Adınızı Giriniz",
+    "email": "E-posta Adresi",
+    "emailPlaceholder": "E-posta adresinizi giriniz",
+    "changePassword": "Şifre Değiştir",
+    "passwordPlaceholder": "Şifre",
+    "confirmPassword": "Şifreyi Onayla",
+    "confirmPasswordPlaceholder": "Şifreyi Tekrar Giriniz",
+    "updateButton": "Güncelle",
+    "updateSuccess": "Kullanıcı bilgileri başarıyla güncellendi",
+    "updateError": "Kullanıcı bilgileri güncellenirken hata oluştu"
+  },
+  "tabs": {
+    "dashboard": "Panel",
+    "orders": "Siparişlerim",
+    "wishlist": "İstek Listesi",
+    "cart": "Alışveriş Sepeti",
+    "address": "Adreslerim",
+    "tickets": "Destek Talepleri",
+    "notifications": "Bildirimler"
+  }
+}

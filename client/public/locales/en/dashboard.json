@@ -1,0 +1,25 @@
+{
+  "title": "Account Dashboard",
+  "form": {
+    "fullName": "Full Name",
+    "fullNamePlaceholder": "Enter Full Name",
+    "email": "Email Address",
+    "emailPlaceholder": "Enter email",
+    "changePassword": "Change Password",
+    "passwordPlaceholder": "Password",
+    "confirmPassword": "Confirm Password",
+    "confirmPasswordPlaceholder": "Confirm Password",
+    "updateButton": "Update",
+    "updateSuccess": "User data updated successfully",
+    "updateError": "Error updating user data"
+  },
+  "tabs": {
+    "dashboard": "Dashboard",
+    "orders": "My Orders",
+    "wishlist": "Wishlist",
+    "cart": "Shopping Cart",
+    "address": "My Addresses",
+    "tickets": "Support Tickets",
+    "notifications": "Notifications"
+  }
+}

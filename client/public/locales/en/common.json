@@ -17,5 +17,7 @@
   "submit": "Submit",
   "reset": "Reset",
   "clearAllFilters": "Clear All Filters",
-  "retry": "Retry"
+  "retry": "Retry",
+  "viewDetails": "View Details",
+  "hideDetails": "Hide Details"
 }

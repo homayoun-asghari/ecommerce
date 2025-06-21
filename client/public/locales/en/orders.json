@@ -1,0 +1,24 @@
+{
+  "tabs": {
+    "pending": "Pending",
+    "shipped": "Shipped",
+    "delivered": "Delivered",
+    "cancelled": "Cancelled"
+  },
+  "noOrders": "No orders found",
+  "order": {
+    "orderNumber": "Order #{{orderNumber}}",
+    "date": "Date: {{date}}",
+    "status": "Status: {{status}}",
+    "total": "Total: {{total}}",
+    "viewDetails": "View Details",
+    "trackOrder": "Track Order"
+  },
+  "status": {
+    "pending": "Pending",
+    "processing": "Processing",
+    "shipped": "Shipped",
+    "delivered": "Delivered",
+    "cancelled": "Cancelled"
+  }
+}

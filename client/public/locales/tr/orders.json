@@ -1,0 +1,24 @@
+{
+  "tabs": {
+    "pending": "Beklemede",
+    "shipped": "Kargoda",
+    "delivered": "Teslim Edildi",
+    "cancelled": "İptal Edildi"
+  },
+  "noOrders": "Sipariş bulunamadı",
+  "order": {
+    "orderNumber": "Sipariş #{{orderNumber}}",
+    "date": "Tarih: {{date}}",
+    "status": "Durum: {{status}}",
+    "total": "Toplam: {{total}}",
+    "viewDetails": "Detayları Görüntüle",
+    "trackOrder": "Siparişi Takip Et"
+  },
+  "status": {
+    "pending": "Beklemede",
+    "processing": "İşleniyor",
+    "shipped": "Kargoda",
+    "delivered": "Teslim Edildi",
+    "cancelled": "İptal Edildi"
+  }
+}
