@@ -1,4 +1,5 @@
 import React, { useEffect } from "react";
+import { useTranslation } from 'react-i18next';
 import cartLight from "../assets/cart-light.png";
 import cartDark from "../assets/cart-dark.png";
 import { useTheme } from "../contexts/ThemeContext";
@@ -23,6 +24,7 @@ const ContentColumn = styled.div`
 `;
 
 const CartContent = ({ isInTab = false }) => {
+    const { t } = useTranslation('cart');
     const { mode } = useTheme();
     const { cartItems } = useCart();
     const { user } = useUser();
@@ -50,7 +52,7 @@ const CartContent = ({ isInTab = false }) => {
         return (
             <div className="d-flex flex-column justify-content-center align-items-center gap-5" style={{ height: "50vh" }}>
                 <img src={mode ? cartLight : cartDark} alt="Cart" />
-                <h1>Your Cart Is Empty!</h1>
+                <h1>{t('emptyCart')}</h1>
             </div>
         );
     }
@@ -72,7 +74,7 @@ const CartContent = ({ isInTab = false }) => {
                     className="btn btn-success btn-lg"
                     style={{ minWidth: '200px' }}
                 >
-                    Proceed to Checkout
+                    {t('proceedToCheckout')}
                 </Link>
             </div>
         </div>

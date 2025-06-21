@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import { useTranslation } from 'react-i18next';
 import Form from 'react-bootstrap/Form';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
@@ -48,12 +49,12 @@ function Checkout() {
     const { user } = useUser();
     const userId = user?.data?.id;
 
-    // Inside your component:
+    const { isOpen } = useSideBar();
+    const { t } = useTranslation('checkout');
     const [isValid, setIsValid] = useState(false);
     const shippingRef = useRef(null);
     const paymentRef = useRef(null);
     const termsRef = useRef(null);
-    const { isOpen } = useSideBar();
 
     for (const item of cartItems) {
         totalCost += item.quantity * item.price;
@@ -164,7 +165,7 @@ function Checkout() {
                                                 <Form.Check 
                                                     type="radio" 
                                                     name="shipping" 
-                                                    label="Ship to this address" 
+                                                    label={t('form.shipToThisAddress')} 
                                                     onChange={e => handleShipping(item.id)}
                                                     className="mt-2"
                                                 />
@@ -172,59 +173,64 @@ function Checkout() {
                                         ))
                                 ) : (
                                     <div className="alert alert-info">
-                                        No additional addresses found. Please add a new address in your account.
+                                        {t('form.noAdditionalAddresses')}
                                     </div>
                                 )}
                             </div>
                         )}
                     </Form>
                 )}
-                {!user && <><h4 className="border-bottom py-1">Billing Data</h4>
+                {!user && <><h4 className="border-bottom py-1">{t('billingData')}</h4>
                     <Form id="checkout" className="d-flex flex-column gap-3" controlId="checkout" onSubmit={handleSubmit}>
                         <Form.Group className="mb-3" controlId="name">
-                            <Form.Label>Full Name</Form.Label>
-                            <Form.Control name="name" type="text" placeholder="Enter Full Name" required />
+                            <Form.Label>{t('form.fullName')}</Form.Label>
+                            <Form.Control name="name" type="text" placeholder={t('form.fullName')} required />
                         </Form.Group>
                         <Form.Group className="mb-3" controlId="email">
-                            <Form.Label>Email address</Form.Label>
-                            <Form.Control name="email" type="email" placeholder="Enter email" required />
+                            <Form.Label>{t('form.email')}</Form.Label>
+                            <Form.Control name="email" type="email" placeholder={t('form.email')} required />
                         </Form.Group>
                         <Form.Group className="mb-3" controlId="street">
-                            <Form.Label>Street</Form.Label>
-                            <Form.Control type="text" name="street" placeholder="Enter Address Here" required />
+                            <Form.Label>{t('form.street')}</Form.Label>
+                            <Form.Control type="text" name="street" placeholder={t('form.street')} required />
                         </Form.Group>
                         <Form.Group className="mb-3" controlId="city">
-                            <Form.Label>City</Form.Label>
-                            <Form.Control type="text" name="city" placeholder="Enter City" required />
+                            <Form.Label>{t('form.city')}</Form.Label>
+                            <Form.Control type="text" name="city" placeholder={t('form.city')} required />
                         </Form.Group>
                         <Form.Group className="mb-3" controlId="state">
-                            <Form.Label>State</Form.Label>
-                            <Form.Control type="text" name="state" placeholder="Enter State" required />
+                            <Form.Label>{t('form.state')}</Form.Label>
+                            <Form.Control type="text" name="state" placeholder={t('form.state')} required />
                         </Form.Group>
                         <Form.Group className="mb-3" controlId="postal_code">
-                            <Form.Label>Postal Code</Form.Label>
-                            <Form.Control type="text" name="postal_code" placeholder="Enter Postal Code" required />
+                            <Form.Label>{t('form.postalCode')}</Form.Label>
+                            <Form.Control type="text" name="postal_code" placeholder={t('form.postalCode')} required />
                         </Form.Group>
                         <Form.Group className="mb-3" controlId="country">
-                            <Form.Label>Country</Form.Label>
-                            <Form.Control type="text" name="country" placeholder="Enter Country" required />
+                            <Form.Label>{t('form.country')}</Form.Label>
+                            <Form.Control type="text" name="country" placeholder={t('form.country')} required />
                         </Form.Group>
                         <Form.Group className="mb-3" controlId="phone">
-                            <Form.Label>Phone</Form.Label>
-                            <Form.Control type="text" name="phone" placeholder="Enter Phone Number" required />
+                            <Form.Label>{t('form.phone')}</Form.Label>
+                            <Form.Control type="text" name="phone" placeholder={t('form.phone')} required />
                         </Form.Group>
-                        <Form.Check type="checkbox" name="createAccount" label="Create an Account?" onChange={(e) => setCreateAccount(e.target.checked)} />
+                        <Form.Check 
+                            type="checkbox" 
+                            name="createAccount" 
+                            label={t('form.createAccount')} 
+                            onChange={(e) => setCreateAccount(e.target.checked)} 
+                        />
 
                         {createAccount && (
                             <>
                                 <Form.Group className="mb-3" controlId="password">
-                                    <Form.Label>Password</Form.Label>
-                                    <Form.Control name="password" type="password" placeholder="Password" required />
+                                    <Form.Label>{t('form.password')}</Form.Label>
+                                    <Form.Control name="password" type="password" placeholder={t('form.password')} required />
                                 </Form.Group>
 
                                 <Form.Group className="mb-3" controlId="confirmPassword">
-                                    <Form.Label>Confirm Password</Form.Label>
-                                    <Form.Control name="confirmPassword" type="password" placeholder="Confirm Password" required />
+                                    <Form.Label>{t('form.confirmPassword')}</Form.Label>
+                                    <Form.Control name="confirmPassword" type="password" placeholder={t('form.confirmPassword')} required />
                                 </Form.Group>
                             </>
                         )}
@@ -247,34 +253,34 @@ function Checkout() {
 
                         {showShippingForm && (
                             <>
-                                <h4 className="border-bottom py-1">Shipping Data</h4>
+                                <h4 className="border-bottom py-1">{t('shippingData')}</h4>
                                 <Form.Group className="mb-3" controlId="shippingName">
-                                    <Form.Label>Full Name</Form.Label>
-                                    <Form.Control name="shippingName" type="text" placeholder="Enter Full Name" required />
+                                    <Form.Label>{t('form.fullName')}</Form.Label>
+                                    <Form.Control name="shippingName" type="text" placeholder={t('form.fullName')} required />
                                 </Form.Group>
                                 <Form.Group className="mb-3" controlId="shippingStreet">
-                                    <Form.Label>Street</Form.Label>
-                                    <Form.Control type="text" name="shippingStreet" placeholder="Enter Address Here" required />
+                                    <Form.Label>{t('form.street')}</Form.Label>
+                                    <Form.Control type="text" name="shippingStreet" placeholder={t('form.street')} required />
                                 </Form.Group>
                                 <Form.Group className="mb-3" controlId="shippingCity">
-                                    <Form.Label>City</Form.Label>
-                                    <Form.Control type="text" name="shippingCity" placeholder="Enter City" required />
+                                    <Form.Label>{t('form.city')}</Form.Label>
+                                    <Form.Control type="text" name="shippingCity" placeholder={t('form.city')} required />
                                 </Form.Group>
                                 <Form.Group className="mb-3" controlId="shippingState">
-                                    <Form.Label>State</Form.Label>
-                                    <Form.Control type="text" name="shippingState" placeholder="Enter State" required />
+                                    <Form.Label>{t('form.state')}</Form.Label>
+                                    <Form.Control type="text" name="shippingState" placeholder={t('form.state')} required />
                                 </Form.Group>
                                 <Form.Group className="mb-3" controlId="shippingPostal_code">
-                                    <Form.Label>Postal Code</Form.Label>
-                                    <Form.Control type="text" name="shippingPostal_code" placeholder="Enter Postal Code" required />
+                                    <Form.Label>{t('form.postalCode')}</Form.Label>
+                                    <Form.Control type="text" name="shippingPostal_code" placeholder={t('form.postalCode')} required />
                                 </Form.Group>
                                 <Form.Group className="mb-3" controlId="shippingCountry">
-                                    <Form.Label>Country</Form.Label>
-                                    <Form.Control type="text" name="shippingCountry" placeholder="Enter Country" required />
+                                    <Form.Label>{t('form.country')}</Form.Label>
+                                    <Form.Control type="text" name="shippingCountry" placeholder={t('form.country')} required />
                                 </Form.Group>
                                 <Form.Group className="mb-3" controlId="shippingPhone">
-                                    <Form.Label>Phone</Form.Label>
-                                    <Form.Control type="text" name="shippingPhone" placeholder="Enter Phone Number" required />
+                                    <Form.Label>{t('form.phone')}</Form.Label>
+                                    <Form.Control type="text" name="shippingPhone" placeholder={t('form.phone')} required />
                                 </Form.Group>
                             </>
                         )}
@@ -284,9 +290,9 @@ function Checkout() {
 
             <Col lg={4}>
                 <Card border="success">
-                    <Card.Header>Your Order</Card.Header>
+                    <Card.Header>{t('yourOrder')}</Card.Header>
                     <Card.Body className="d-flex flex-column">
-                        <Card.Title>Products</Card.Title>
+                        <Card.Title>{t('products')}</Card.Title>
 
                         {cartItems.map((item, index) => (
                             <Card.Text key={index} className="d-flex justify-content-between">
@@ -297,7 +303,7 @@ function Checkout() {
                         ))}
 
                         <Card.Text className="d-flex justify-content-between border-top py-3">
-                            <span>Subtotal</span>
+                            <span>{t('subtotal')}</span>
                             <span>{totalCost}</span>
                         </Card.Text>
 
@@ -305,32 +311,59 @@ function Checkout() {
                             className="d-flex justify-content-between border-top py-3 gap-3"
                             ref={shippingRef}
                         >
-                            <span>Shipping</span>
-                            <Form.Check type="radio" name="shippingMethod" label="Flat Rate: 15 $" value="flat" onChange={(e) => setDelivary(prev => !prev)} />
-                            <Form.Check type="radio" name="shippingMethod" label="Local Pickup" value="pickup" onChange={(e) => setDelivary(prev => !prev)}/>
+                            <span>{t('shipping')}</span>
+                            <Form.Check 
+                                type="radio" 
+                                name="shippingMethod" 
+                                label={t('shippingMethods.flatRate')} 
+                                value="flat" 
+                                onChange={(e) => setDelivary(prev => !prev)} 
+                            />
+                            <Form.Check 
+                                type="radio" 
+                                name="shippingMethod" 
+                                label={t('shippingMethods.localPickup')} 
+                                value="pickup" 
+                                onChange={(e) => setDelivary(prev => !prev)}
+                            />
                         </Card.Text>
 
                         <Card.Text className="d-flex justify-content-between border-top py-3">
-                            <span>Total</span>
+                            <span>{t('total')}</span>
                             <span>{delivary ? (totalCost += delivaryCost) : totalCost}</span>
                         </Card.Text>
 
                         <Card.Text className="d-flex flex-column border-top py-3 gap-3" ref={paymentRef}>
-                            <span>Payment</span>
-                            <Form.Check type="radio" name="paymentMethod" label="Direct Bank Payment" value="bank" />
-                            <Form.Check type="radio" name="paymentMethod" label="Check Payment" value="check" />
-                            <Form.Check type="radio" name="paymentMethod" label="Cash On Delivery" value="cash" />
+                            <span>{t('payment')}</span>
+                            <Form.Check 
+                                type="radio" 
+                                name="paymentMethod" 
+                                label={t('paymentMethods.bank')} 
+                                value="bank" 
+                            />
+                            <Form.Check 
+                                type="radio" 
+                                name="paymentMethod" 
+                                label={t('paymentMethods.check')} 
+                                value="check" 
+                            />
+                            <Form.Check 
+                                type="radio" 
+                                name="paymentMethod" 
+                                label={t('paymentMethods.cash')} 
+                                value="cash" 
+                            />
                         </Card.Text>
 
                         <Card.Text className="d-flex flex-column border-top py-3 gap-3" ref={termsRef}>
                             <Form.Check
                                 type="checkbox"
-                                label="I have read and agree to the website terms and conditions"
+                                label={t('form.terms')}
                             />
                         </Card.Text>
 
                         <Button variant="success" type="submit" form="checkout" disabled={!isValid}>
-                            Place Order
+                            {t('placeOrder')}
                         </Button>
                     </Card.Body>
                 </Card>

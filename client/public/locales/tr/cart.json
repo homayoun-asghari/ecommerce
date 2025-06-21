@@ -1,7 +1,8 @@
 {
   "cart": "Sepet",
   "yourCart": "Sepetiniz",
-  "emptyCart": "Sepetiniz boş",
+  "emptyCart": "Sepetiniz Boş!",
+  "proceedToCheckout": "Ödemeye Geç",
   "remove": "Kaldır",
   "subtotal": "Ara Toplam",
   "total": "Toplam",

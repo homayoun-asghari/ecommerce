@@ -1,7 +1,8 @@
 {
   "cart": "Cart",
   "yourCart": "Your Cart",
-  "emptyCart": "Your cart is empty",
+  "emptyCart": "Your Cart Is Empty!",
+  "proceedToCheckout": "Proceed to Checkout",
   "remove": "Remove",
   "subtotal": "Subtotal",
   "total": "Total",

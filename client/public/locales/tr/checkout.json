@@ -1,0 +1,37 @@
+{
+  "billingData": "Fatura Bilgileri",
+  "shippingData": "Kargo Adresi",
+  "yourOrder": "Siparişiniz",
+  "products": "Ürünler",
+  "subtotal": "Ara Toplam",
+  "shipping": "Kargo",
+  "total": "Toplam",
+  "payment": "Ödeme",
+  "placeOrder": "Siparişi Tamamla",
+  "form": {
+    "fullName": "Ad Soyad",
+    "email": "E-posta Adresi",
+    "street": "Adres",
+    "city": "Şehir",
+    "state": "İlçe",
+    "postalCode": "Posta Kodu",
+    "country": "Ülke",
+    "phone": "Telefon",
+    "createAccount": "Hesap Oluştur?",
+    "password": "Şifre",
+    "confirmPassword": "Şifreyi Onayla",
+    "shipToDifferent": "Farklı bir adrese gönder?",
+    "shipToThisAddress": "Bu adrese gönder",
+    "noAdditionalAddresses": "Başka adres bulunamadı. Lütfen hesabınıza yeni bir adres ekleyin.",
+    "terms": "Web sitesi şartlarını ve koşullarını okudum ve kabul ediyorum"
+  },
+  "shippingMethods": {
+    "flatRate": "Sabit Ücret: 15 TL",
+    "localPickup": "Mağazadan Teslim"
+  },
+  "paymentMethods": {
+    "bank": "Banka Havalesi",
+    "check": "Çek ile Ödeme",
+    "cash": "Kapıda Ödeme"
+  }
+}

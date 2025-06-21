@@ -1,0 +1,37 @@
+{
+  "billingData": "Billing Data",
+  "shippingData": "Shipping Data",
+  "yourOrder": "Your Order",
+  "products": "Products",
+  "subtotal": "Subtotal",
+  "shipping": "Shipping",
+  "total": "Total",
+  "payment": "Payment",
+  "placeOrder": "Place Order",
+  "form": {
+    "fullName": "Full Name",
+    "email": "Email address",
+    "street": "Street",
+    "city": "City",
+    "state": "State",
+    "postalCode": "Postal Code",
+    "country": "Country",
+    "phone": "Phone",
+    "createAccount": "Create an Account?",
+    "password": "Password",
+    "confirmPassword": "Confirm Password",
+    "shipToDifferent": "Ship to different address?",
+    "shipToThisAddress": "Ship to this address",
+    "noAdditionalAddresses": "No additional addresses found. Please add a new address in your account.",
+    "terms": "I have read and agree to the website terms and conditions"
+  },
+  "shippingMethods": {
+    "flatRate": "Flat Rate: 15 $",
+    "localPickup": "Local Pickup"
+  },
+  "paymentMethods": {
+    "bank": "Direct Bank Payment",
+    "check": "Check Payment",
+    "cash": "Cash On Delivery"
+  }
+}
