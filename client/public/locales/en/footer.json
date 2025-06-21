@@ -1,0 +1,77 @@
+{
+  "newsletter": {
+    "title": "Join our newsletter for 10$ offs",
+    "description": "Register now to get latest updates on promotions & coupons. Don't worry, we not spam!",
+    "emailPlaceholder": "Enter Your Email",
+    "terms": "By subscribing you agree to our Terms & Conditions and Privacy & Cookies Policy."
+  },
+  "help": {
+    "title": "Need Help?",
+    "address": "New York, New York",
+    "hours": "Monday-Friday: 08am-9pm",
+    "phone": "+1(212)555-3333",
+    "orderHelp": "Need help with your order?",
+    "email": "info@mail.com"
+  },
+  "makeMoney": "Make Money",
+  "makeMoneyOptions": {
+    "sellOnGrogin": "Sell on Grogin",
+    "sellServices": "Sell Your Services on Grogin",
+    "sellBusiness": "Sell on Grogin Business",
+    "sellApps": "Sell Your Apps on Grogin",
+    "becomeAffiliate": "Become an Affiliate",
+    "advertiseProducts": "Advertise Your Products",
+    "sellPublish": "Sell-Publish with Us",
+    "becomeVendor": "Become a Vendor"
+  },
+  "helpYou": {
+    "title": "Let Us Help You",
+    "accessibility": "Accessibility Statement",
+    "orders": "Your Orders",
+    "returns": "Returns & Replacements",
+    "shipping": "Shipping Rates & Policies",
+    "refundPolicy": "Refund and Returns Policy",
+    "privacy": "Privacy Policy",
+    "terms": "Terms and Conditions",
+    "cookieSettings": "Cookie Settings",
+    "helpCenter": "Help Center"
+  },
+  "aboutUs": {
+    "title": "Get to Know Us",
+    "careers": "Careers for Grogin",
+    "about": "About Grogin",
+    "investor": "Investor Relations",
+    "devices": "Grogin Devices",
+    "reviews": "Customer Reviews",
+    "social": "Social Responsibility",
+    "locations": "Store Locations"
+  },
+  "downloadApp": {
+    "title": "Download our app",
+    "googlePlayAlt": "Google Play Store",
+    "appStoreAlt": "App Store",
+    "discountText": "Download App Get -10% Discount",
+    "discountText2": "Download App Get -20% Discount"
+  },
+  "followUs": {
+    "title": "Follow us:",
+    "facebook": "Facebook",
+    "instagram": "Instagram",
+    "twitter": "Twitter"
+  },
+  "paymentMethods": "Payment Methods",
+  "paymentIcons": {
+    "visa": "Visa",
+    "payment": "Payment",
+    "paypal": "PayPal",
+    "skrill": "Skrill",
+    "klarna": "Klarna"
+  },
+  "copyright": "Copyright © {{year}} Jinstore WooCommerce WordPress Theme. All right reserved. Powered by BlackRise Themes.",
+  "footerLinks": {
+    "terms": "Terms and Conditions",
+    "privacy": "Privacy Policy",
+    "tracking": "Order Tracking"
+  },
+  "allRightsReserved": "All Rights Reserved"
+}

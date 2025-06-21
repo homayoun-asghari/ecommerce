@@ -1,0 +1,20 @@
+{
+  "cart": "Sepet",
+  "yourCart": "Sepetiniz",
+  "emptyCart": "Sepetiniz boş",
+  "remove": "Kaldır",
+  "subtotal": "Ara Toplam",
+  "total": "Toplam",
+  "checkout": "Ödemeye Geç",
+  "continueShopping": "Alışverişe Devam Et",
+  "emptyCartMessage": "Sepetiniz boş. Hemen alışverişe başlayın!",
+  "quantity": "Adet",
+  "updateCart": "Sepeti Güncelle",
+  "applyCoupon": "Kupon Uygula",
+  "couponCode": "Kupon Kodu",
+  "apply": "Uygula",
+  "shipping": "Kargo",
+  "tax": "Vergi",
+  "discount": "İndirim",
+  "grandTotal": "Genel Toplam"
+}

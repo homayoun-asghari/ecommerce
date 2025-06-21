@@ -13,16 +13,19 @@ import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import { useCart } from "../contexts/CartContext";
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import { useWishList } from "../contexts/WishListContext";
-import {useNotification} from "../contexts/NotificationContext";
+import { useNotification } from "../contexts/NotificationContext";
 import NotificationsIcon from '@mui/icons-material/Notifications';
+import { useLanguage } from '../hooks/useLanguage';
 
 
 
-function SecondBar() {
+function FirstBar() {
     const { mode } = useTheme();
     const { cartItems } = useCart();
     const { wishList } = useWishList();
-    const {notifications} = useNotification();
+    const { notifications } = useNotification();
+    const { t } = useLanguage();
+    
     return (
         <Container fluid className="px-3 px-md-4">
             <Row className="align-items-center py-2 gx-2 gx-md-3">
@@ -91,4 +94,4 @@ function SecondBar() {
     );
 }
 
-export default SecondBar;
+export default FirstBar;

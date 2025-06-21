@@ -1,0 +1,20 @@
+{
+  "cart": "Cart",
+  "yourCart": "Your Cart",
+  "emptyCart": "Your cart is empty",
+  "remove": "Remove",
+  "subtotal": "Subtotal",
+  "total": "Total",
+  "checkout": "Proceed to Checkout",
+  "continueShopping": "Continue Shopping",
+  "emptyCartMessage": "Your cart is empty. Start adding some products!",
+  "quantity": "Qty",
+  "updateCart": "Update Cart",
+  "applyCoupon": "Apply Coupon",
+  "couponCode": "Coupon Code",
+  "apply": "Apply",
+  "shipping": "Shipping",
+  "tax": "Tax",
+  "discount": "Discount",
+  "grandTotal": "Grand Total"
+}

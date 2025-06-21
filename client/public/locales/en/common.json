@@ -1,0 +1,21 @@
+{
+  "welcome": "Welcome",
+  "logout": "Log Out",
+  "login": "Log In",
+  "signup": "Sign Up",
+  "search": "Search",
+  "loading": "Loading...",
+  "error": "An error occurred",
+  "success": "Success",
+  "save": "Save",
+  "cancel": "Cancel",
+  "delete": "Delete",
+  "edit": "Edit",
+  "back": "Back",
+  "next": "Next",
+  "previous": "Previous",
+  "submit": "Submit",
+  "reset": "Reset",
+  "clearAllFilters": "Clear All Filters",
+  "retry": "Retry"
+}

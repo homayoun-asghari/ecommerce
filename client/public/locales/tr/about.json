@@ -1,0 +1,48 @@
+{
+  "hero": {
+    "title": "Mağazamız Hakkında",
+    "description": "Size en iyi ürünleri üstün kalite ve hizmetle sunma tutkusuyla yanıp tutuşuyoruz. Yolculuğumuz, çevrimiçi alışverişi kolay, keyifli ve güvenilir hale getirme fikriyle başladı."
+  },
+  "story": {
+    "title": "Hikayemiz",
+    "content": "2023 yılında kurulan mağazamız, küçük bir girişimden çevrimiçi perakendede güvenilir bir markaya dönüştü. Kaliteye, sürdürülebilirliğe ve müşterilerimizle kalıcı ilişkiler kurmaya inanıyoruz."
+  },
+  "features": [
+    {
+      "icon": "shopping-bag",
+      "title": "Kaliteli Ürünler",
+      "description": "Seveceğiniz yüksek kaliteli ürünlerden özenle seçilmiş bir koleksiyon."
+    },
+    {
+      "icon": "shield-alt",
+      "title": "Güvenli Alışveriş",
+      "description": "Güvenliğiniz önceliğimizdir, tüm işlemler şifrelenmiştir."
+    },
+    {
+      "icon": "headset",
+      "title": "7/24 Destek",
+      "description": "Ekibimiz her türlü sorunuz için her zaman yanınızda."
+    }
+  ],
+  "team": {
+    "title": "Ekibimizle Tanışın",
+    "subtitle": "Başarımızın arkasındaki tutkulu insanlar",
+    "members": [
+      {
+        "name": "Alex Johnson",
+        "role": "CEO & Kurucu",
+        "img": "https://randomuser.me/api/portraits/men/32.jpg"
+      },
+      {
+        "name": "Sarah Williams",
+        "role": "Operasyon Müdürü",
+        "img": "https://randomuser.me/api/portraits/women/44.jpg"
+      },
+      {
+        "name": "Michael Chen",
+        "role": "Ürün Müdürü",
+        "img": "https://randomuser.me/api/portraits/men/22.jpg"
+      }
+    ]
+  }
+}

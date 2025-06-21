@@ -1,19 +1,14 @@
 import React, { useEffect } from 'react';
-import { MenuItem, Select } from '@mui/material';
 import { useTranslation } from 'react-i18next';
-
-export const languages = [
-  { code: 'en', name: 'English', flag: '🇺🇸' },
-  { code: 'tr', name: 'Türkçe', flag: '🇹🇷' },
-];
+import { languages } from '../i18n';
+import { Form } from 'react-bootstrap';
 
 function LanguageSwitcher() {
   const { i18n } = useTranslation();
-  const currentLang = i18n.language;
+  const currentLang = i18n.language || 'en';
 
-  const handleChange = (lang) => {
-    i18n.changeLanguage(lang);
-    localStorage.setItem('i18nextLng', lang);
+  const changeLanguage = (lng) => {
+    i18n.changeLanguage(lng);
   };
 
   // Set default language to English if not set
@@ -25,57 +20,33 @@ function LanguageSwitcher() {
   }, [i18n]);
 
   return (
-    <Select
-      value={currentLang || 'en'}
-      onChange={(e) => handleChange(e.target.value)}
-      size="small"
-      variant="outlined"
-      sx={{
-        minWidth: 120,
-        color: 'inherit',
-        '& .MuiSelect-select': {
-          padding: '6px 32px 6px 12px',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '8px',
-        },
-        '& .MuiOutlinedInput-notchedOutline': {
-          borderColor: 'transparent',
-        },
-        '&:hover .MuiOutlinedInput-notchedOutline': {
-          borderColor: 'rgba(255, 255, 255, 0.23)',
-        },
-        '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-          borderColor: 'rgba(255, 255, 255, 0.5)',
-        },
-        '& .MuiSelect-icon': {
-          color: 'inherit',
-        },
-        '& .MuiPaper-root': {
-          backgroundColor: 'background.paper',
-          color: 'text.primary',
-        },
-      }}
-      MenuProps={{
-        PaperProps: {
-          sx: {
-            bgcolor: 'background.paper',
-            '& .MuiMenuItem-root': {
-              display: 'flex',
-              gap: '8px',
-              padding: '8px 16px',
-            },
-          },
-        },
+    <Form.Select 
+      aria-label="Select language"
+      value={currentLang}
+      onChange={(e) => changeLanguage(e.target.value)}
+      style={{
+        cursor: 'pointer',
+        padding: '0.375rem 2.25rem 0.375rem 0.75rem',
+        borderColor: '#dee2e6',
+        borderRadius: '0.25rem',
+        backgroundColor: 'white',
+        backgroundImage: 'url("data:image/svg+xml,%3csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 16 16\'%3e%3cpath fill=\'none\' stroke=\'%23343a40\' stroke-linecap=\'round\' stroke-linejoin=\'round\' stroke-width=\'2\' d=\'m2 5 6 6 6-6\'/%3e%3c/svg%3e")',
+        backgroundRepeat: 'no-repeat',
+        backgroundPosition: 'right 0.75rem center',
+        backgroundSize: '16px 12px',
+        appearance: 'none',
+        width: 'auto',
+        display: 'inline-block',
+        fontSize: '0.875rem',
+        maxWidth: '120px'
       }}
     >
       {languages.map((lang) => (
-        <MenuItem key={lang.code} value={lang.code}>
-          <span>{lang.flag}</span>
-          <span>{lang.name}</span>
-        </MenuItem>
+        <option key={lang.code} value={lang.code}>
+          {lang.flag} {lang.name}
+        </option>
       ))}
-    </Select>
+    </Form.Select>
   );
 }
 

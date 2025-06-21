@@ -13,124 +13,125 @@ import { Telephone, Envelope, Facebook, Instagram, Twitter } from "react-bootstr
 import { Nav } from "react-bootstrap";
 import { useTheme } from '../contexts/ThemeContext.jsx';
 import { Send } from "react-bootstrap-icons";
+import { useLanguage } from '../hooks/useLanguage';
 
 function Footer() {
     const year = new Date().getFullYear();
     const { mode } = useTheme();
+    const { t } = useLanguage();
 
     return (
         <Container fluid className={`footer g-5 ${mode ? "footer-light" : "footer-dark"}`}>
             <Row lg={6} md={12}>
                 <Col lg={8} md={12} >
-                    <h5>Join our newsletter for 10$ offs</h5>
-                    <p>Register now to get latest updates on promotions &
-                        coupons.Don’t worry, we not spam!</p>
+                    <h5>{t('footer:newsletter.title')}</h5>
+                    <p>{t('footer:newsletter.description')}</p>
                 </Col>
 
                 <Col lg={4} md={12} className="d-flex flex-column align-items-end">
-                    <Searchbar button={<><Send /> </>} placeholder="Enter Your Email" />
-                    <p className="py-3">By subscribing you agree to our Terms & Conditions and Privacy & Cookies Policy.</p>
+                    <Searchbar button={<><Send /> </>} placeholder={t('footer:newsletter.emailPlaceholder')} />
+                    <p className="py-3">{t('footer:newsletter.terms')}</p>
                 </Col>
             </Row>
 
 
             <Row className="d-flex justify-content-center gap-5" lg={6} md={12} >
                 <Col>
-                    <h5>Need Help ?</h5>
-                    <p>New York, New York</p>
+                    <h5>{t('footer:help.title')}</h5>
+                    <p>{t('footer:help.address')}</p>
 
-                    <p style={{ margin: "0" }}>Monday-Friday: 08am-9pm</p>
-                    <h6>{<Telephone />} +1(212)555-3333</h6>
+                    <p style={{ margin: "0" }}>{t('footer:help.hours')}</p>
+                    <h6>{<Telephone />} {t('footer:help.phone')}</h6>
 
-                    <p className="text-nowrap" style={{ margin: "0" }}>Need help with your order?</p>
-                    <h6>{<Envelope />} info@mail.com</h6>
+                    <p className="text-nowrap" style={{ margin: "0" }}>{t('footer:help.orderHelp')}</p>
+                    <h6>{<Envelope />} {t('footer:help.email')}</h6>
                 </Col>
 
-                <Col >
-                    <h5>Make Money </h5>
+                <Col>
+                    <h5>{t('footer:makeMoney')}</h5>
                     <Nav className="flex-column text-nowrap">
                         <Nav.Link href="/">
-                            Sell on Grogin
+                            {t('footer:makeMoneyOptions.sellOnGrogin')}
                         </Nav.Link>
                         <Nav.Link href="/">
-                            Sell Your Services on Grogin
+                            {t('footer:makeMoneyOptions.sellServices')}
                         </Nav.Link>
                         <Nav.Link href="/">
-                            Sell on Grogin Business
+                            {t('footer:makeMoneyOptions.sellBusiness')}
                         </Nav.Link>
                         <Nav.Link href="/">
-                            Sell Your Apps on Grogin
+                            {t('footer:makeMoneyOptions.sellApps')}
                         </Nav.Link>
                         <Nav.Link href="/">
-                            Become an Affilate
+                            {t('footer:makeMoneyOptions.becomeAffiliate')}
                         </Nav.Link>
                         <Nav.Link href="/">
-                            Advertise Your Products
+                            {t('footer:makeMoneyOptions.advertiseProducts')}
                         </Nav.Link>
                         <Nav.Link href="/">
-                            Sell-Publish with Us
+                            {t('footer:makeMoneyOptions.sellPublish')}
                         </Nav.Link>
                         <Nav.Link href="/">
-                            Become an Blowwe Vendor
+                            {t('footer:makeMoneyOptions.becomeVendor')}
                         </Nav.Link>
                     </Nav>
                 </Col>
 
-                <Col >
-                    <h5>Let Us Help You</h5>
+                <Col>
+                    <h5>{t('footer:helpYou.title')}</h5>
                     <Nav className="flex-column text-nowrap">
                         <Nav.Link href="/">
-                            Accessibility Statement
+                            {t('footer:helpYou.accessibility')}
                         </Nav.Link>
                         <Nav.Link href="/">
-                            Your Orders
+                            {t('footer:helpYou.orders')}
                         </Nav.Link>
                         <Nav.Link href="/">
-                            Returns & Replacements
+                            {t('footer:helpYou.returns')}
                         </Nav.Link>
                         <Nav.Link href="/">
-                            Shipping Rates & Policies
+                            {t('footer:helpYou.shipping')}
                         </Nav.Link>
                         <Nav.Link href="/">
-                            Refund and Returns Policy
+                            {t('footer:helpYou.refundPolicy')}
                         </Nav.Link>
                         <Nav.Link href="/">
-                            Privacy Policy
+                            {t('footer:helpYou.privacy')}
                         </Nav.Link>
                         <Nav.Link href="/">
-                            Terms and Conditions
+                            {t('footer:helpYou.terms')}
                         </Nav.Link>
                         <Nav.Link href="/">
-                            Cookie Settings
+                            {t('footer:helpYou.cookieSettings')}
                         </Nav.Link>
                         <Nav.Link href="/">
-                            Help Center
+                            {t('footer:helpYou.helpCenter')}
                         </Nav.Link>
                     </Nav>
                 </Col>
-                <Col >
-                    <h5>Get to Know Us</h5>
+                <Col>
+                    <h5>{t('footer:aboutUs.title')}</h5>
                     <Nav className="flex-column text-nowrap">
                         <Nav.Link href="/">
-                            Careers for Grogin
+                            {t('footer:aboutUs.careers')}
                         </Nav.Link>
                         <Nav.Link href="/">
-                            About Grogin
+                            {t('footer:aboutUs.about')}
                         </Nav.Link>
                         <Nav.Link href="/">
-                            Inverstor Relations
+                            {t('footer:aboutUs.investor')}
                         </Nav.Link>
                         <Nav.Link href="/">
-                            Grogin Devices
+                            {t('footer:aboutUs.devices')}
                         </Nav.Link>
                         <Nav.Link href="/">
-                            Customer reviews
+                            {t('footer:aboutUs.reviews')}
                         </Nav.Link>
                         <Nav.Link href="/">
-                            Social Responsibility
+                            {t('footer:aboutUs.social')}
                         </Nav.Link>
                         <Nav.Link href="/">
-                            Store Locations
+                            {t('footer:aboutUs.locations')}
                         </Nav.Link>
                     </Nav>
                 </Col>
@@ -139,37 +140,45 @@ function Footer() {
 
             <Row className="py-3">
                 <Col className="d-flex flex-column align-items-start">
-                    <h5>Download our app</h5>
+                    <h5>{t('footer:downloadApp.title')}</h5>
                     <Nav.Link href="/">
-                        <img src={googlePlay} alt="google play logo" />
+                        <img src={googlePlay} alt={t('footer:downloadApp.googlePlayAlt')} />
                     </Nav.Link>
-                    <p className="text-nowrap" style={{ paddingLeft: "var(--space-xs)" }}>Download App Get
-                        -10% Discount</p>
+                    <p className="text-nowrap" style={{ paddingLeft: "var(--space-xs)" }}>
+                        {t('footer:downloadApp.discountText')}
+                    </p>
                     <Nav.Link href="/">
-                        <img src={appStore} alt="app store logo" />
+                        <img src={appStore} alt={t('footer:downloadApp.appStoreAlt')} />
                     </Nav.Link>
-                    <p className="text-nowrap" style={{ paddingLeft: "var(--space-xs)" }}>Download App Get
-                        -20% Discount</p>
+                    <p className="text-nowrap" style={{ paddingLeft: "var(--space-xs)" }}>
+                        {t('footer:downloadApp.discountText2')}
+                    </p>
                 </Col>
 
                 <Col className="d-flex flex-column align-items-end">
                     <div className="d-flex flex-column align-items-start">
-                        <h5>Follow us:</h5>
+                        <h5>{t('footer:followUs.title')}</h5>
 
                         <Nav>
-                            <Nav.Link href="/">
+                            <Nav.Link href="/" aria-label={t('footer:followUs.facebook')}>
                                 <h6>{<Facebook />}</h6>
                             </Nav.Link>
-                            <Nav.Link href="/">
+                            <Nav.Link href="/" aria-label={t('footer:followUs.instagram')}>
                                 <h6>{<Instagram />}</h6>
                             </Nav.Link>
-                            <Nav.Link href="/">
+                            <Nav.Link href="/" aria-label={t('footer:followUs.twitter')}>
                                 <h6>{<Twitter />}</h6>
                             </Nav.Link>
                         </Nav>
 
-                        <p style={{ paddingTop: "var(--space-md)", margin: "0" }}>Payment Methods:</p>
-                        <span><img src={visa} alt="visa logo" />    <img src={payment} alt="payment logo" />    <img src={paypal} alt="paypal logo" />  <img src={skrill} alt="skrill logo" />  <img src={klarna} alt="klarna logo" /></span>
+                        <p style={{ paddingTop: "var(--space-md)", margin: "0" }}>{t('footer:paymentMethods')}:</p>
+                        <span>
+                            <img src={visa} alt={t('footer:paymentIcons.visa')} />
+                            <img src={payment} alt={t('footer:paymentIcons.payment')} />
+                            <img src={paypal} alt={t('footer:paymentIcons.paypal')} />
+                            <img src={skrill} alt={t('footer:paymentIcons.skrill')} />
+                            <img src={klarna} alt={t('footer:paymentIcons.klarna')} />
+                        </span>
                     </div>
 
                 </Col>
@@ -178,21 +187,22 @@ function Footer() {
 
             <Row lg={6} md={12} >
                 <Col lg={6} md={12} className="d-flex align-items-end justify-content-start">
-                    <p style={{ marginBottom: "0px" }}>Copyright © {year} Jinstore WooCommerce WordPress Theme. All right reserved. Powered by BlackRise Themes.</p>
+                    <p style={{ marginBottom: "0px" }}>
+                        {t('footer:copyright', { year })}
+                    </p>
                 </Col>
 
                 <Col lg={6} md={12} className="d-flex flex-column align-items-end">
                     <Nav>
                         <Nav.Link href="/">
-                            Terms and Conditions
+                            {t('footer:footerLinks.terms')}
                         </Nav.Link>
                         <Nav.Link href="/">
-                            Privacy Policy
+                            {t('footer:footerLinks.privacy')}
                         </Nav.Link>
                         <Nav.Link href="/">
-                            Order Tracking
+                            {t('footer:footerLinks.tracking')}
                         </Nav.Link>
-
                     </Nav>
                 </Col>
 

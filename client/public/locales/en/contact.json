@@ -1,0 +1,35 @@
+{
+  "title": "Contact Us",
+  "description": "Have questions or feedback? We'd love to hear from you! Fill out the form below and we'll get back to you as soon as possible.",
+  "form": {
+    "name": "Full Name",
+    "email": "Email Address",
+    "subject": "Subject",
+    "message": "Message",
+    "required": "*",
+    "namePlaceholder": "Enter your name",
+    "emailPlaceholder": "Enter your email",
+    "subjectPlaceholder": "What's this about?",
+    "messagePlaceholder": "Type your message here...",
+    "submit": "Send Message",
+    "sending": "Sending...",
+    "success": "Thank you for your message! We'll get back to you soon.",
+    "validation": {
+      "required": "Please fill in all required fields",
+      "email": "Please enter a valid email address",
+      "error": "An error occurred while submitting the form. Please try again.",
+      "failed": "Failed to send message"
+    }
+  },
+  "contactInfo": {
+    "title": "Contact Information",
+    "email": "contact@example.com",
+    "phone": "+1 (234) 567-890",
+    "address": "123 Business Street, City, Country"
+  },
+  "icons": {
+    "email": "envelope",
+    "phone": "telephone",
+    "address": "geo-alt"
+  }
+}

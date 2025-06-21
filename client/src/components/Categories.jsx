@@ -2,6 +2,7 @@ import "../styles/Categories.css";
 import React, { useState, useEffect, useRef } from "react";
 import { useSideBar } from "../contexts/SideBarContext";
 import CategoryItems from "./CategoryItems";
+import { useLanguage } from "../hooks/useLanguage";
 
 function Categories() {
     const { isOpen, setIsOpen } = useSideBar();
@@ -9,6 +10,7 @@ function Categories() {
     const [isTransitioning, setIsTransitioning] = useState(false);
     const dropdownRef = useRef(null);
     const isFirstRender = useRef(true);
+    const { t } = useLanguage();
 
     // Handle dropdown toggle
     const handleToggle = (e) => {
@@ -61,7 +63,7 @@ function Categories() {
                         onClick={handleToggle}
                         aria-expanded={isDropdownOpen}
                     >
-                        All categories
+                        {t('categories:allCategories')}
                     </button>
                     <div 
                         className={`accordion-dropdown ${isDropdownOpen ? 'show' : ''}`}

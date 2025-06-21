@@ -1,0 +1,35 @@
+{
+  "title": "Bize Ulaşın",
+  "description": "Sorularınız veya geri bildirimleriniz mi var? Sizden haber almak isteriz! Aşağıdaki formu doldurun, en kısa sürede size dönüş yapacağız.",
+  "form": {
+    "name": "Ad Soyad",
+    "email": "E-posta Adresi",
+    "subject": "Konu",
+    "message": "Mesajınız",
+    "required": "*",
+    "namePlaceholder": "Adınızı giriniz",
+    "emailPlaceholder": "E-posta adresinizi giriniz",
+    "subjectPlaceholder": "Bu ne hakkında?",
+    "messagePlaceholder": "Mesajınızı buraya yazın...",
+    "submit": "Mesaj Gönder",
+    "sending": "Gönderiliyor...",
+    "success": "Mesajınız için teşekkürler! En kısa sürede size dönüş yapacağız.",
+    "validation": {
+      "required": "Lütfen tüm zorunlu alanları doldurun",
+      "email": "Lütfen geçerli bir e-posta adresi girin",
+      "error": "Form gönderilirken bir hata oluştu. Lütfen tekrar deneyin.",
+      "failed": "Mesaj gönderilemedi"
+    }
+  },
+  "contactInfo": {
+    "title": "İletişim Bilgileri",
+    "email": "iletisim@ornek.com",
+    "phone": "+90 (123) 456 78 90",
+    "address": "İş Merkezi Caddesi No:123, Şehir, Ülke"
+  },
+  "icons": {
+    "email": "envelope",
+    "phone": "telephone",
+    "address": "geo-alt"
+  }
+}

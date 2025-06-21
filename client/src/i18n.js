@@ -1,140 +1,62 @@
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
+import Backend from 'i18next-http-backend';
+
+export const languages = [
+  { code: 'en', name: 'English', flag: '🇺🇸' },
+  { code: 'tr', name: 'Türkçe', flag: '🇹🇷' },
+];
+
+// Log when translations are loaded
+i18n.on('languageChanged', (lng) => {
+  console.log(`Language changed to: ${lng}`);
+  console.log('Current language:', i18n.language);
+  console.log('Available languages:', i18n.languages);
+  console.log('Current translations:', i18n.getResourceBundle(lng, 'products'));
+});
 
 i18n
+  // Load translation using http -> see /public/locales
+  .use(Backend)
+  // Detect user language
   .use(LanguageDetector)
+  // Pass the i18n instance to react-i18next
   .use(initReactI18next)
+  .on('initialized', () => {
+    console.log('i18n initialized');
+    console.log('Current language:', i18n.language);
+    console.log('Available languages:', i18n.languages);
+  })
+  .on('loaded', (loaded) => {
+    console.log('i18n loaded', loaded);
+  })
+  .on('failedLoading', (lng, ns, msg) => {
+    console.error(`Failed loading ${lng} ${ns}:`, msg);
+  })
   .init({
     fallbackLng: 'en',
-    supportedLngs: ['en', 'tr'],
+    debug: process.env.NODE_ENV === 'development',
+    supportedLngs: languages.map(lang => lang.code),
+    defaultNS: 'common',
+    fallbackNS: 'common',
+    ns: ['common', 'products', 'cart', 'navigation', 'footer', 'categories', 'contact', 'about'],
     interpolation: {
-      escapeValue: false,
+      escapeValue: false, // Not needed for React as it escapes by default
     },
+    backend: {
+      loadPath: '/locales/{{lng}}/{{ns}}.json',
+    },
+    // Configure language detection
     detection: {
       order: ['localStorage', 'navigator'],
       caches: ['localStorage'],
+      lookupLocalStorage: 'i18nextLng',
     },
-    resources: {
-      en: {
-        translation: {
-          // Common
-          welcome: 'Welcome',
-          logout: 'Log Out',
-          login: 'Log In',
-          signup: 'Sign Up',
-          search: 'Search',
-          cart: 'Cart',
-          price: 'Price',
-          quantity: 'Quantity',
-          total: 'Total',
-          subtotal: 'Subtotal',
-          checkout: 'Checkout',
-          continueShopping: 'Continue Shopping',
-          
-          // Navigation
-          home: 'Home',
-          products: 'Products',
-          categories: 'Categories',
-          about: 'About Us',
-          contact: 'Contact',
-          
-          // Product
-          addToCart: 'Add to Cart',
-          inStock: 'In Stock',
-          outOfStock: 'Out of Stock',
-          productDetails: 'Product Details',
-          relatedProducts: 'Related Products',
-          
-          // Cart
-          yourCart: 'Your Cart',
-          emptyCart: 'Your cart is empty',
-          remove: 'Remove',
-          
-          // Checkout
-          shippingInfo: 'Shipping Information',
-          paymentMethod: 'Payment Method',
-          placeOrder: 'Place Order',
-          
-          // Forms
-          name: 'Name',
-          email: 'Email',
-          password: 'Password',
-          confirmPassword: 'Confirm Password',
-          address: 'Address',
-          city: 'City',
-          country: 'Country',
-          zipCode: 'ZIP Code',
-          phone: 'Phone',
-          
-          // Messages
-          addedToCart: 'Added to cart',
-          orderPlaced: 'Your order has been placed!',
-          thankYou: 'Thank you for your purchase!',
-          loading: 'Loading...',
-          error: 'An error occurred',
-        },
-      },
-      tr: {
-        translation: {
-          // Common
-          welcome: 'Hoş Geldiniz',
-          logout: 'Çıkış Yap',
-          login: 'Giriş Yap',
-          signup: 'Kayıt Ol',
-          search: 'Ara',
-          cart: 'Sepet',
-          price: 'Fiyat',
-          quantity: 'Adet',
-          total: 'Toplam',
-          subtotal: 'Ara Toplam',
-          checkout: 'Ödemeye Geç',
-          continueShopping: 'Alışverişe Devam Et',
-          
-          // Navigation
-          home: 'Ana Sayfa',
-          products: 'Ürünler',
-          categories: 'Kategoriler',
-          about: 'Hakkımızda',
-          contact: 'İletişim',
-          
-          // Product
-          addToCart: 'Sepete Ekle',
-          inStock: 'Stokta Var',
-          outOfStock: 'Stokta Yok',
-          productDetails: 'Ürün Detayları',
-          relatedProducts: 'Benzer Ürünler',
-          
-          // Cart
-          yourCart: 'Sepetiniz',
-          emptyCart: 'Sepetiniz boş',
-          remove: 'Kaldır',
-          
-          // Checkout
-          shippingInfo: 'Teslimat Bilgileri',
-          paymentMethod: 'Ödeme Yöntemi',
-          placeOrder: 'Siparişi Tamamla',
-          
-          // Forms
-          name: 'Ad Soyad',
-          email: 'E-posta',
-          password: 'Şifre',
-          confirmPassword: 'Şifreyi Onayla',
-          address: 'Adres',
-          city: 'Şehir',
-          country: 'Ülke',
-          zipCode: 'Posta Kodu',
-          phone: 'Telefon',
-          
-          // Messages
-          addedToCart: 'Sepete eklendi',
-          orderPlaced: 'Siparişiniz alındı!',
-          thankYou: 'Alışverişiniz için teşekkür ederiz!',
-          loading: 'Yükleniyor...',
-          error: 'Bir hata oluştu',
-        },
-      },
-    },
+    // React i18next configuration
+    react: {
+      useSuspense: false, // Disable Suspense to avoid issues with React 18
+    }
   });
 
 export default i18n;

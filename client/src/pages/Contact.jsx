@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import { API_BASE_URL } from '../config';
 import { Container, Row, Col, Form, Button, Alert } from 'react-bootstrap';
+import { useLanguage } from '../hooks/useLanguage';
 
 const Contact = () => {
+  const { t } = useLanguage();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -27,14 +29,14 @@ const Contact = () => {
     
     // Basic validation
     if (!formData.name || !formData.email || !formData.message) {
-      setError('Please fill in all required fields');
+      setError(t('contact:form.validation.required'));
       return;
     }
     
     // Email validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(formData.email)) {
-      setError('Please enter a valid email address');
+      setError(t('contact:form.validation.email'));
       return;
     }
     
@@ -58,7 +60,7 @@ const Contact = () => {
       const data = await response.json();
       
       if (!response.ok) {
-        throw new Error(data.error || 'Failed to send message');
+        throw new Error(data.error || t('contact:form.validation.failed'));
       }
       
       // Show success message
@@ -79,7 +81,7 @@ const Contact = () => {
       
     } catch (err) {
       console.error('Error submitting form:', err);
-      setError(err.message || 'An error occurred while submitting the form. Please try again.');
+      setError(err.message || t('contact:form.validation.error'));
     } finally {
       setIsLoading(false);
     }
@@ -89,15 +91,14 @@ const Contact = () => {
     <Container className="my-5">
       <Row className="justify-content-center">
         <Col md={8} lg={6}>
-          <h1 className="text-center mb-4">Contact Us</h1>
+          <h1 className="text-center mb-4">{t('contact:title')}</h1>
           <p className="text-center mb-5">
-            Have questions or feedback? We'd love to hear from you! Fill out the form below 
-            and we'll get back to you as soon as possible.
+            {t('contact:description')}
           </p>
           
           {submitted && (
             <Alert variant="success" className="mb-4">
-              Thank you for your message! We'll get back to you soon.
+              {t('contact:form.success')}
             </Alert>
           )}
           
@@ -109,49 +110,58 @@ const Contact = () => {
           
           <Form onSubmit={handleSubmit}>
             <Form.Group className="mb-3" controlId="formName">
-              <Form.Label>Full Name <span className="text-danger">*</span></Form.Label>
+              <Form.Label>
+                {t('contact:form.name')} 
+                <span className="text-danger">{t('contact:form.required')}</span>
+              </Form.Label>
               <Form.Control
                 type="text"
                 name="name"
                 value={formData.name}
                 onChange={handleChange}
-                placeholder="Enter your name"
+                placeholder={t('contact:form.namePlaceholder')}
                 required
               />
             </Form.Group>
             
             <Form.Group className="mb-3" controlId="formEmail">
-              <Form.Label>Email Address <span className="text-danger">*</span></Form.Label>
+              <Form.Label>
+                {t('contact:form.email')} 
+                <span className="text-danger">{t('contact:form.required')}</span>
+              </Form.Label>
               <Form.Control
                 type="email"
                 name="email"
                 value={formData.email}
                 onChange={handleChange}
-                placeholder="Enter your email"
+                placeholder={t('contact:form.emailPlaceholder')}
                 required
               />
             </Form.Group>
             
             <Form.Group className="mb-3" controlId="formSubject">
-              <Form.Label>Subject</Form.Label>
+              <Form.Label>{t('contact:form.subject')}</Form.Label>
               <Form.Control
                 type="text"
                 name="subject"
                 value={formData.subject}
                 onChange={handleChange}
-                placeholder="What's this about?"
+                placeholder={t('contact:form.subjectPlaceholder')}
               />
             </Form.Group>
             
             <Form.Group className="mb-4" controlId="formMessage">
-              <Form.Label>Message <span className="text-danger">*</span></Form.Label>
+              <Form.Label>
+                {t('contact:form.message')} 
+                <span className="text-danger">{t('contact:form.required')}</span>
+              </Form.Label>
               <Form.Control
                 as="textarea"
                 name="message"
                 value={formData.message}
                 onChange={handleChange}
                 rows={5}
-                placeholder="Type your message here..."
+                placeholder={t('contact:form.messagePlaceholder')}
                 required
               />
             </Form.Group>
@@ -163,28 +173,28 @@ const Contact = () => {
                 size="lg"
                 disabled={isLoading}
               >
-                {isLoading ? 'Sending...' : 'Send Message'}
+                {isLoading ? t('contact:form.sending') : t('contact:form.submit')}
               </Button>
             </div>
           </Form>
           
           <div className="mt-5">
-            <h4>Contact Information</h4>
+            <h4>{t('contact:contactInfo.title')}</h4>
             <p className="mb-1">
-              <i className="bi bi-envelope me-2"></i>
-              <a href="mailto:contact@example.com" className="text-decoration-none">
-                contact@example.com
+              <i className={`bi bi-${t('contact:icons.email')} me-2`}></i>
+              <a href={`mailto:${t('contact:contactInfo.email')}`} className="text-decoration-none">
+                {t('contact:contactInfo.email')}
               </a>
             </p>
             <p className="mb-1">
-              <i className="bi bi-telephone me-2"></i>
-              <a href="tel:+1234567890" className="text-decoration-none">
-                +1 (234) 567-890
+              <i className={`bi bi-${t('contact:icons.phone')} me-2`}></i>
+              <a href={`tel:${t('contact:contactInfo.phone').replace(/\D/g, '')}`} className="text-decoration-none">
+                {t('contact:contactInfo.phone')}
               </a>
             </p>
             <p className="mb-0">
-              <i className="bi bi-geo-alt me-2"></i>
-              123 Business Street, City, Country
+              <i className={`bi bi-${t('contact:icons.address')} me-2`}></i>
+              {t('contact:contactInfo.address')}
             </p>
           </div>
         </Col>

@@ -6,10 +6,10 @@ import {
     Form,
     Spinner,
     Card,
-    Stack,
     Button
 } from 'react-bootstrap';
 import styled from 'styled-components';
+import { useLanguage } from '../hooks/useLanguage';
 import ProductCard from '../components/ProductCard';
 import { useSideBar } from '../contexts/SideBarContext';
 import { useFilters } from '../contexts/FilterContext';
@@ -48,12 +48,32 @@ const ProductsGrid = styled.div`
 `;
 
 function Shop() {
+    const { t } = useLanguage();
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [pagination, setPagination] = useState({
+        page: 1,
+        limit: 12,
+        total: 0,
+        totalPages: 1
+    });
+    const [sortBy, setSortBy] = useState('featured');
+    const { isOpen } = useSideBar();
+    const { filters, updateFilters } = useFilters();
     const [searchParams, setSearchParams] = useSearchParams();
-    const [sortBy, setSortBy] = useState(searchParams.get('sort') || 'featured');
     
+    // Sort options with translations
+    const sortOptions = [
+        { value: 'featured', label: t('products:featured') },
+        { value: 'price-low', label: t('products:priceLowToHigh') },
+        { value: 'price-high', label: t('products:priceHighToLow') },
+        { value: 'rating', label: t('products:topRated') },
+        { value: 'newest', label: t('products:newest') },
+        { value: 'best-sellers', label: t('products:bestSellers') },
+        { value: 'discount', label: t('products:topDiscount') }
+    ];
+
     // Update URL when sort changes
     useEffect(() => {
         const params = new URLSearchParams(searchParams);
@@ -64,21 +84,14 @@ function Shop() {
         }
         setSearchParams(params, { replace: true });
     }, [sortBy, searchParams, setSearchParams]);
-    const [pagination, setPagination] = useState({
-        page: 1,
-        limit: 12,
-        total: 0,
-        totalPages: 1
-    });
-    const { isOpen } = useSideBar();
 
+    // Initialize sort from URL
     useEffect(() => {
-        // Any side effect that needs to run when isOpen changes
-        // This effect intentionally left blank for future use
-    }, [isOpen]);
-
-    // Get filters and update function from context
-    const { filters, updateFilters } = useFilters();
+        const sortParam = searchParams.get('sort');
+        if (sortParam) {
+            setSortBy(sortParam);
+        }
+    }, [searchParams]);
 
     // Fetch products with filters, sorting, and pagination
     const fetchProducts = useCallback(async (page = 1) => {
@@ -229,47 +242,38 @@ function Shop() {
                         <Card.Header className="border-bottom-0 py-3">
                             <div className="d-flex flex-column flex-md-row justify-content-between align-items-center w-100">
                                 <h5 className="mb-3 mb-md-0 text-center text-md-start">
-                                    {pagination.total} {pagination.total === 1 ? 'Product' : 'Products'} Found
+                                    {t('products:productsFound', { count: pagination.total })}
                                 </h5>
-                                <div className="d-flex align-items-center justify-content-end ms-auto">
+                                <div className="d-flex align-items-center gap-2">
+                                    <Form.Select
+                                        size="sm"
+                                        style={{ minWidth: '180px' }}
+                                        value={sortBy}
+                                        onChange={(e) => setSortBy(e.target.value)}
+                                        aria-label={t('products:sortBy')}
+                                    >
+                                        {sortOptions.map((option) => (
+                                            <option key={option.value} value={option.value}>
+                                                {option.label}
+                                            </option>
+                                        ))}
+                                    </Form.Select>
                                     <Button
                                         variant="outline-secondary"
                                         size="sm"
                                         onClick={() => {
-                                            // Clear all filters
                                             updateFilters({
                                                 categories: [],
                                                 priceRange: { min: 0, max: 1000 },
                                                 minRating: 0
                                             });
-                                            // Clear URL parameters
                                             setSearchParams({});
                                         }}
                                         disabled={!filters.categories?.length && !filters.minRating && 
                                                 filters.priceRange?.min === 0 && filters.priceRange?.max === 1000}
-                                        className="me-2"
                                     >
-                                        Clear All Filters
+                                        {t('common:clearAllFilters')}
                                     </Button>
-                                    <div style={{ minWidth: '180px' }}>
-                                        <Stack direction="horizontal" gap={2} className="justify-content-center justify-content-md-end">
-                                            <Form.Label className="mb-0 text-nowrap">Sort by:</Form.Label>
-                                            <Form.Select
-                                                size="sm"
-                                                style={{ minWidth: '180px' }}
-                                                value={sortBy}
-                                                onChange={(e) => setSortBy(e.target.value)}
-                                            >
-                                                <option value="featured">Featured</option>
-                                                <option value="price-low">Price: Low to High</option>
-                                                <option value="price-high">Price: High to Low</option>
-                                                <option value="rating">Top Rated</option>
-                                                <option value="newest">Newest</option>
-                                                <option value="best-sellers">Best Sellers</option>
-                                                <option value="discount">Top Discount</option>
-                                            </Form.Select>
-                                        </Stack>
-                                    </div>
                                 </div>
                             </div>
                         </Card.Header>
@@ -277,7 +281,7 @@ function Shop() {
                             {loading ? (
                                 <div className="text-center py-5">
                                     <Spinner animation="border" role="status">
-                                        <span className="visually-hidden">Loading...</span>
+                                        <span className="visually-hidden">{t('common:loading')}</span>
                                     </Spinner>
                                 </div>
                             ) : products.length > 0 ? (
@@ -293,10 +297,9 @@ function Shop() {
                                         ))}
                                     </ProductsGrid>
 
-                                    {/* Pagination */}
                                     {pagination.totalPages > 1 && (
                                         <div className="d-flex justify-content-center mt-4 mb-3">
-                                            <nav aria-label="Product pagination">
+                                            <nav aria-label={t('products:pagination')}>
                                                 <ul className="pagination">
                                                     <li className={`page-item ${pagination.page === 1 ? 'disabled' : ''}`}>
                                                         <button
@@ -304,12 +307,11 @@ function Shop() {
                                                             onClick={() => handlePageChange(pagination.page - 1)}
                                                             disabled={pagination.page === 1}
                                                         >
-                                                            Previous
+                                                            {t('common:previous')}
                                                         </button>
                                                     </li>
 
                                                     {Array.from({ length: Math.min(5, pagination.totalPages) }, (_, i) => {
-                                                        // Calculate page numbers to show (max 5 at a time)
                                                         let pageNum;
                                                         if (pagination.totalPages <= 5) {
                                                             pageNum = i + 1;
@@ -339,7 +341,7 @@ function Shop() {
                                                             onClick={() => handlePageChange(pagination.page + 1)}
                                                             disabled={pagination.page === pagination.totalPages}
                                                         >
-                                                            Next
+                                                            {t('common:next')}
                                                         </button>
                                                     </li>
                                                 </ul>
@@ -349,9 +351,11 @@ function Shop() {
                                 </>
                             ) : (
                                 <div className="text-center py-5">
-                                    <Card.Title className="mb-3">No products found</Card.Title>
+                                    <Card.Title className="mb-3">
+                                        {t('products:noProductsFound')}
+                                    </Card.Title>
                                     <Card.Text className="text-muted mb-4">
-                                        We couldn't find any products matching your filters.
+                                        {t('products:noProductsMatchingFilters')}
                                     </Card.Text>
                                     <Button
                                         variant="outline-primary"
@@ -362,7 +366,7 @@ function Shop() {
                                         })}
                                         className="px-4"
                                     >
-                                        Clear All Filters
+                                        {t('common:clearAllFilters')}
                                     </Button>
                                 </div>
                             )}

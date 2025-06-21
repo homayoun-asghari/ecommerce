@@ -1,0 +1,21 @@
+{
+  "welcome": "Hoş Geldiniz",
+  "logout": "Çıkış Yap",
+  "login": "Giriş Yap",
+  "signup": "Kayıt Ol",
+  "search": "Ara",
+  "loading": "Yükleniyor...",
+  "error": "Bir hata oluştu",
+  "success": "Başarılı",
+  "save": "Kaydet",
+  "cancel": "İptal",
+  "delete": "Sil",
+  "edit": "Düzenle",
+  "back": "Geri",
+  "next": "İleri",
+  "previous": "Önceki",
+  "submit": "Gönder",
+  "reset": "Sıfırla",
+  "clearAllFilters": "Tüm Filtreleri Temizle",
+  "retry": "Tekrar Dene"
+}

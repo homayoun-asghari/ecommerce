@@ -1,0 +1,48 @@
+{
+  "hero": {
+    "title": "About Our Store",
+    "description": "We're passionate about bringing you the best products with exceptional quality and service. Our journey began with a simple idea: to make online shopping easy, enjoyable, and reliable."
+  },
+  "story": {
+    "title": "Our Story",
+    "content": "Founded in 2023, our store has grown from a small startup to a trusted name in online retail. We believe in quality, sustainability, and creating lasting relationships with our customers."
+  },
+  "features": [
+    {
+      "icon": "shopping-bag",
+      "title": "Quality Products",
+      "description": "Carefully curated selection of high-quality items you'll love."
+    },
+    {
+      "icon": "shield-alt",
+      "title": "Secure Shopping",
+      "description": "Your security is our priority with encrypted transactions."
+    },
+    {
+      "icon": "headset",
+      "title": "24/7 Support",
+      "description": "Our team is always here to help with any questions."
+    }
+  ],
+  "team": {
+    "title": "Meet Our Team",
+    "subtitle": "The passionate people behind our success",
+    "members": [
+      {
+        "name": "Alex Johnson",
+        "role": "CEO & Founder",
+        "img": "https://randomuser.me/api/portraits/men/32.jpg"
+      },
+      {
+        "name": "Sarah Williams",
+        "role": "Head of Operations",
+        "img": "https://randomuser.me/api/portraits/women/44.jpg"
+      },
+      {
+        "name": "Michael Chen",
+        "role": "Product Manager",
+        "img": "https://randomuser.me/api/portraits/men/22.jpg"
+      }
+    ]
+  }
+}

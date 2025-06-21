@@ -1,0 +1,77 @@
+{
+  "newsletter": {
+    "title": "10$ indirim için bültenimize katılın",
+    "description": "Kampanyalar ve kuponlarla ilgili en son güncellemeleri almak için hemen kaydolun. Endişelenmeyin, spam yapmayız!",
+    "emailPlaceholder": "E-posta adresinizi giriniz",
+    "terms": "Abone olarak Hüküm ve Koşullarımızı ve Gizlilik ve Çerez Politikamızı kabul etmiş olursunuz."
+  },
+  "help": {
+    "title": "Yardıma mı İhtiyacınız Var?",
+    "address": "New York, New York",
+    "hours": "Pazartesi-Cuma: 08:00-21:00",
+    "phone": "+1(212)555-3333",
+    "orderHelp": "Siparişinizle ilgili yardıma mı ihtiyacınız var?",
+    "email": "info@mail.com"
+  },
+  "makeMoney": "Para Kazanın",
+  "makeMoneyOptions": {
+    "sellOnGrogin": "Grogin'de Satış Yapın",
+    "sellServices": "Grogin'de Hizmetlerinizi Satın",
+    "sellBusiness": "Grogin İş'te Satış Yapın",
+    "sellApps": "Grogin'de Uygulamalarınızı Satın",
+    "becomeAffiliate": "Satış Ortağı Olun",
+    "advertiseProducts": "Ürünlerinizi Tanıtın",
+    "sellPublish": "Bizimle Satış-Yayıncılık Yapın",
+    "becomeVendor": "Satıcı Olun"
+  },
+  "helpYou": {
+    "title": "Size Nasıl Yardımcı Olabiliriz?",
+    "accessibility": "Erişilebilirlik Bildirimi",
+    "orders": "Siparişleriniz",
+    "returns": "İade ve Değişim",
+    "shipping": "Nakliye Ücretleri ve Politikaları",
+    "refundPolicy": "İade ve İptal Politikası",
+    "privacy": "Gizlilik Politikası",
+    "terms": "Kullanım Koşulları",
+    "cookieSettings": "Çerez Ayarları",
+    "helpCenter": "Yardım Merkezi"
+  },
+  "aboutUs": {
+    "title": "Bizi Tanıyın",
+    "careers": "Grogin'de Kariyer",
+    "about": "Grogin Hakkında",
+    "investor": "Yatırımcı İlişkileri",
+    "devices": "Grogin Cihazları",
+    "reviews": "Müşteri Yorumları",
+    "social": "Sosyal Sorumluluk",
+    "locations": "Mağaza Konumları"
+  },
+  "downloadApp": {
+    "title": "Uygulamamızı İndirin",
+    "googlePlayAlt": "Google Play Store",
+    "appStoreAlt": "App Store",
+    "discountText": "Uygulamayı İndirin %10 İndirim Kazanın",
+    "discountText2": "Uygulamayı İndirin %20 İndirim Kazanın"
+  },
+  "followUs": {
+    "title": "Bizi Takip Edin:",
+    "facebook": "Facebook",
+    "instagram": "Instagram",
+    "twitter": "Twitter"
+  },
+  "paymentMethods": "Ödeme Yöntemleri",
+  "paymentIcons": {
+    "visa": "Visa",
+    "payment": "Ödeme",
+    "paypal": "PayPal",
+    "skrill": "Skrill",
+    "klarna": "Klarna"
+  },
+  "copyright": "Telif Hakkı © {{year}} Jinstore WooCommerce WordPress Tema. Tüm hakları saklıdır. BlackRise Temaları tarafından desteklenmektedir.",
+  "footerLinks": {
+    "terms": "Kullanım Koşulları",
+    "privacy": "Gizlilik Politikası",
+    "tracking": "Sipariş Takibi"
+  },
+  "allRightsReserved": "Tüm Hakları Saklıdır"
+}
