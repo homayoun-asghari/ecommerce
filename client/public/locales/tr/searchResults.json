@@ -1,0 +1,17 @@
+{
+  "searchResultsFor": "\"{{query}}\" için arama sonuçları",
+  "noProductsFound": "Aramanızla eşleşen ürün bulunamadı.",
+  "searchingProducts": "Ürünler aranıyor...",
+  "noResultsTitle": "\"{{query}}\" için hiç ürün bulunamadı",
+  "noResultsSuggestion": "Farklı anahtar kelimeler deneyin veya yazımı kontrol edin",
+  "sortBy": "Sırala",
+  "sortOptions": {
+    "relevance": "İlgiliye göre",
+    "bestSellers": "Çok Satanlar",
+    "topDiscount": "İndirim Oranı",
+    "priceLowHigh": "Fiyat: Düşükten Yükseğe",
+    "priceHighLow": "Fiyat: Yüksekten Düşüğe",
+    "topRated": "En Çok Değerlendirilenler",
+    "newest": "En Yeni"
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "title": "Filters",
+  "apply": "Apply",
+  "clearAll": "Clear All",
+  "priceRange": {
+    "title": "Price Range",
+    "min": "Min",
+    "max": "Max"
+  },
+  "categories": {
+    "title": "Categories"
+  },
+  "rating": {
+    "title": "Rating",
+    "starsAndUp": "{{rating}} Stars & Up"
+  },
+  "availability": {
+    "title": "Availability",
+    "inStock": "In Stock",
+    "outOfStock": "Out of Stock"
+  },
+  "brand": {
+    "title": "Brand"
+  },
+  "color": {
+    "title": "Color"
+  }
+}

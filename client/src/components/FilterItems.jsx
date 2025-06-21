@@ -1,4 +1,5 @@
-import React, { useCallback, useState} from 'react';
+import React, { useCallback, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import Accordion from 'react-bootstrap/Accordion';
 import {
     Form,
@@ -11,6 +12,7 @@ import CategoryItems from "./CategoryItems";
 import { useFilters } from '../contexts/FilterContext';
 
 function AccordionItems() {
+    const { t } = useTranslation();
     const { filters, updateFilters } = useFilters();
     const [priceRange, setPriceRange] = useState({
         min: filters.priceRange?.min || 0,
@@ -39,17 +41,6 @@ function AccordionItems() {
         });
     }, [priceRange, filters, updateFilters]);
 
-    const handleCategoryChange = useCallback((category, checked) => {
-        const newCategories = checked
-            ? [...new Set([...(filters.categories || []), category])]
-            : (filters.categories || []).filter(c => c !== category);
-
-        updateFilters({
-            ...filters,
-            categories: newCategories
-        });
-    }, [filters, updateFilters]);
-
     const handleRatingChange = useCallback((rating) => {
         updateFilters({
             ...filters,
@@ -57,19 +48,18 @@ function AccordionItems() {
         });
     }, [filters, updateFilters]);
 
-
     return (
         <div>
             <Accordion>
                 {/* Price Range Filter */}
                 <Accordion.Item eventKey="0" className="mb-3">
-                    <Accordion.Header>Price Range</Accordion.Header>
+                    <Accordion.Header>{t('filters:priceRange.title')}</Accordion.Header>
                     <Accordion.Body>
                         <Stack gap={3}>
                             <Row className="g-2">
                                 <Col>
                                     <Form.Group>
-                                        <Form.Label className="small text-muted mb-1">Min</Form.Label>
+                                        <Form.Label className="small text-muted mb-1">{t('filters:priceRange.min')}</Form.Label>
                                         <InputGroup size="sm">
                                             <InputGroup.Text>$</InputGroup.Text>
                                             <Form.Control
@@ -86,7 +76,7 @@ function AccordionItems() {
                                 </Col>
                                 <Col>
                                     <Form.Group>
-                                        <Form.Label className="small text-muted mb-1">Max</Form.Label>
+                                        <Form.Label className="small text-muted mb-1">{t('filters:priceRange.max')}</Form.Label>
                                         <InputGroup size="sm">
                                             <InputGroup.Text>$</InputGroup.Text>
                                             <Form.Control
@@ -115,7 +105,7 @@ function AccordionItems() {
 
                 {/* Categories Filter */}
                 <Accordion.Item eventKey="1" className="mb-3">
-                    <Accordion.Header>Categories</Accordion.Header>
+                    <Accordion.Header>{t('filters:categories.title')}</Accordion.Header>
                     <Accordion.Body>
                         <CategoryItems />
                     </Accordion.Body>
@@ -123,7 +113,7 @@ function AccordionItems() {
 
                 {/* Rating Filter */}
                 <Accordion.Item eventKey="2">
-                    <Accordion.Header>Rating</Accordion.Header>
+                    <Accordion.Header>{t('filters:rating.title')}</Accordion.Header>
                     <Accordion.Body>
                         <Stack gap={2}>
                             {[4, 3, 2, 1].map((rating) => (
@@ -132,7 +122,7 @@ function AccordionItems() {
                                     type="radio"
                                     name="rating"
                                     id={`rating-${rating}`}
-                                    label={`${rating} Stars & Up`}
+                                    label={t('filters:rating.starsAndUp', { rating })}
                                     checked={filters.minRating === rating}
                                     onChange={() => handleRatingChange(rating)}
                                     className="px-2 py-1 rounded hover-bg-light"

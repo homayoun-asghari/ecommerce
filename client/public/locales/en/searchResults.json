@@ -1,0 +1,17 @@
+{
+  "searchResultsFor": "Search Results for \"{{query}}\"",
+  "noProductsFound": "No products found matching your search.",
+  "searchingProducts": "Searching for products...",
+  "noResultsTitle": "No products found for \"{{query}}\"",
+  "noResultsSuggestion": "Try different keywords or check the spelling",
+  "sortBy": "Sort by",
+  "sortOptions": {
+    "relevance": "Relevance",
+    "bestSellers": "Best Sellers",
+    "topDiscount": "Top Discount",
+    "priceLowHigh": "Price: Low to High",
+    "priceHighLow": "Price: High to Low",
+    "topRated": "Top Rated",
+    "newest": "Newest"
+  }
+}

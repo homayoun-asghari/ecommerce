@@ -5,19 +5,11 @@ import { useSideBar } from "../contexts/SideBarContext";
 import { useFilters } from "../contexts/FilterContext";
 import { API_BASE_URL } from "../config";
 import ProductCard from '../components/ProductCard';
-import FilterSideBar from '../components/FilterSideBar';
+
+import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 
-// Styled components for layout and animations
-const SidebarColumn = styled(Col)`
-  transition: all 0.3s ease-in-out;
-  transform: ${({ $isOpen }) => ($isOpen ? 'translateX(0)' : 'translateX(-100%)')};
-  opacity: ${({ $isOpen }) => ($isOpen ? '1' : '0')};
-  position: ${({ $isOpen }) => ($isOpen ? 'relative' : 'absolute')};
-  z-index: ${({ $isOpen }) => ($isOpen ? '1' : '-1')};
-  width: 300px;
-  padding-right: 0;
-`;
+
 
 const ContentColumn = styled(Col)`
   transition: all 0.3s ease-in-out;
@@ -55,8 +47,6 @@ const ProductsGrid = styled.div`
 
 const SearchResults = () => {
   const location = useLocation();
-  // eslint-disable-next-line no-unused-vars
-  const navigate = useNavigate(); // Will be used for future navigation
   const [searchQuery, setSearchQuery] = useState('');
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -64,6 +54,7 @@ const SearchResults = () => {
   const [sortBy, setSortBy] = useState('relevance');
   const { isOpen } = useSideBar();
   const { filters } = useFilters();
+  const { t } = useTranslation();
 
   const fetchSearchResults = useCallback(async (query) => {
     if (!query) return;
@@ -74,8 +65,8 @@ const SearchResults = () => {
 
       // Build query parameters with filters
       const params = new URLSearchParams();
-      params.append('q', query); // Don't encode here, let the URLSearchParams handle it
-      params.append('sort', sortBy); // Add sort parameter
+      params.append('q', query);
+      params.append('sort', sortBy);
       
       if (filters.categories?.length > 0) {
         params.append('category', filters.categories[0]);
@@ -96,23 +87,23 @@ const SearchResults = () => {
       
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.error || 'Failed to fetch search results');
+        throw new Error(errorData.error || t('common:fetchError'));
       }
 
       const data = await response.json();
       setResults(data.products || []);
       
       if (data.products && data.products.length === 0) {
-        setError('No products found matching your search.');
+        setError(t('searchResults:noProductsFound'));
       }
     } catch (err) {
       console.error('Error fetching search results:', err);
-      setError(err.message || 'An error occurred while searching');
+      setError(err.message || t('common:errorOccurred'));
       setResults([]);
     } finally {
       setLoading(false);
     }
-  }, [filters, sortBy]);
+  }, [filters, sortBy, t]);
 
   // Fetch search results when query changes or filters update
   useEffect(() => {
@@ -128,11 +119,12 @@ const SearchResults = () => {
   }, [location.search, fetchSearchResults]);
 
   // Search is handled via URL parameters, no need for separate submit handler
-  // navigate is already declared at the top of the component
+  // eslint-disable-next-line no-unused-vars
+  const navigate = useNavigate(); // Will be used for future navigation
 
-  const sortResults = (results, sortBy) => {
+  const sortResults = (results, sortKey) => {
     const sortedResults = [...results];
-    switch (sortBy) {
+    switch (sortKey) {
       case 'best-sellers':
         return sortedResults.sort((a, b) => (b.sold || 0) - (a.sold || 0));
       case 'price_asc':
@@ -161,28 +153,31 @@ const SearchResults = () => {
           <Card className="mb-4 border-0 shadow-sm">
             <Card.Header className="d-flex justify-content-between align-items-center py-3">
               <h5 className="mb-0">
-                Search Results for "{searchQuery}"
+                {t('searchResults:searchResultsFor', { query: searchQuery })}
                 {!loading && results.length > 0 && (
                   <span className="text-muted ms-2 fw-normal">
-                    ({results.length} {results.length === 1 ? 'item' : 'items'})
+                    ({results.length} {results.length === 1 ? t('common:item') : t('common:items')})
                   </span>
                 )}
               </h5>
               <div className="d-flex align-items-center">
-                <span className="me-2 d-none d-sm-inline text-nowrap">Sort by:</span>
+                <span className="me-2 d-none d-sm-inline text-nowrap">
+                  {t('searchResults:sortBy')}:
+                </span>
                 <Form.Select
                   size="sm"
                   style={{ minWidth: '180px' }}
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value)}
+                  aria-label={t('searchResults:sortBy')}
                 >
-                  <option value="relevance">Relevance</option>
-                  <option value="best-sellers">Best Sellers</option>
-                  <option value="discount">Top Discount</option>
-                  <option value="price_asc">Price: Low to High</option>
-                  <option value="price_desc">Price: High to Low</option>
-                  <option value="rating">Top Rated</option>
-                  <option value="newest">Newest</option>
+                  <option value="relevance">{t('searchResults:sortOptions.relevance')}</option>
+                  <option value="best-sellers">{t('searchResults:sortOptions.bestSellers')}</option>
+                  <option value="discount">{t('searchResults:sortOptions.topDiscount')}</option>
+                  <option value="price_asc">{t('searchResults:sortOptions.priceLowHigh')}</option>
+                  <option value="price_desc">{t('searchResults:sortOptions.priceHighLow')}</option>
+                  <option value="rating">{t('searchResults:sortOptions.topRated')}</option>
+                  <option value="newest">{t('searchResults:sortOptions.newest')}</option>
                 </Form.Select>
               </div>
             </Card.Header>
@@ -190,9 +185,9 @@ const SearchResults = () => {
               {loading ? (
                 <div className="text-center py-5">
                   <Spinner animation="border" role="status">
-                    <span className="visually-hidden">Loading...</span>
+                    <span className="visually-hidden">{t('common:loading')}...</span>
                   </Spinner>
-                  <p className="mt-2">Searching for products...</p>
+                  <p className="mt-2">{t('searchResults:searchingProducts')}</p>
                 </div>
               ) : error ? (
                 <Alert variant="danger" className="m-3">
@@ -200,8 +195,8 @@ const SearchResults = () => {
                 </Alert>
               ) : results.length === 0 ? (
                 <div className="text-center py-5">
-                  <h5>No products found for "{searchQuery}"</h5>
-                  <p className="text-muted">Try different keywords or check the spelling</p>
+                  <h5>{t('searchResults:noResultsTitle', { query: searchQuery })}</h5>
+                  <p className="text-muted">{t('searchResults:noResultsSuggestion')}</p>
                 </div>
               ) : (
                 <ProductsGrid className="p-3">

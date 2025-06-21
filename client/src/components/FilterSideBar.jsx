@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useSideBar } from "../contexts/SideBarContext";
+import { useTranslation } from 'react-i18next';
 import "../styles/Categories.css";
 import FilterItems from "./FilterItems";
 
@@ -9,6 +10,7 @@ const FilterSideBar = ({ className = '' }) => {
     const [isTransitioning, setIsTransitioning] = useState(false);
     const dropdownRef = useRef(null);
     const isFirstRender = useRef(true);
+    const { t } = useTranslation();
 
     // Sync with sidebar state
     useEffect(() => {
@@ -68,7 +70,7 @@ const FilterSideBar = ({ className = '' }) => {
                         onClick={handleToggle}
                         aria-expanded={isDropdownOpen}
                     >
-                        Filters
+                        {t('filters:title')}
                     </button>
                     <div 
                         className={`accordion-dropdown ${isDropdownOpen ? 'show' : ''}`}

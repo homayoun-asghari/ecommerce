@@ -1,0 +1,28 @@
+{
+  "title": "Filtreler",
+  "apply": "Uygula",
+  "clearAll": "Tümünü Temizle",
+  "priceRange": {
+    "title": "Fiyat Aralığı",
+    "min": "Min",
+    "max": "Maks"
+  },
+  "categories": {
+    "title": "Kategoriler"
+  },
+  "rating": {
+    "title": "Değerlendirme",
+    "starsAndUp": "{{rating}} ve Üzeri Yıldız"
+  },
+  "availability": {
+    "title": "Stok Durumu",
+    "inStock": "Stokta Var",
+    "outOfStock": "Stokta Yok"
+  },
+  "brand": {
+    "title": "Marka"
+  },
+  "color": {
+    "title": "Renk"
+  }
+}
