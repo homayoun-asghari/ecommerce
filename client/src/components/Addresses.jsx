@@ -6,8 +6,10 @@ import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import { GoogleMap, LoadScript, Marker } from '@react-google-maps/api';
 import { API_BASE_URL } from "../config";
+import { useTranslation } from 'react-i18next';
 
 function Addresses() {
+    const { t } = useTranslation('address');
     const { user } = useUser();
     const userId = user.data.id;
     const [addresses, setAddresses] = useState([]);
@@ -95,12 +97,12 @@ function Addresses() {
     return (
         <div className="d-flex flex-column justify-content-end">
             <Button variant="primary" onClick={handleShow}>
-                Add New Address
+                {t('addNewAddress')}
             </Button>
 
             <Modal show={show} onHide={handleClose} centered >
                 <Modal.Header closeButton>
-                    <Modal.Title>Add New Address</Modal.Title>
+                    <Modal.Title>{t('addNewAddress')}</Modal.Title>
                 </Modal.Header>
 
                 <Modal.Body>
@@ -116,16 +118,16 @@ function Addresses() {
                         >
                             {markerPosition && <Marker position={markerPosition} draggable={true} onDragEnd={(e) => handleMapClick(e)}/>}
                         </GoogleMap>
-                        <p className="mt-2">Selected Address: {address}</p>
+                        <p className="mt-2">{t('selectedAddress')}: {address}</p>
                     </LoadScript>
 
                     <Form onSubmit={handleSubmit}>
                         <Form.Group className="mb-3">
-                            <Form.Label>Full Name</Form.Label>
+                            <Form.Label>{t('fullName')}</Form.Label>
                             <Form.Control type="text" name="full_name" required />
                         </Form.Group>
                         <Form.Group className="mb-3">
-                            <Form.Label>Street</Form.Label>
+                            <Form.Label>{t('street')}</Form.Label>
                             <Form.Control
                               type="text"
                               name="street"
@@ -135,7 +137,7 @@ function Addresses() {
                             />
                         </Form.Group>
                         <Form.Group className="mb-3">
-                            <Form.Label>City</Form.Label>
+                            <Form.Label>{t('city')}</Form.Label>
                             <Form.Control
                               type="text"
                               name="city"
@@ -145,7 +147,7 @@ function Addresses() {
                             />
                         </Form.Group>
                         <Form.Group className="mb-3">
-                            <Form.Label>State</Form.Label>
+                            <Form.Label>{t('state')}</Form.Label>
                             <Form.Control
                               type="text"
                               name="state"
@@ -155,7 +157,7 @@ function Addresses() {
                             />
                         </Form.Group>
                         <Form.Group className="mb-3">
-                            <Form.Label>Postal Code</Form.Label>
+                            <Form.Label>{t('postalCode')}</Form.Label>
                             <Form.Control
                               type="text"
                               name="postal_code"
@@ -165,7 +167,7 @@ function Addresses() {
                             />
                         </Form.Group>
                         <Form.Group className="mb-3">
-                            <Form.Label>Country</Form.Label>
+                            <Form.Label>{t('country')}</Form.Label>
                             <Form.Control
                               type="text"
                               name="country"
@@ -175,17 +177,17 @@ function Addresses() {
                             />
                         </Form.Group>
                         <Form.Group className="mb-3">
-                            <Form.Label>Phone</Form.Label>
+                            <Form.Label>{t('phone')}</Form.Label>
                             <Form.Control type="text" name="phone" required />
                         </Form.Group>
-                        <Form.Check type="checkbox" name="is_default" label="Default" />
+                        <Form.Check type="checkbox" name="is_default" label={t('default')} />
 
                         <Modal.Footer>
                             <Button variant="secondary" onClick={handleClose}>
-                                Cancel
+                                {t('cancel')}
                             </Button>
                             <Button variant="primary" type="submit">
-                                Save Address
+                                {t('saveAddress')}
                             </Button>
                         </Modal.Footer>
                     </Form>

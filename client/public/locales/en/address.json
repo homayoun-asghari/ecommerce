@@ -1,0 +1,20 @@
+{
+  "addNewAddress": "Add New Address",
+  "selectedAddress": "Selected Address",
+  "fullName": "Full Name",
+  "street": "Street",
+  "city": "City",
+  "state": "State",
+  "postalCode": "Postal Code",
+  "country": "Country",
+  "phone": "Phone",
+  "default": "Default",
+  "cancel": "Cancel",
+  "saveAddress": "Save Address",
+  "deliverTo": "Deliver to",
+  "address": "Address",
+  "phoneLabel": "Phone",
+  "notProvided": "Not provided",
+  "unknownUser": "Unknown User",
+  "delete": "Delete"
+}

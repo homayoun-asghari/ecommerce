@@ -1,0 +1,20 @@
+{
+  "addNewAddress": "Yeni Adres Ekle",
+  "selectedAddress": "Seçilen Adres",
+  "fullName": "Tam Adı",
+  "street": "Sokak",
+  "city": "Şehir",
+  "state": "İlçe",
+  "postalCode": "Posta Kodu",
+  "country": "Ülke",
+  "phone": "Telefon",
+  "default": "Varsayılan",
+  "cancel": "İptal",
+  "saveAddress": "Adresi Kaydet",
+  "deliverTo": "Teslimat Adresi",
+  "address": "Adres",
+  "phoneLabel": "Telefon",
+  "notProvided": "Belirtilmemiş",
+  "unknownUser": "Bilinmeyen Kullanıcı",
+  "delete": "Sil"
+}

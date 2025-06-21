@@ -1,0 +1,46 @@
+{
+  "tabs": {
+    "open": "Open",
+    "pending": "Pending",
+    "resolved": "Resolved",
+    "closed": "Closed"
+  },
+  "addNewTicket": "Add New Ticket",
+  "category": "Category",
+  "selectCategory": "Select Category",
+  "order": "Order",
+  "payment": "Payment",
+  "account": "Account",
+  "technical": "Technical",
+  "other": "Other",
+  "selectRelatedOrder": "Select Related Order",
+  "selectAnOrder": "Select an order",
+  "orderNumber": "Order #{{number}}",
+  "subject": "Subject",
+  "message": "Message",
+  "attachFile": "Attach File (jpg | jpeg | png, optional)",
+  "cancel": "Cancel",
+  "send": "Send",
+  "ticket": {
+    "category": "Category: {{category}}",
+    "closeTicket": "Close Ticket",
+    "showMessages": "Show Messages",
+    "hideMessages": "Hide Messages",
+    "subject": "Subject: {{subject}}",
+    "status": {
+      "open": "Open",
+      "pending": "Pending",
+      "resolved": "Resolved",
+      "closed": "Closed"
+    },
+    "noMessages": "No messages yet"
+  },
+  "errors": {
+    "ticketCreationFailed": "Failed to create ticket",
+    "messageSendingFailed": "Failed to send message"
+  },
+  "success": {
+    "ticketCreated": "Ticket created successfully",
+    "messageSent": "Message sent successfully"
+  }
+}

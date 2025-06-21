@@ -5,8 +5,10 @@ import { useUser } from "../contexts/UserContext";
 import Button from 'react-bootstrap/Button';
 import { Trash } from "react-bootstrap-icons";
 import { API_BASE_URL } from "../config";
+import { useTranslation } from 'react-i18next';
 
 function AddressCard({ address = {}, mode = 'card' }) {
+    const { t } = useTranslation('address');
     const { user } = useUser();
     const userId = user?.data?.id;
     const setDefaultAddress = async (addressId) => {
@@ -47,23 +49,23 @@ function AddressCard({ address = {}, mode = 'card' }) {
     return (
         <Card className="m-3">
             <Card.Header>
-                    Deliver to {address?.full_name || 'Unknown User'}
+                    {t('deliverTo')} {address?.full_name || t('unknownUser')}
                 </Card.Header>
             <Card.Body>
-                <Card.Title>Address: {address?.street || ''} {address?.city || ''} {address?.state || ''} {address?.country || ''}</Card.Title>
+                <Card.Title>{t('address')}: {address?.street || ''} {address?.city || ''} {address?.state || ''} {address?.country || ''}</Card.Title>
                 <Card.Text>
-                    Phone: {address?.phone || 'Not provided'}
+                    {t('phoneLabel')}: {address?.phone || t('notProvided')}
                 </Card.Text>
                 {mode === "page" && <div className="d-flex justify-content-between align-items-end">
                     <Form.Check
                         type="checkbox"
                         name="defaultAddress"
                         id={`default-${address.id}`}
-                        label="Default"
+                        label={t('default')}
                         checked={address?.is_default || false}
                         onChange={() => setDefaultAddress(address.id)}
                     />
-                    <Button variant="danger" onClick={handleDelete}><Trash /></Button>
+                    <Button variant="danger" onClick={handleDelete} title={t('delete')}><Trash /></Button>
                 </div>}
             </Card.Body>
         </Card>

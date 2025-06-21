@@ -1,0 +1,46 @@
+{
+  "tabs": {
+    "open": "Açık",
+    "pending": "Beklemede",
+    "resolved": "Çözüldü",
+    "closed": "Kapalı"
+  },
+  "addNewTicket": "Yeni Destek Talebi Ekle",
+  "category": "Kategori",
+  "selectCategory": "Kategori Seçiniz",
+  "order": "Sipariş",
+  "payment": "Ödeme",
+  "account": "Hesap",
+  "technical": "Teknik Destek",
+  "other": "Diğer",
+  "selectRelatedOrder": "İlgili Siparişi Seçin",
+  "selectAnOrder": "Bir sipariş seçin",
+  "orderNumber": "Sipariş #{{number}}",
+  "subject": "Konu",
+  "message": "Mesaj",
+  "attachFile": "Dosya Ekle (jpg | jpeg | png, isteğe bağlı)",
+  "cancel": "İptal",
+  "send": "Gönder",
+  "ticket": {
+    "category": "Kategori: {{category}}",
+    "closeTicket": "Talebi Kapat",
+    "showMessages": "Mesajları Göster",
+    "hideMessages": "Mesajları Gizle",
+    "subject": "Konu: {{subject}}",
+    "status": {
+      "open": "Açık",
+      "pending": "Beklemede",
+      "resolved": "Çözüldü",
+      "closed": "Kapalı"
+    },
+    "noMessages": "Henüz mesaj yok"
+  },
+  "errors": {
+    "ticketCreationFailed": "Destek talebi oluşturulamadı",
+    "messageSendingFailed": "Mesaj gönderilemedi"
+  },
+  "success": {
+    "ticketCreated": "Destek talebi başarıyla oluşturuldu",
+    "messageSent": "Mesaj başarıyla gönderildi"
+  }
+}

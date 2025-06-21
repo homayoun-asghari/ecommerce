@@ -6,8 +6,10 @@ import Modal from 'react-bootstrap/Modal';
 import Form from 'react-bootstrap/Form';
 import { useUser } from "../contexts/UserContext";
 import { API_BASE_URL } from "../config";
+import { useTranslation } from 'react-i18next';
 
 function Tickets() {
+    const { t } = useTranslation('tickets');
     const [activeTab, setActiveTab] = useState('open');
     const [category, setCategory] = useState("");
     const [tickets, setTickets] = useState([]);
@@ -62,71 +64,71 @@ function Tickets() {
             <div className="d-flex justify-content-between mb-3">
                 <Nav variant="underline" activeKey={activeTab} onSelect={(selectedKey) => setActiveTab(selectedKey)}>
                     <Nav.Item>
-                        <Nav.Link eventKey="open">Open</Nav.Link>
+                        <Nav.Link eventKey="open">{t('tabs.open')}</Nav.Link>
                     </Nav.Item>
                     <Nav.Item>
-                        <Nav.Link eventKey="pending">Pending</Nav.Link>
+                        <Nav.Link eventKey="pending">{t('tabs.pending')}</Nav.Link>
                     </Nav.Item>
                     <Nav.Item>
-                        <Nav.Link eventKey="resolved">Resolved</Nav.Link>
+                        <Nav.Link eventKey="resolved">{t('tabs.resolved')}</Nav.Link>
                     </Nav.Item>
                     <Nav.Item>
-                        <Nav.Link eventKey="closed">Closed</Nav.Link>
+                        <Nav.Link eventKey="closed">{t('tabs.closed')}</Nav.Link>
                     </Nav.Item>
                 </Nav>
 
-                <Button variant="primary" onClick={handleShow}>Add New Ticket</Button>
+                <Button variant="primary" onClick={handleShow}>{t('addNewTicket')}</Button>
 
                 <Modal show={show} onHide={handleClose} centered >
                     <Modal.Header closeButton>
-                        <Modal.Title>Add New Ticket</Modal.Title>
+                        <Modal.Title>{t('addNewTicket')}</Modal.Title>
                     </Modal.Header>
 
                     <Modal.Body>
                         <Form onSubmit={handleSubmit}>
                             <Form.Group className="mb-3">
-                                <Form.Label>Category</Form.Label>
+                                <Form.Label>{t('category')}</Form.Label>
                                 <Form.Select name="category" value={category} onChange={(e) => setCategory(e.target.value)} required>
-                                    <option value="">Select Category</option>
-                                    <option value="order">Order</option>
-                                    <option value="payment">Payment</option>
-                                    <option value="account">Account</option>
-                                    <option value="technical">Technical</option>
-                                    <option value="other">Other</option>
+                                    <option value="">{t('selectCategory')}</option>
+                                    <option value="order">{t('order')}</option>
+                                    <option value="payment">{t('payment')}</option>
+                                    <option value="account">{t('account')}</option>
+                                    <option value="technical">{t('technical')}</option>
+                                    <option value="other">{t('other')}</option>
                                 </Form.Select>
                             </Form.Group>
                             {category === "order" && (
                                 <Form.Group className="mb-3">
-                                    <Form.Label>Select Related Order</Form.Label>
+                                    <Form.Label>{t('selectRelatedOrder')}</Form.Label>
                                     <Form.Select name="order_id">
-                                        <option value="">Select an order</option>
+                                        <option value="">{t('selectAnOrder')}</option>
                                         {orders.map(order => (
-                                            <option key={order.order_id} value={order.order_id}>Order #{order.order_id}</option>
+                                            <option key={order.order_id} value={order.order_id}>{t('orderNumber', { number: order.order_id })}</option>
                                         ))}
                                     </Form.Select>
                                 </Form.Group>
                             )}
 
                             <Form.Group className="mb-3">
-                                <Form.Label>Subject</Form.Label>
+                                <Form.Label>{t('subject')}</Form.Label>
                                 <Form.Control type="text" name="subject" required />
                             </Form.Group>
                             <Form.Group className="mb-3">
-                                <Form.Label>Message</Form.Label>
+                                <Form.Label>{t('message')}</Form.Label>
                                 <Form.Control as="textarea" rows={3} name="message" required />
                             </Form.Group>
 
                             <Form.Group className="mb-3">
-                                <Form.Label>Attach File (jpg | jpeg | png, optional)</Form.Label>
+                                <Form.Label>{t('attachFile')}</Form.Label>
                                 <Form.Control type="file" name="attachment" accept=".jpg,.jpeg,.png" />
                             </Form.Group>
 
                             <Modal.Footer>
                                 <Button variant="secondary" onClick={handleClose}>
-                                    Cancel
+                                    {t('cancel')}
                                 </Button>
                                 <Button variant="primary" type="submit">
-                                    Send
+                                    {t('send')}
                                 </Button>
                             </Modal.Footer>
                         </Form>
@@ -134,7 +136,7 @@ function Tickets() {
                 </Modal>
             </div>
 
-            {tickets.map(ticket => <TicketCard ticket={ticket} />)}
+            {tickets.map((ticket, index) => <TicketCard key={index} ticket={ticket} />)}
 
         </div>
     );

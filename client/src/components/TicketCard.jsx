@@ -8,8 +8,10 @@ import Form from 'react-bootstrap/Form';
 import InputGroup from 'react-bootstrap/InputGroup';
 import { Send } from "react-bootstrap-icons";
 import { API_BASE_URL } from "../config";
+import { useTranslation } from 'react-i18next';
 
 function TicketCard({ ticket }) {
+    const { t } = useTranslation('tickets');
     const [expanded, setExpanded] = useState(false);
     const [messages, setMessages] = useState([]);
     const { user } = useUser();
@@ -56,19 +58,19 @@ function TicketCard({ ticket }) {
     return (
         <Card className="mb-3">
             <Card.Header className="d-flex justify-content-between align-items-center">
-                Category: {ticket.category}
+                {t('ticket.category', { category: t(ticket.category) })}
                 <div >
                     {ticket.status !== "closed" && <Button onClick={handleClose} variant="outline-danger" className="m-1">
-                        Close Ticket
+                        {t('ticket.closeTicket')}
                     </Button>}
 
                     <Button onClick={handleClick} variant="outline-success">
-                        {expanded ? "Hide Messages" : "Show Messages"}
+                        {expanded ? t('ticket.hideMessages') : t('ticket.showMessages')}
                     </Button>
                 </div>
             </Card.Header>
             <Card.Body>
-                <Card.Title>Subjetc: {ticket.subject}</Card.Title>
+                <Card.Title>{t('ticket.subject', { subject: ticket.subject })}</Card.Title>
                 <Collapse in={expanded}>
                     <div>
                         {messages.map((message, i) => (
@@ -104,12 +106,12 @@ function TicketCard({ ticket }) {
                         ))}
                         {ticket.status !== "closed" && <Form className="mt-3" onSubmit={handleSend}>
                             <Form.Group className="mb-3">
-                                <Form.Label>Attach File (jpg | jpeg | png, optional)</Form.Label>
+                                <Form.Label>{t('attachFile')}</Form.Label>
                                 <Form.Control type="file" name="attachment" accept=".jpg,.jpeg,.png" />
                             </Form.Group>
                             <InputGroup>
                                 <Form.Control name="message" as="textarea" aria-label="With textarea" style={{ resize: "none" }} rows={3} />
-                                <Button variant="primary" type="submit" ><Send /> Send </Button>
+                                <Button variant="primary" type="submit"><Send /> {t('send')}</Button>
                             </InputGroup>
 
                         </Form>}
