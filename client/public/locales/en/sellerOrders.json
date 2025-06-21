@@ -1,0 +1,12 @@
+{
+  "loadingOrders": "Loading orders...",
+  "errorLoadingOrders": "Error: {{error}}",
+  "noOrdersFound": "No orders found for this seller.",
+  "orderId": "Order ID: {{id}}",
+  "status": "Status: {{status}}",
+  "date": "Date: {{date}}",
+  "name": "Name: {{name}}",
+  "address": "Address: {{street}} {{city}} {{state}} {{country}} {{postalCode}}",
+  "phone": "Phone: {{phone}}",
+  "total": "Total: ${{total}}"
+}

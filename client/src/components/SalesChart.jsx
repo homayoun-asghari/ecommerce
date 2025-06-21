@@ -7,22 +7,20 @@ import { useUser } from "../contexts/UserContext";
 import { API_BASE_URL } from "../config";
 import Card from 'react-bootstrap/Card';
 import Col from "react-bootstrap/Col";
+import { useTranslation } from 'react-i18next';
 
 function SalesChart() {
+    const { t } = useTranslation('salesChart');
     const [deliveredData, setDeliveredData] = useState([]);
     const [pendingData, setPendingData] = useState([]);
     const [totalSales, setTotalSales] = useState(0);
     const [summary, setSummary] = useState([]);
     const [month, setMonth] = useState(new Date().getMonth() + 1);
-    const [currentMonth, setCurrentMonth] = useState({});
-    const [year, setYear] = useState(new Date().getFullYear());
+    const year = new Date().getFullYear();
     const { user } = useUser();
     const userId = user?.data?.id;
 
-    const months = [
-        "January", "February", "March", "April", "May", "June",
-        "July", "August", "September", "October", "November", "December"
-    ];
+    const months = t('months', { returnObjects: true });
 
     useEffect(() => {
         async function fetchChartData() {
@@ -61,7 +59,7 @@ function SalesChart() {
         <>
             <Card>
                 <Card.Header className="d-flex justify-content-between align-items-center">
-                    <h5>Total Sales: ${totalSales.toFixed(2)}</h5>
+                    <h5>{t('totalSales')}: ${totalSales.toFixed(2)}</h5>
                     <select value={month} onChange={e => setMonth(Number(e.target.value))}>
                         {months.map((name, i) => (
                             <option key={i} value={i + 1}>{name}</option>
@@ -76,8 +74,8 @@ function SalesChart() {
                             <YAxis allowDecimals={false} />
                             <Tooltip />
                             <Legend />
-                            <Line data={deliveredData} type="monotone" dataKey="orders" stroke="#28a745" name="Delivered Orders" />
-                            <Line data={pendingData} type="monotone" dataKey="orders" stroke="#ffc107" name="Pending Orders" />
+                            <Line data={deliveredData} type="monotone" dataKey="orders" stroke="#28a745" name={t('deliveredOrders')} />
+                            <Line data={pendingData} type="monotone" dataKey="orders" stroke="#ffc107" name={t('pendingOrders')} />
                         </LineChart>
                     </ResponsiveContainer>
                 </Card.Body>
@@ -86,7 +84,7 @@ function SalesChart() {
             <div className="d-flex justify-content-between align-items-center gap-1 mt-3">
                 <Col lg={6}>
                     <Card>
-                        <Card.Header>Total orders</Card.Header>
+                        <Card.Header>{t('totalOrders')}</Card.Header>
                         <Card.Body>
                             <Card.Title>{summary.reduce((total, item) => total + Number(item.order_count), 0)}
                             </Card.Title>
@@ -96,7 +94,7 @@ function SalesChart() {
 
                 <Col lg={6}>
                     <Card >
-                        <Card.Header>Total sales</Card.Header>
+                        <Card.Header>{t('totalSalesAmount')}</Card.Header>
                         <Card.Body>
                             <Card.Title>{summary.find(item => item.status === 'delivered')?.total_sales || 0} $</Card.Title>
                         </Card.Body>
@@ -107,7 +105,7 @@ function SalesChart() {
             <div className="d-flex justify-content-between align-items-center gap-1 mt-3">
                 <Col lg={3}>
                     <Card>
-                        <Card.Header>Total Delivered</Card.Header>
+                        <Card.Header>{t('totalDelivered')}</Card.Header>
                         <Card.Body>
                             <Card.Title>{summary.find(item => item.status === 'delivered')?.order_count || 0}</Card.Title>
                         </Card.Body>
@@ -116,7 +114,7 @@ function SalesChart() {
 
                 <Col lg={3}>
                     <Card >
-                        <Card.Header>Total Shipped</Card.Header>
+                        <Card.Header>{t('totalShipped')}</Card.Header>
                         <Card.Body>
                             <Card.Title>{summary.find(item => item.status === 'shipped')?.order_count || 0}</Card.Title>
                         </Card.Body>
@@ -125,7 +123,7 @@ function SalesChart() {
 
                 <Col lg={3}>
                     <Card>
-                        <Card.Header>Total Pending</Card.Header>
+                        <Card.Header>{t('totalPending')}</Card.Header>
                         <Card.Body>
                             <Card.Title>{summary.find(item => item.status === 'pending')?.order_count || 0}</Card.Title>
                         </Card.Body>
@@ -134,7 +132,7 @@ function SalesChart() {
 
                 <Col lg={3}>
                     <Card >
-                        <Card.Header>Total Cancealed</Card.Header>
+                        <Card.Header>{t('totalCanceled')}</Card.Header>
                         <Card.Body>
                             <Card.Title>{summary.find(item => item.status === 'cancealed')?.order_count || 0}</Card.Title>
                         </Card.Body>

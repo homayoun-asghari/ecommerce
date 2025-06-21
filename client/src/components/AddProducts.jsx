@@ -16,6 +16,7 @@ import { Pencil, Trash, Search, Plus } from 'react-bootstrap-icons';
 import styled from 'styled-components';
 import { useUser } from "../contexts/UserContext";
 import { API_BASE_URL } from "../config";
+import { useTranslation } from 'react-i18next';
 // Styled Components
 const ProductsGrid = styled.div`
     display: grid;
@@ -64,8 +65,7 @@ const ProductCardWrapper = styled(Card)`
 // Removed unused ActionButton styled component
 
 const AddProducts = () => {
-    // Remove unused navigate since we're not doing any navigation in this component
-    // No need for user context or authentication
+    const { t } = useTranslation('addProducts');
     
     // State
     const [products, setProducts] = useState([]);
@@ -99,15 +99,7 @@ const AddProducts = () => {
     });
     
     // Available categories
-    const [categories, setCategories] = useState([
-        'Electronics',
-        'Clothing',
-        'Books',
-        'Home',
-        'Beauty',
-        'Toys',
-        'Food & Grocery'
-    ]);
+    const [categories, setCategories] = useState([]);
 
     // Fetch seller's products
     const fetchProducts = useCallback(async () => {
@@ -192,7 +184,7 @@ const AddProducts = () => {
         
         // Basic validation
         if (!formData.name || !formData.price || !formData.category || formData.stock === '') {
-            setError('Please fill in all required fields');
+            setError(t('requiredField'));
             return;
         }
 
@@ -229,7 +221,7 @@ const AddProducts = () => {
             } else {
                 // Add new product
                 if (!formData.image) {
-                    setError('Product image is required');
+                    setError(t('imageRequired'));
                     setIsSubmitting(false);
                     return;
                 }
@@ -245,12 +237,12 @@ const AddProducts = () => {
                 throw new Error(data.error || 'Something went wrong');
             }
 
-            setSuccess(editingProductId ? 'Product updated successfully' : 'Product added successfully');
+            setSuccess(editingProductId ? t('productUpdated') : t('productAdded'));
             fetchProducts();
             handleClose();
         } catch (err) {
             console.error('Error saving product:', err);
-            setError(err.message || 'Failed to save product');
+            setError(err.message || t('errorSavingProduct'));
         } finally {
             setIsSubmitting(false);
         }
@@ -274,7 +266,7 @@ const AddProducts = () => {
     
     // Handle delete button click
     const handleDelete = async (productId) => {
-        if (window.confirm('Are you sure you want to delete this product? This action cannot be undone.')) {
+        if (window.confirm(t('deleteConfirmation'))) {
             try {
                 setLoading(true);
                 const token = localStorage.getItem('token');
@@ -292,12 +284,12 @@ const AddProducts = () => {
                     throw new Error(data.error || 'Failed to delete product');
                 }
 
-                setSuccess('Product deleted successfully');
+                setSuccess(t('productDeleted'));
                 // Refresh the products list
                 await fetchProducts();
             } catch (err) {
                 console.error('Error deleting product:', err);
-                setError(err.message || 'Failed to delete product');
+                setError(err.message || t('errorDeletingProduct'));
             } finally {
                 setLoading(false);
             }
@@ -338,14 +330,14 @@ const AddProducts = () => {
         <>
             {/* Header with Add Product Button */}
             <div className="d-flex justify-content-between align-items-center mb-4">
-                <h2 className="mb-0">My Products</h2>
+                <h2 className="mb-0">{t('myProducts')}</h2>
                 <Button 
                     variant="primary" 
                     onClick={handleAddNew}
                     disabled={loading}
                 >
                     <Plus className="me-2" />
-                    Add New Product
+                    {t('addNewProduct')}
                 </Button>
             </div>
 
@@ -358,7 +350,7 @@ const AddProducts = () => {
                         </InputGroup.Text>
                         <Form.Control
                             type="text"
-                            placeholder="Search products..."
+                            placeholder={t('searchPlaceholder')}
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                         />
@@ -369,7 +361,7 @@ const AddProducts = () => {
                         value={categoryFilter}
                         onChange={(e) => setCategoryFilter(e.target.value)}
                     >
-                        <option value="all">All Categories</option>
+                        <option value="all">{t('allCategories')}</option>
                         {categories.map(category => (
                             <option key={category} value={category}>{category}</option>
                         ))}
@@ -385,9 +377,9 @@ const AddProducts = () => {
             {loading && !filteredProducts.length ? (
                 <div className="text-center py-5">
                     <Spinner animation="border" role="status">
-                        <span className="visually-hidden">Loading...</span>
+                        <span className="visually-hidden">{t('loading')}</span>
                     </Spinner>
-                    <p className="mt-2">Loading products...</p>
+                    <p className="mt-2">{t('loadingProducts')}</p>
                 </div>
             ) : (
                 /* Products Grid */
@@ -411,13 +403,13 @@ const AddProducts = () => {
                                     <Card.Text className="text-muted small mb-3">
                                         {product.description?.length > 100 
                                             ? `${product.description.substring(0, 100)}...` 
-                                            : product.description || 'No description'}
+                                            : product.description || t('noDescription')}
                                     </Card.Text>
                                     <div className="mt-auto">
                                         <div className="d-flex justify-content-between align-items-center mb-3">
                                             <span className="h5 mb-0">${parseFloat(product.price).toFixed(2)}</span>
                                             <span className={product.stock > 0 ? 'text-success' : 'text-danger'}>
-                                                {product.stock > 0 ? `${product.stock} in stock` : 'Out of stock'}
+                                                {product.stock > 0 ? t('inStock', { count: product.stock }) : t('outOfStock')}
                                             </span>
                                         </div>
                                         <div className="d-flex">
@@ -428,7 +420,7 @@ const AddProducts = () => {
                                                 onClick={() => handleEdit(product)}
                                                 disabled={loading}
                                             >
-                                                <Pencil className="me-1" /> Edit
+                                                <Pencil className="me-1" /> {t('edit')}
                                             </Button>
                                             <Button 
                                                 variant="outline-danger" 
@@ -437,7 +429,7 @@ const AddProducts = () => {
                                                 onClick={() => handleDelete(product.id)}
                                                 disabled={loading}
                                             >
-                                                <Trash className="me-1" /> Delete
+                                                <Trash className="me-1" /> {t('delete')}
                                             </Button>
                                         </div>
                                     </div>
@@ -448,8 +440,8 @@ const AddProducts = () => {
                         <div className="col-12 text-center py-5">
                             <h4 className="text-muted">
                                 {searchTerm || categoryFilter !== 'all' 
-                                    ? 'No products match your filters' 
-                                    : 'No products found. Add your first product!'}
+                                    ? t('noMatchingProducts')
+                                    : t('noProductsFound')}
                             </h4>
                         </div>
                     )}
@@ -465,12 +457,12 @@ const AddProducts = () => {
                 backdrop="static"
             >
                 <Modal.Header closeButton closeVariant={isSubmitting ? 'white' : undefined}>
-                    <Modal.Title>{editingProductId ? 'Edit Product' : 'Add New Product'}</Modal.Title>
+                    <Modal.Title>{editingProductId ? t('editProduct') : t('addNewProductTitle')}</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     <Form onSubmit={handleSubmit}>
                         <Form.Group className="mb-3">
-                            <Form.Label>Product Name <span className="text-danger">*</span></Form.Label>
+                            <Form.Label>{t('productName')} <span className="text-danger">*</span></Form.Label>
                             <Form.Control
                                 type="text"
                                 name="name"
@@ -482,7 +474,7 @@ const AddProducts = () => {
                         </Form.Group>
 
                         <Form.Group className="mb-3">
-                            <Form.Label>Description</Form.Label>
+                            <Form.Label>{t('description')}</Form.Label>
                             <Form.Control
                                 as="textarea"
                                 rows={3}
@@ -496,7 +488,7 @@ const AddProducts = () => {
                         <Row>
                             <Col md={6}>
                                 <Form.Group className="mb-3">
-                                    <Form.Label>Price ($) <span className="text-danger">*</span></Form.Label>
+                                    <Form.Label>{t('price')} <span className="text-danger">*</span></Form.Label>
                                     <InputGroup>
                                         <InputGroup.Text>$</InputGroup.Text>
                                         <Form.Control
@@ -514,7 +506,7 @@ const AddProducts = () => {
                             </Col>
                             <Col md={6}>
                                 <Form.Group className="mb-3">
-                                    <Form.Label>Stock Quantity <span className="text-danger">*</span></Form.Label>
+                                    <Form.Label>{t('stockQuantity')} <span className="text-danger">*</span></Form.Label>
                                     <Form.Control
                                         type="number"
                                         name="stock"
@@ -526,7 +518,7 @@ const AddProducts = () => {
                                     />
                                 </Form.Group>
                                 <Form.Group className="mb-3">
-                                    <Form.Label>Discount (%)</Form.Label>
+                                    <Form.Label>{t('discount')}</Form.Label>
                                     <Form.Control
                                         type="number"
                                         name="discount"
@@ -535,7 +527,7 @@ const AddProducts = () => {
                                         min="0"
                                         max="100"
                                         step="0.01"
-                                        placeholder="Enter discount percentage"
+                                        placeholder={t('discountPlaceholder')}
                                         disabled={isSubmitting}
                                     />
                                 </Form.Group>
@@ -543,7 +535,7 @@ const AddProducts = () => {
                         </Row>
 
                         <Form.Group className="mb-3">
-                            <Form.Label>Category <span className="text-danger">*</span></Form.Label>
+                            <Form.Label>{t('category')} <span className="text-danger">*</span></Form.Label>
                             <Form.Select
                                 name="category"
                                 value={formData.category}
@@ -551,7 +543,7 @@ const AddProducts = () => {
                                 required
                                 disabled={isSubmitting}
                             >
-                                <option value="">Select a category</option>
+                                <option value="">{t('selectCategory')}</option>
                                 {categories.map(cat => (
                                     <option key={cat} value={cat}>{cat}</option>
                                 ))}
@@ -559,7 +551,7 @@ const AddProducts = () => {
                         </Form.Group>
 
                         <Form.Group className="mb-4">
-                            <Form.Label>Product Image {!editingProductId && <span className="text-danger">*</span>}</Form.Label>
+                            <Form.Label>{t('productImage')} {!editingProductId && <span className="text-danger">*</span>}</Form.Label>
                             {formData.imagePreview && (
                                 <div className="mb-3 text-center">
                                     <img 
@@ -580,7 +572,7 @@ const AddProducts = () => {
                             />
                             {editingProductId && (
                                 <Form.Text className="text-muted">
-                                    Leave empty to keep the current image
+                                    {t('leaveEmptyForCurrent')}
                                 </Form.Text>
                             )}
                         </Form.Group>
@@ -593,7 +585,7 @@ const AddProducts = () => {
                                 onClick={handleClose}
                                 disabled={isSubmitting}
                             >
-                                Cancel
+                                {t('cancel')}
                             </Button>
                             <Button
                                 variant="primary"
@@ -603,12 +595,12 @@ const AddProducts = () => {
                                 {isSubmitting ? (
                                     <>
                                         <Spinner as="span" size="sm" animation="border" role="status" className="me-2" />
-                                        {editingProductId ? 'Updating...' : 'Adding...'}
+                                        {editingProductId ? t('updating') : t('adding')}
                                     </>
                                 ) : editingProductId ? (
-                                    'Update Product'
+                                    t('updateProduct')
                                 ) : (
-                                    'Add Product'
+                                    t('addProduct')
                                 )}
                             </Button>
                         </div>

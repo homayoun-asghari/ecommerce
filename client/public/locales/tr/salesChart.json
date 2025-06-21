@@ -1,0 +1,15 @@
+{
+  "totalSales": "Toplam Satış",
+  "deliveredOrders": "Teslim Edilen Siparişler",
+  "pendingOrders": "Bekleyen Siparişler",
+  "totalOrders": "Toplam Sipariş",
+  "totalSalesAmount": "Toplam Satış",
+  "totalDelivered": "Toplam Teslim Edilen",
+  "totalShipped": "Toplam Kargoda",
+  "totalPending": "Toplam Bekleyen",
+  "totalCanceled": "Toplam İptal Edilen",
+  "months": [
+    "Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran",
+    "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık"
+  ]
+}

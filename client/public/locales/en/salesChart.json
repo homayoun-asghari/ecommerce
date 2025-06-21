@@ -1,0 +1,15 @@
+{
+  "totalSales": "Total Sales",
+  "deliveredOrders": "Delivered Orders",
+  "pendingOrders": "Pending Orders",
+  "totalOrders": "Total Orders",
+  "totalSalesAmount": "Total Sales",
+  "totalDelivered": "Total Delivered",
+  "totalShipped": "Total Shipped",
+  "totalPending": "Total Pending",
+  "totalCanceled": "Total Canceled",
+  "months": [
+    "January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December"
+  ]
+}

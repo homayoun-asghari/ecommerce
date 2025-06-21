@@ -1,0 +1,12 @@
+{
+  "loadingOrders": "Siparişler yükleniyor...",
+  "errorLoadingOrders": "Hata: {{error}}",
+  "noOrdersFound": "Bu satıcı için sipariş bulunamadı.",
+  "orderId": "Sipariş No: {{id}}",
+  "status": "Durum: {{status}}",
+  "date": "Tarih: {{date}}",
+  "name": "İsim: {{name}}",
+  "address": "Adres: {{street}} {{city}} {{state}} {{country}} {{postalCode}}",
+  "phone": "Telefon: {{phone}}",
+  "total": "Toplam: {{total}} TL"
+}

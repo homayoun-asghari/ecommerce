@@ -1,13 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import { ListGroup, Card, Button } from 'react-bootstrap';
+import { Card } from 'react-bootstrap';
 import { useUser } from "../contexts/UserContext.jsx";
 import { API_BASE_URL } from '../config';
+import { useTranslation } from 'react-i18next';
 
 const SellerOrders = () => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const { user } = useUser();
+  const { t } = useTranslation('sellerOrders');
   const userId = user?.data?.id;
 
   useEffect(() => {
@@ -31,23 +33,32 @@ const SellerOrders = () => {
     fetchOrders();
   }, [userId]);
 
-  if (loading) return <p>Loading orders...</p>;
-  if (error) return <p>Error: {error}</p>;
-  if (orders.length === 0) return <p>No orders found for this seller.</p>;
+  if (loading) return <p>{t('loadingOrders')}</p>;
+  if (error) return <p>{t('errorLoadingOrders', { error })}</p>;
+  if (orders.length === 0) return <p>{t('noOrdersFound')}</p>;
 
   return (
     <>
       {orders.map(order => (
-        <Card className='mb-3'>
-          <Card.Header>Order ID: {order.order_id}</Card.Header>
+        <Card key={order.order_id} className='mb-3'>
+          <Card.Header>{t('orderId', { id: order.order_id })}</Card.Header>
           <Card.Body>
-            <Card.Text>Status: {order.status}</Card.Text>
+            <Card.Text>{t('status', { status: order.status })}</Card.Text>
             <Card.Text>
-              Date: {new Date(order.created_at).toLocaleString()}
+              {t('date', { date: new Date(order.created_at).toLocaleString() })}
             </Card.Text>
-            <Card.Text>Name: {order.buyer_name}</Card.Text>
-            <Card.Text>Address: {order.shipping_address.street}  {order.shipping_address.city} {order.shipping_address.state} {order.shipping_address.country} {order.shipping_address.postal_code} {order.shipping_address.phone}</Card.Text>
-            <Card.Text>Total: ${order.total}</Card.Text>
+            <Card.Text>{t('name', { name: order.buyer_name })}</Card.Text>
+            <Card.Text>
+              {t('address', {
+                street: order.shipping_address.street,
+                city: order.shipping_address.city,
+                state: order.shipping_address.state,
+                country: order.shipping_address.country,
+                postalCode: order.shipping_address.postal_code
+              })}
+            </Card.Text>
+            <Card.Text>{t('phone', { phone: order.shipping_address.phone })}</Card.Text>
+            <Card.Text>{t('total', { total: order.total })}</Card.Text>
           </Card.Body>
         </Card>
       ))}
