@@ -1,9 +1,11 @@
 import Card from 'react-bootstrap/Card';
 import Button from 'react-bootstrap/Button';
 import { useNotification } from "../contexts/NotificationContext";
+import { useTranslation } from 'react-i18next';
 
 function Notifications() {
-    const {notifications, makeRead} = useNotification();
+    const { t } = useTranslation('notifications');
+    const { notifications, makeRead } = useNotification();
 
     return (
         <div>
@@ -14,12 +16,17 @@ function Notifications() {
                         <Card.Text>{n.message}</Card.Text>
                         {!n.is_read && (
                             <Button variant="light" size="sm" onClick={() => makeRead(n.id)}>
-                                Mark as read
+                                {t('markAsRead')}
                             </Button>
                         )}
                     </Card.Body>
                 </Card>
             ))}
+            {notifications.length === 0 && (
+                <Card>
+                    <Card.Body>{t('noNotifications')}</Card.Body>
+                </Card>
+            )}
         </div>
     );
 }
