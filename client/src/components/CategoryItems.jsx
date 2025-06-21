@@ -2,10 +2,20 @@ import React, { useCallback } from "react";
 import Accordion from 'react-bootstrap/Accordion';
 import { useNavigate } from 'react-router-dom';
 import { useFilters } from '../contexts/FilterContext';
+import { useLanguage } from '../hooks/useLanguage';
 
 function AccordionItems() {
     const { filters, updateFilters } = useFilters();
     const navigate = useNavigate();
+    const { t } = useLanguage();
+    
+    // Get all section translations
+    const sections = t('categories:sections', { returnObjects: true });
+    
+    // Get all category translations
+    const categoryTranslations = (section) => {
+        return t(`categories:${section}`, { returnObjects: true });
+    };
 
     const handleCategoryClick = useCallback((e, category) => {
         e.preventDefault();
@@ -20,109 +30,91 @@ function AccordionItems() {
         return filters.categories.includes(category);
     };
 
-    const renderCategoryLink = (to, label, category) => (
-        <li>
-            <a 
-                href={to} 
-                className={`text-decoration-none ${isCategoryActive(category) ? 'fw-bold' : 'text-body'}`}
-                onClick={(e) => handleCategoryClick(e, category)}
-            >
-                {label}
-            </a>
-        </li>
-    );
+    const renderCategoryLink = (to, categoryKey, section) => {
+        const category = categoryTranslations(section)[categoryKey];
+        return (
+            <li key={categoryKey}>
+                <a 
+                    href={to} 
+                    className={`text-decoration-none ${isCategoryActive(categoryKey) ? 'fw-bold' : 'text-body'}`}
+                    onClick={(e) => handleCategoryClick(e, categoryKey)}
+                >
+                    {category}
+                </a>
+            </li>
+        );
+    };
 
     return (
         <div>
             <Accordion>
                 <Accordion.Item eventKey="0">
-                    <Accordion.Header>Fruits & Vegetables</Accordion.Header>
+                    <Accordion.Header>{sections.fruitsVegetables}</Accordion.Header>
                     <Accordion.Body>
                         <ul className="list-unstyled">
-                            {renderCategoryLink("/shop?category=fresh-fruits", "Fresh Fruits", "fresh-fruits")}
-                            {renderCategoryLink("/shop?category=fresh-vegetables", "Fresh Vegetables", "fresh-vegetables")}
-                            {renderCategoryLink("/shop?category=organic-produce", "Organic Produce", "organic-produce")}
-                            {renderCategoryLink("/shop?category=herbs-seasonings", "Herbs & Seasonings", "herbs-seasonings")}
-                            {renderCategoryLink("/shop?category=cut-fruits", "Cut & Prepared Fruits", "cut-fruits")}
-                            {renderCategoryLink("/shop?category=salad-kits", "Salad Kits", "salad-kits")}
+                            {Object.entries(categoryTranslations('fruitsVegetables')).map(([key]) => (
+                                renderCategoryLink(`/shop?category=${key}`, key, 'fruitsVegetables')
+                            ))}
                         </ul>
                     </Accordion.Body>
                 </Accordion.Item>
                 <Accordion.Item eventKey="1">
-                    <Accordion.Header>Meats & Seafood</Accordion.Header>
+                    <Accordion.Header>{sections.meatsSeafood}</Accordion.Header>
                     <Accordion.Body>
                         <ul className="list-unstyled">
-                            {renderCategoryLink("/shop?category=beef", "Beef", "beef")}
-                            {renderCategoryLink("/shop?category=chicken", "Chicken", "chicken")}
-                            {renderCategoryLink("/shop?category=pork", "Pork", "pork")}
-                            {renderCategoryLink("/shop?category=fish", "Fish", "fish")}
-                            {renderCategoryLink("/shop?category=seafood", "Shrimp & Shellfish", "seafood")}
-                            {renderCategoryLink("/shop?category=deli-meats", "Deli Meats", "deli-meats")}
+                            {Object.entries(categoryTranslations('meatsSeafood')).map(([key]) => (
+                                renderCategoryLink(`/shop?category=${key}`, key, 'meatsSeafood')
+                            ))}
                         </ul>
                     </Accordion.Body>
                 </Accordion.Item>
                 <Accordion.Item eventKey="2">
-                    <Accordion.Header>Dairy & Eggs</Accordion.Header>
+                    <Accordion.Header>{sections.dairyEggs}</Accordion.Header>
                     <Accordion.Body>
                         <ul className="list-unstyled">
-                            {renderCategoryLink("/shop?category=milk-cream", "Milk & Cream", "milk-cream")}
-                            {renderCategoryLink("/shop?category=cheese", "Cheese", "cheese")}
-                            {renderCategoryLink("/shop?category=yogurt", "Yogurt", "yogurt")}
-                            {renderCategoryLink("/shop?category=butter", "Butter & Margarine", "butter")}
-                            {renderCategoryLink("/shop?category=eggs", "Eggs", "eggs")}
-                            {renderCategoryLink("/shop?category=dairy-alternatives", "Dairy Alternatives", "dairy-alternatives")}
+                            {Object.entries(categoryTranslations('dairyEggs')).map(([key]) => (
+                                renderCategoryLink(`/shop?category=${key}`, key, 'dairyEggs')
+                            ))}
                         </ul>
                     </Accordion.Body>
                 </Accordion.Item>
                 <Accordion.Item eventKey="3">
-                    <Accordion.Header>Bakery & Bread</Accordion.Header>
+                    <Accordion.Header>{sections.bakeryBread}</Accordion.Header>
                     <Accordion.Body>
                         <ul className="list-unstyled">
-                            {renderCategoryLink("/shop?category=fresh-bread", "Fresh Bread", "fresh-bread")}
-                            {renderCategoryLink("/shop?category=buns-rolls", "Buns & Rolls", "buns-rolls")}
-                            {renderCategoryLink("/shop?category=breakfast-pastries", "Breakfast Pastries", "breakfast-pastries")}
-                            {renderCategoryLink("/shop?category=cakes-cupcakes", "Cakes & Cupcakes", "cakes-cupcakes")}
-                            {renderCategoryLink("/shop?category=cookies-brownies", "Cookies & Brownies", "cookies-brownies")}
-                            {renderCategoryLink("/shop?category=gluten-free-bakery", "Gluten-Free Bakery", "gluten-free-bakery")}
+                            {Object.entries(categoryTranslations('bakeryBread')).map(([key]) => (
+                                renderCategoryLink(`/shop?category=${key}`, key, 'bakeryBread')
+                            ))}
                         </ul>
                     </Accordion.Body>
                 </Accordion.Item>
                 <Accordion.Item eventKey="4">
-                    <Accordion.Header>Beverages</Accordion.Header>
+                    <Accordion.Header>{sections.beverages}</Accordion.Header>
                     <Accordion.Body>
                         <ul className="list-unstyled">
-                            {renderCategoryLink("/shop?category=water", "Water & Sparkling", "water")}
-                            {renderCategoryLink("/shop?category=sodas", "Sodas & Soft Drinks", "sodas")}
-                            {renderCategoryLink("/shop?category=coffee", "Coffee", "coffee")}
-                            {renderCategoryLink("/shop?category=tea", "Tea", "tea")}
-                            {renderCategoryLink("/shop?category=juices", "Juices & Drinks", "juices")}
-                            {renderCategoryLink("/shop?category=energy-drinks", "Energy & Sports Drinks", "energy-drinks")}
+                            {Object.entries(categoryTranslations('beverages')).map(([key]) => (
+                                renderCategoryLink(`/shop?category=${key}`, key, 'beverages')
+                            ))}
                         </ul>
                     </Accordion.Body>
                 </Accordion.Item>
                 <Accordion.Item eventKey="5">
-                    <Accordion.Header>Frozen Foods</Accordion.Header>
+                    <Accordion.Header>{sections.frozenFoods}</Accordion.Header>
                     <Accordion.Body>
                         <ul className="list-unstyled">
-                            {renderCategoryLink("/shop?category=frozen-meals", "Frozen Meals", "frozen-meals")}
-                            {renderCategoryLink("/shop?category=frozen-vegetables", "Frozen Vegetables", "frozen-vegetables")}
-                            {renderCategoryLink("/shop?category=frozen-fruits", "Frozen Fruits", "frozen-fruits")}
-                            {renderCategoryLink("/shop?category=ice-cream", "Ice Cream & Desserts", "ice-cream")}
-                            {renderCategoryLink("/shop?category=frozen-breakfast", "Frozen Breakfast", "frozen-breakfast")}
-                            {renderCategoryLink("/shop?category=frozen-snacks", "Frozen Appetizers & Snacks", "frozen-snacks")}
+                            {Object.entries(categoryTranslations('frozenFoods')).map(([key]) => (
+                                renderCategoryLink(`/shop?category=${key}`, key, 'frozenFoods')
+                            ))}
                         </ul>
                     </Accordion.Body>
                 </Accordion.Item>
                 <Accordion.Item eventKey="6">
-                    <Accordion.Header>Snacks & Candy</Accordion.Header>
+                    <Accordion.Header>{sections.snacksCandy}</Accordion.Header>
                     <Accordion.Body>
                         <ul className="list-unstyled">
-                            {renderCategoryLink("/shop?category=chips", "Chips & Pretzels", "chips")}
-                            {renderCategoryLink("/shop?category=cookies", "Cookies & Biscuits", "cookies")}
-                            {renderCategoryLink("/shop?category=chocolate", "Chocolate & Candy", "chocolate")}
-                            {renderCategoryLink("/shop?category=nuts-seeds", "Nuts & Seeds", "nuts-seeds")}
-                            {renderCategoryLink("/shop?category=granola-bars", "Granola & Cereal Bars", "granola-bars")}
-                            {renderCategoryLink("/shop?category=snack-mixes", "Popcorn & Snack Mixes", "snack-mixes")}
+                            {Object.entries(categoryTranslations('snacksCandy')).map(([key]) => (
+                                renderCategoryLink(`/shop?category=${key}`, key, 'snacksCandy')
+                            ))}
                         </ul>
                     </Accordion.Body>
                 </Accordion.Item>

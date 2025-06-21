@@ -1,0 +1,22 @@
+{
+  "slides": [
+    {
+      "id": "fresh",
+      "title": "Buy Fresh",
+      "description": "Get the latest deals on fresh products",
+      "buttonText": "Shop Now"
+    },
+    {
+      "id": "new-arrivals",
+      "title": "New Arrivals",
+      "description": "Discover our latest collection",
+      "buttonText": "Shop Now"
+    },
+    {
+      "id": "special-offers",
+      "title": "Special Offers",
+      "description": "Limited time deals you don't want to miss",
+      "buttonText": "Shop Now"
+    }
+  ]
+}

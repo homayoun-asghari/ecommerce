@@ -29,7 +29,6 @@ function LanguageSwitcher() {
         padding: '0.375rem 2.25rem 0.375rem 0.75rem',
         borderColor: '#dee2e6',
         borderRadius: '0.25rem',
-        backgroundColor: 'white',
         backgroundImage: 'url("data:image/svg+xml,%3csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 16 16\'%3e%3cpath fill=\'none\' stroke=\'%23343a40\' stroke-linecap=\'round\' stroke-linejoin=\'round\' stroke-width=\'2\' d=\'m2 5 6 6 6-6\'/%3e%3c/svg%3e")',
         backgroundRepeat: 'no-repeat',
         backgroundPosition: 'right 0.75rem center',

@@ -1,0 +1,22 @@
+{
+  "slides": [
+    {
+      "id": "fresh",
+      "title": "Taze Ürünler Alın",
+      "description": "Taze ürünlerde en yeni fırsatları kaçırmayın",
+      "buttonText": "Alışverişe Başla"
+    },
+    {
+      "id": "new-arrivals",
+      "title": "Yeni Gelenler",
+      "description": "En yeni koleksiyonumuzu keşfedin",
+      "buttonText": "Alışverişe Başla"
+    },
+    {
+      "id": "special-offers",
+      "title": "Özel Teklifler",
+      "description": "Kaçırmak istemeyeceğiniz sınırlı süreli fırsatlar",
+      "buttonText": "Alışverişe Başla"
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "placeholder": "Search products...",
+  "noResults": "No products found",
+  "loading": "Searching...",
+  "error": "Error searching products",
+  "categories": "Categories",
+  "price": "Price",
+  "filter": "Filter",
+  "sortBy": "Sort by",
+  "relevance": "Relevance",
+  "priceLowHigh": "Price: Low to High",
+  "priceHighLow": "Price: High to Low",
+  "newest": "Newest",
+  "rating": "Rating",
+  "apply": "Apply",
+  "clearAll": "Clear all"
+}

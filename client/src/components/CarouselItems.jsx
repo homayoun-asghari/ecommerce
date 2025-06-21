@@ -9,6 +9,7 @@ import hero3 from "../assets/hero3.jpg";
 import { Link } from 'react-router-dom';
 import "../styles/CarouselItems.css";
 import { useSideBar } from "../contexts/SideBarContext";
+import { useLanguage } from "../hooks/useLanguage";
 
 // ContentColumn styled component for sidebar layout
 const ContentColumn = styled(Col)`
@@ -234,66 +235,86 @@ const SlideContent = styled.div`
 
 function CarouselItems() {
     const { isOpen } = useSideBar();
+    const { t } = useLanguage();
+    
+    // Get slides from translations with a fallback to default slides
+    const slides = React.useMemo(() => {
+        // Default slides in case translation fails
+        const defaultSlides = [
+            {
+                id: 'fresh',
+                title: 'Buy Fresh',
+                description: 'Get the latest deals on fresh products',
+                buttonText: 'Shop Now'
+            },
+            {
+                id: 'new-arrivals',
+                title: 'New Arrivals',
+                description: 'Discover our latest collection',
+                buttonText: 'Shop Now'
+            },
+            {
+                id: 'special-offers',
+                title: 'Special Offers',
+                description: 'Limited time deals you don\'t want to miss',
+                buttonText: 'Shop Now'
+            }
+        ];
+
+        try {
+            const slidesData = t('carousel:slides', { returnObjects: true, defaultValue: defaultSlides });
+            
+            // If we get an object with slides array, use that
+            if (slidesData && Array.isArray(slidesData.slides)) {
+                return slidesData.slides;
+            }
+            // If we get an array directly, use it
+            if (Array.isArray(slidesData)) {
+                return slidesData;
+            }
+            
+            console.warn('Invalid carousel slides format, using default slides');
+            return defaultSlides;
+        } catch (error) {
+            console.error('Error loading carousel slides:', error);
+            return defaultSlides;
+        }
+    }, [t]);
+    
+    // Map of slide IDs to their corresponding images
+    const slideImages = {
+        'fresh': hero1,
+        'new-arrivals': hero2,
+        'special-offers': hero3
+    };
     
     return (
         <Container fluid className="py-4 px-0 px-md-3">
             <div className="position-relative" style={{ minHeight: '500px', width: '100%' }}>
                 <ContentColumn $isOpen={isOpen} className="px-0 px-md-3">
                     <AnimatedCarousel fade>
-                    <Carousel.Item interval={5000}>
-                        <img
-                            className="d-block w-100"
-                            src={hero1}
-                            alt="Fresh products"
-                        />
-                        <Carousel.Caption>
-                            <SlideContent>
-                                <h1 className="display-4 fw-bold mb-3">Buy Fresh</h1>
-                                <p className="lead mb-4">Get the latest deals on fresh products</p>
-                                <Link to="/shop" className="btn btn-primary btn-lg px-4 py-2">
-                                    Shop Now
-                                </Link>
-                            </SlideContent>
-                        </Carousel.Caption>
-                    </Carousel.Item>
-
-                    <Carousel.Item interval={5000}>
-                        <img
-                            className="d-block w-100"
-                            src={hero2}
-                            alt="New Arrivals"
-                        />
-                        <Carousel.Caption>
-                            <SlideContent>
-                                <h1 className="display-4 fw-bold mb-3">New Arrivals</h1>
-                                <p className="lead mb-4">Discover our latest collection</p>
-                                <Link to="/shop" className="btn btn-primary btn-lg px-4 py-2">
-                                    Shop Now
-                                </Link>
-                            </SlideContent>
-                        </Carousel.Caption>
-                    </Carousel.Item>
-
-                    <Carousel.Item interval={5000}>
-                        <img
-                            className="d-block w-100"
-                            src={hero3}
-                            alt="Special Offers"
-                        />
-                        <Carousel.Caption>
-                            <SlideContent>
-                                <h1 className="display-4 fw-bold mb-3">Special Offers</h1>
-                                <p className="lead mb-4">Limited time deals you don't want to miss</p>
-                                <Link to="/shop" className="btn btn-primary btn-lg px-4 py-2">
-                                    Shop Now
-                                </Link>
-                            </SlideContent>
-                        </Carousel.Caption>
-                    </Carousel.Item>
-                        </AnimatedCarousel>
-                    </ContentColumn>
-                </div>
-            </Container>
+                        {slides.map((slide, index) => (
+                            <Carousel.Item key={slide.id} interval={5000}>
+                                <img
+                                    className="d-block w-100"
+                                    src={slideImages[slide.id]}
+                                    alt={slide.title}
+                                />
+                                <Carousel.Caption>
+                                    <SlideContent>
+                                        <h1 className="display-4 fw-bold mb-3">{slide.title}</h1>
+                                        <p className="lead mb-4">{slide.description}</p>
+                                        <Link to="/shop" className="btn btn-primary btn-lg px-4 py-2">
+                                            {slide.buttonText}
+                                        </Link>
+                                    </SlideContent>
+                                </Carousel.Caption>
+                            </Carousel.Item>
+                        ))}
+                    </AnimatedCarousel>
+                </ContentColumn>
+            </div>
+        </Container>
     );
 }
 

@@ -1,38 +1,32 @@
-// src/components/Searchbar.jsx
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { Form, InputGroup, Button, ListGroup } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import { Search } from 'react-bootstrap-icons';
 import { API_BASE_URL } from "../config";
+import { useTranslation } from 'react-i18next';
 import "../styles/Searchbar.css";
 
-function Searchbar({ width, placeholder = 'Search products...', onSearch }) {
+function Searchbar({ width, onSearch }) {
     const [searchQuery, setSearchQuery] = useState('');
     const [searchResults, setSearchResults] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [showResults, setShowResults] = useState(false);
     const searchRef = useRef(null);
     const navigate = useNavigate();
+    const { t } = useTranslation();
+    
+    // Get translated text
+    const placeholder = t('search:placeholder', 'Search products...');
+    const loadingText = t('search:loading', 'Searching...');
+    const noResultsText = t('search:noResults', 'No products found');
+    const errorText = t('search:error', 'Error searching products');
 
-    // Debounce effect
-    useEffect(() => {
-        const delayDebounce = setTimeout(() => {
-            if (searchQuery.trim()) {
-                fetchSearchResults(searchQuery.trim());
-            } else {
-                setSearchResults([]);
-            }
-        }, 300);
-
-        return () => clearTimeout(delayDebounce);
-    }, [searchQuery]);
-
-    const fetchSearchResults = async (query) => {
+    const fetchSearchResults = useCallback(async (query) => {
         setIsLoading(true);
         try {
             const response = await fetch(`${API_BASE_URL}/product/search?q=${encodeURIComponent(query.trim())}`);
             if (!response.ok) {
-                throw new Error('Failed to fetch search results');
+                throw new Error(errorText);
             }
             const data = await response.json();
             const results = data.products || [];
@@ -45,13 +39,26 @@ function Searchbar({ width, placeholder = 'Search products...', onSearch }) {
         } finally {
             setIsLoading(false);
         }
-    };
+    }, [errorText]);
+
+    // Debounce search
+    useEffect(() => {
+        const delayDebounce = setTimeout(() => {
+            if (searchQuery.trim()) {
+                fetchSearchResults(searchQuery.trim());
+            } else {
+                setSearchResults([]);
+            }
+        }, 300);
+
+        return () => clearTimeout(delayDebounce);
+    }, [searchQuery, fetchSearchResults]);
 
     const handleResultClick = (product) => {
         navigate(`/product/${product.id}`);
         setSearchQuery('');
         setShowResults(false);
-        if (onSearch) onSearch(product.name);
+        onSearch?.(product.name);
     };
 
     const handleSubmit = (e) => {
@@ -60,11 +67,12 @@ function Searchbar({ width, placeholder = 'Search products...', onSearch }) {
         if (query) {
             navigate(`/search?q=${encodeURIComponent(query)}`);
             setShowResults(false);
-            setSearchQuery(''); // Clear the search input
-            if (onSearch) onSearch(query);
+            setSearchQuery('');
+            onSearch?.(query);
         }
     };
 
+    // Close results when clicking outside
     useEffect(() => {
         const handleClickOutside = (event) => {
             if (searchRef.current && !searchRef.current.contains(event.target)) {
@@ -73,9 +81,7 @@ function Searchbar({ width, placeholder = 'Search products...', onSearch }) {
         };
 
         document.addEventListener('mousedown', handleClickOutside);
-        return () => {
-            document.removeEventListener('mousedown', handleClickOutside);
-        };
+        return () => document.removeEventListener('mousedown', handleClickOutside);
     }, []);
 
     return (
@@ -96,6 +102,7 @@ function Searchbar({ width, placeholder = 'Search products...', onSearch }) {
                         type="submit" 
                         className="search-button"
                         disabled={!searchQuery.trim()}
+                        aria-label="Search"
                     >
                         <Search />
                     </Button>
@@ -105,7 +112,9 @@ function Searchbar({ width, placeholder = 'Search products...', onSearch }) {
             {showResults && searchResults.length > 0 && (
                 <div className="search-results-dropdown">
                     {isLoading ? (
-                        <div className="p-3 text-center">Searching...</div>
+                        <div className="search-loading">{loadingText}</div>
+                    ) : searchResults.length === 0 && searchQuery ? (
+                        <div className="search-no-results">{noResultsText}</div>
                     ) : (
                         <ListGroup variant="flush">
                             {searchResults.map((product) => (
@@ -130,7 +139,6 @@ function Searchbar({ width, placeholder = 'Search products...', onSearch }) {
                                             <small className="text-muted">
                                                 ${parseFloat(product.price || 0).toFixed(2)}
                                             </small>
-
                                         </div>
                                     </div>
                                 </ListGroup.Item>

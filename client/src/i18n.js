@@ -13,7 +13,13 @@ i18n.on('languageChanged', (lng) => {
   console.log(`Language changed to: ${lng}`);
   console.log('Current language:', i18n.language);
   console.log('Available languages:', i18n.languages);
-  console.log('Current translations:', i18n.getResourceBundle(lng, 'products'));
+  console.log('Available namespaces:', i18n.options.ns);
+  
+  // Log available translation keys for debugging
+  ['common', 'search'].forEach(ns => {
+    const resources = i18n.getResourceBundle(lng, ns);
+    console.log(`Available keys in ${ns}:`, resources ? Object.keys(resources) : 'No resources found');
+  });
 });
 
 i18n
@@ -40,7 +46,7 @@ i18n
     supportedLngs: languages.map(lang => lang.code),
     defaultNS: 'common',
     fallbackNS: 'common',
-    ns: ['common', 'products', 'cart', 'navigation', 'footer', 'categories', 'contact', 'about'],
+    ns: ['common', 'products', 'cart', 'navigation', 'footer', 'categories', 'contact', 'about', 'carousel', 'search'],
     interpolation: {
       escapeValue: false, // Not needed for React as it escapes by default
     },

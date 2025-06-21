@@ -1,3 +1,68 @@
 {
-  "allCategories": "All categories"
+  "allCategories": "All categories",
+  "sections": {
+    "fruitsVegetables": "Fruits & Vegetables",
+    "meatsSeafood": "Meats & Seafood",
+    "dairyEggs": "Dairy & Eggs",
+    "bakeryBread": "Bakery & Bread",
+    "beverages": "Beverages",
+    "frozenFoods": "Frozen Foods",
+    "snacksCandy": "Snacks & Candy"
+  },
+  "fruitsVegetables": {
+    "freshFruits": "Fresh Fruits",
+    "freshVegetables": "Fresh Vegetables",
+    "organicProduce": "Organic Produce",
+    "herbsSeasonings": "Herbs & Seasonings",
+    "cutFruits": "Cut & Prepared Fruits",
+    "saladKits": "Salad Kits"
+  },
+  "meatsSeafood": {
+    "beef": "Beef",
+    "chicken": "Chicken",
+    "pork": "Pork",
+    "fish": "Fish",
+    "seafood": "Shrimp & Shellfish",
+    "deliMeats": "Deli Meats"
+  },
+  "dairyEggs": {
+    "milkCream": "Milk & Cream",
+    "cheese": "Cheese",
+    "yogurt": "Yogurt",
+    "butter": "Butter & Margarine",
+    "eggs": "Eggs",
+    "dairyAlternatives": "Dairy Alternatives"
+  },
+  "bakeryBread": {
+    "freshBread": "Fresh Bread",
+    "bunsRolls": "Buns & Rolls",
+    "breakfastPastries": "Breakfast Pastries",
+    "cakesCupcakes": "Cakes & Cupcakes",
+    "cookiesBrownies": "Cookies & Brownies",
+    "glutenFreeBakery": "Gluten-Free Bakery"
+  },
+  "beverages": {
+    "water": "Water & Sparkling",
+    "sodas": "Sodas & Soft Drinks",
+    "coffee": "Coffee",
+    "tea": "Tea",
+    "juices": "Juices & Drinks",
+    "energyDrinks": "Energy & Sports Drinks"
+  },
+  "frozenFoods": {
+    "frozenMeals": "Frozen Meals",
+    "frozenVegetables": "Frozen Vegetables",
+    "frozenFruits": "Frozen Fruits",
+    "iceCream": "Ice Cream & Desserts",
+    "frozenBreakfast": "Frozen Breakfast",
+    "frozenSnacks": "Frozen Appetizers & Snacks"
+  },
+  "snacksCandy": {
+    "chips": "Chips & Pretzels",
+    "cookies": "Cookies & Biscuits",
+    "chocolate": "Chocolate & Candy",
+    "nutsSeeds": "Nuts & Seeds",
+    "granolaBars": "Granola & Cereal Bars",
+    "snackMixes": "Popcorn & Snack Mixes"
+  }
 }

@@ -1,0 +1,17 @@
+{
+  "placeholder": "Ürün ara...",
+  "noResults": "Hiç ürün bulunamadı",
+  "loading": "Aranıyor...",
+  "error": "Ürün aranırken hata oluştu",
+  "categories": "Kategoriler",
+  "price": "Fiyat",
+  "filter": "Filtrele",
+  "sortBy": "Sırala",
+  "relevance": "İlgiliye göre",
+  "priceLowHigh": "Fiyat: Düşükten Yükseğe",
+  "priceHighLow": "Fiyat: Yüksekten Düşüğe",
+  "newest": "En Yeni",
+  "rating": "Değerlendirme",
+  "apply": "Uygula",
+  "clearAll": "Tümünü Temizle"
+}

@@ -1,3 +1,68 @@
 {
-  "allCategories": "Tüm Kategoriler"
+  "allCategories": "Tüm Kategoriler",
+  "sections": {
+    "fruitsVegetables": "Meyve & Sebze",
+    "meatsSeafood": "Et & Deniz Ürünleri",
+    "dairyEggs": "Süt & Yumurta",
+    "bakeryBread": "Fırın & Ekmek",
+    "beverages": "İçecekler",
+    "frozenFoods": "Dondurulmuş Gıdalar",
+    "snacksCandy": "Atıştırmalıklar & Şekerlemeler"
+  },
+  "fruitsVegetables": {
+    "freshFruits": "Taze Meyveler",
+    "freshVegetables": "Taze Sebzeler",
+    "organicProduce": "Organik Ürünler",
+    "herbsSeasonings": "Otlar & Baharatlar",
+    "cutFruits": "Dilimlenmiş & Hazır Meyveler",
+    "saladKits": "Salata Kits"
+  },
+  "meatsSeafood": {
+    "beef": "Sığır Eti",
+    "chicken": "Tavuk",
+    "pork": "Domuz Eti",
+    "fish": "Balık",
+    "seafood": "Karides & Kabuklu Deniz Ürünleri",
+    "deliMeats": "Şarküteri Ürünleri"
+  },
+  "dairyEggs": {
+    "milkCream": "Süt & Krema",
+    "cheese": "Peynir",
+    "yogurt": "Yoğurt",
+    "butter": "Tereyağı & Margarin",
+    "eggs": "Yumurta",
+    "dairyAlternatives": "Süt Alternatifleri"
+  },
+  "bakeryBread": {
+    "freshBread": "Taze Ekmek",
+    "bunsRolls": "Ekmek Çeşitleri",
+    "breakfastPastries": "Kahvaltılık Hamur İşleri",
+    "cakesCupcakes": "Pasta & Kekler",
+    "cookiesBrownies": "Kurabiye & Browni",
+    "glutenFreeBakery": "Glutensiz Ürünler"
+  },
+  "beverages": {
+    "water": "Su & Maden Suyu",
+    "sodas": "Gazlı İçecekler",
+    "coffee": "Kahve",
+    "tea": "Çay",
+    "juices": "Meyve Suları & İçecekler",
+    "energyDrinks": "Enerji & Spor İçecekleri"
+  },
+  "frozenFoods": {
+    "frozenMeals": "Dondurulmuş Yemekler",
+    "frozenVegetables": "Dondurulmuş Sebzeler",
+    "frozenFruits": "Dondurulmuş Meyveler",
+    "iceCream": "Dondurma & Tatlılar",
+    "frozenBreakfast": "Dondurulmuş Kahvaltılıklar",
+    "frozenSnacks": "Dondurulmuş Atıştırmalıklar"
+  },
+  "snacksCandy": {
+    "chips": "Cips & Tuzlu Krakerler",
+    "cookies": "Kurabiyeler & Bisküviler",
+    "chocolate": "Çikolata & Şekerleme",
+    "nutsSeeds": "Kuruyemiş & Tohumlar",
+    "granolaBars": "Granola & Tahıl Barları",
+    "snackMixes": "Patlamış Mısır & Karışık Atıştırmalıklar"
+  }
 }
