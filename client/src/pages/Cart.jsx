@@ -4,8 +4,8 @@ import cartDark from "../assets/cart-dark.png";
 import { useTheme } from "../contexts/ThemeContext";
 import { useCart } from "../contexts/CartContext";
 import ProductCard from "../components/ProductCard";
-
 import { useUser } from "../contexts/UserContext";
+import { useSideBar } from "../contexts/SideBarContext";
 import { Link } from 'react-router-dom';
 import { useNavigate } from "react-router-dom";
 import styled from 'styled-components';
@@ -81,6 +81,7 @@ const CartContent = ({ isInTab = false }) => {
 
 function Cart() {
     const { user } = useUser();
+    const { isOpen } = useSideBar();
     const navigate = useNavigate();
     const location = window.location.pathname;
     const isCartPage = location === '/cart';
@@ -103,7 +104,7 @@ function Cart() {
 
     // For non-logged in users on cart page
     return (
-        <ContentColumn $isOpen={false}>
+        <ContentColumn $isOpen={isOpen}>
             <CartContent isInTab={false} />
         </ContentColumn>
     );
