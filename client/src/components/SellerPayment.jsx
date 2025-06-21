@@ -3,6 +3,7 @@ import { Card, Badge, ListGroup, Accordion } from 'react-bootstrap';
 import { useUser } from "../contexts/UserContext.jsx";
 import { API_BASE_URL } from "../config";
 import styled from 'styled-components';
+import { useTranslation } from 'react-i18next';
 
 // Styled components
 const StatusBadge = styled(Badge)`
@@ -96,6 +97,7 @@ const SellerPayment = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const { user } = useUser();
+    const { t } = useTranslation('sellerPayment');
     const userId = user?.data?.id;
     const [activeKey, setActiveKey] = useState(null);
 
@@ -127,22 +129,24 @@ const SellerPayment = () => {
         fetchPayments();
     }, [userId]);
 
-    if (loading) return <div className="text-center py-5"><div className="spinner-border text-primary" role="status"><span className="visually-hidden">Loading...</span></div></div>;
-    if (error) return <div className="alert alert-danger">Error: {error}</div>;
-    if (payments.length === 0) return <div className="alert alert-info">No payment history found.</div>;
+    if (loading) return <div className="text-center py-5"><div className="spinner-border text-primary" role="status"><span className="visually-hidden">{t('loading')}</span></div></div>;
+    if (error) return <div className="alert alert-danger">{t('errorLoadingPayments', { error })}</div>;
+    if (payments.length === 0) return <div className="alert alert-info">{t('noPaymentsFound')}</div>;
 
     return (
         <div className="seller-payments">
-            <h2 className="mb-4">Payment History</h2>
+            <h2 className="mb-4">{t('paymentHistory')}</h2>
             <Accordion activeKey={activeKey} onSelect={(key) => setActiveKey(key)}>
                 {payments.map((payment) => (
                     <OrderCard key={payment.id} className="mb-3">
                         <Accordion.Item eventKey={`order-${payment.id}`} className="border-0">
                             <OrderHeader>
                                 <div className="d-flex align-items-center">
-                                    <span className="me-3">Payment #{payment.id} (Order #{payment.order_id})</span>
+                                    <span className="me-3">
+                                        {t('paymentId', { id: payment.id })} ({t('orderId', { id: payment.order_id })})
+                                    </span>
                                     <StatusBadge bg={getStatusVariant(payment.status)}>
-                                        {payment.status}
+                                        {t(`status.${payment.status.toLowerCase()}`, t('status.default'))}
                                     </StatusBadge>
                                 </div>
                                 <div className="text-muted small">
@@ -156,7 +160,10 @@ const SellerPayment = () => {
                                             <ItemDetails>
                                                 <div className="fw-medium">{item.product_name}</div>
                                                 <div className="small">
-                                                    Qty: {item.quantity} × ${item.price.toFixed(2)}
+                                                    {t('quantity', { 
+                                                        quantity: item.quantity, 
+                                                        price: item.price.toFixed(2) 
+                                                    })}
                                                 </div>
                                             </ItemDetails>
                                             <ItemPrice>
@@ -166,7 +173,7 @@ const SellerPayment = () => {
                                     ))}
                                     <div className="p-3">
                                         <OrderTotal>
-                                            Payment Amount: ${parseFloat(payment.amount).toFixed(2)}
+                                            {t('paymentAmount', { amount: parseFloat(payment.amount).toFixed(2) })}
                                         </OrderTotal>
                                     </div>
                                 </ListGroup>

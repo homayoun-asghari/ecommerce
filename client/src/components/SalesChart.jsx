@@ -10,7 +10,7 @@ import Col from "react-bootstrap/Col";
 import { useTranslation } from 'react-i18next';
 
 function SalesChart() {
-    const { t } = useTranslation('salesChart');
+    const { t, i18n } = useTranslation('salesChart');
     const [deliveredData, setDeliveredData] = useState([]);
     const [pendingData, setPendingData] = useState([]);
     const [totalSales, setTotalSales] = useState(0);
@@ -20,7 +20,24 @@ function SalesChart() {
     const { user } = useUser();
     const userId = user?.data?.id;
 
-    const months = t('months', { returnObjects: true });
+    // Ensure months is always an array
+    const getMonths = () => {
+        try {
+            const translatedMonths = t('months', { returnObjects: true });
+            if (Array.isArray(translatedMonths) && translatedMonths.length === 12) {
+                return translatedMonths;
+            }
+        } catch (e) {
+            console.warn('Error loading translated months:', e);
+        }
+        // Fallback to English months
+        return [
+            'January', 'February', 'March', 'April', 'May', 'June',
+            'July', 'August', 'September', 'October', 'November', 'December'
+        ];
+    };
+    
+    const months = getMonths();
 
     useEffect(() => {
         async function fetchChartData() {
@@ -60,10 +77,21 @@ function SalesChart() {
             <Card>
                 <Card.Header className="d-flex justify-content-between align-items-center">
                     <h5>{t('totalSales')}: ${totalSales.toFixed(2)}</h5>
-                    <select value={month} onChange={e => setMonth(Number(e.target.value))}>
-                        {months.map((name, i) => (
-                            <option key={i} value={i + 1}>{name}</option>
-                        ))}
+                    <select 
+                        value={month} 
+                        onChange={e => setMonth(Number(e.target.value))}
+                        className="form-select form-select-sm"
+                        style={{ width: 'auto' }}
+                    >
+                        {months && months.length > 0 ? (
+                            months.map((name, i) => (
+                                <option key={i} value={i + 1}>{name}</option>
+                            ))
+                        ) : (
+                            <option value={month}>
+                                {new Date(year, month - 1).toLocaleString(i18n.language, { month: 'long' })}
+                            </option>
+                        )}
                     </select>
                 </Card.Header>
                 <Card.Body>

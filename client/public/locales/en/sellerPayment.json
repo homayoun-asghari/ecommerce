@@ -1,0 +1,17 @@
+{
+  "paymentHistory": "Payment History",
+  "loading": "Loading...",
+  "errorLoadingPayments": "Error: {{error}}",
+  "noPaymentsFound": "No payment history found.",
+  "paymentId": "Payment #{{id}}",
+  "orderId": "Order #{{id}}",
+  "quantity": "Qty: {{quantity}} × ${{price}}",
+  "paymentAmount": "Payment Amount: ${{amount}}",
+  "status": {
+    "completed": "Completed",
+    "pending": "Pending",
+    "cancelled": "Cancelled",
+    "shipped": "Shipped",
+    "default": "Processing"
+  }
+}

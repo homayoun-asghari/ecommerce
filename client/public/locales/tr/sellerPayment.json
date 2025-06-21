@@ -1,0 +1,17 @@
+{
+  "paymentHistory": "Ödeme Geçmişi",
+  "loading": "Yükleniyor...",
+  "errorLoadingPayments": "Hata: {{error}}",
+  "noPaymentsFound": "Ödeme geçmişi bulunamadı.",
+  "paymentId": "Ödeme #{{id}}",
+  "orderId": "Sipariş #{{id}}",
+  "quantity": "Adet: {{quantity}} × {{price}} TL",
+  "paymentAmount": "Ödeme Tutarı: {{amount}} TL",
+  "status": {
+    "completed": "Tamamlandı",
+    "pending": "Beklemede",
+    "cancelled": "İptal Edildi",
+    "shipped": "Kargoya Verildi",
+    "default": "İşleniyor"
+  }
+}
