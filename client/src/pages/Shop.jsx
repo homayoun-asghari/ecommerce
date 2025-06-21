@@ -227,11 +227,11 @@ function Shop() {
                 >
                     <Card className="border-0 shadow-sm mb-4">
                         <Card.Header className="border-bottom-0 py-3">
-                            <div className="d-flex flex-column flex-md-row justify-content-center justify-content-md-between align-items-center w-100">
+                            <div className="d-flex flex-column flex-md-row justify-content-between align-items-center w-100">
                                 <h5 className="mb-3 mb-md-0 text-center text-md-start">
                                     {pagination.total} {pagination.total === 1 ? 'Product' : 'Products'} Found
                                 </h5>
-                                <div className="d-flex align-items-center gap-2" style={{ maxWidth: '500px', width: '100%' }}>
+                                <div className="d-flex align-items-center justify-content-end ms-auto">
                                     <Button
                                         variant="outline-secondary"
                                         size="sm"
