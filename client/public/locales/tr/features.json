@@ -1,0 +1,24 @@
+{
+  "features": [
+    {
+      "id": "onlinePayment",
+      "title": "Sadece çevrimiçi ödeme",
+      "description": "Güvenli çevrimiçi ödeme seçenekleri ile kolay alışveriş."
+    },
+    {
+      "id": "newStocks",
+      "title": "Yeni stoklar ve indirimler",
+      "description": "Düzenli olarak güncellenen envanter ve özel teklifler."
+    },
+    {
+      "id": "qualityAssurance",
+      "title": "Kalite güvencesi",
+      "description": "Müşteri memnuniyeti için tüm ürünler sıkı kalite kontrollerinden geçer."
+    },
+    {
+      "id": "fastDelivery",
+      "title": "Hızlı teslimat",
+      "description": "1 saatten başlayan hızlı ve güvenilir teslimat seçenekleri."
+    }
+  ]
+}

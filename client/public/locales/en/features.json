@@ -1,0 +1,24 @@
+{
+  "features": [
+    {
+      "id": "onlinePayment",
+      "title": "Payment only online",
+      "description": "Secure online payments with multiple payment options available for your convenience."
+    },
+    {
+      "id": "newStocks",
+      "title": "New stocks and sales",
+      "description": "Regularly updated inventory with exciting new products and special offers."
+    },
+    {
+      "id": "qualityAssurance",
+      "title": "Quality assurance",
+      "description": "All products undergo strict quality checks to ensure customer satisfaction."
+    },
+    {
+      "id": "fastDelivery",
+      "title": "Fast delivery",
+      "description": "Quick and reliable shipping with delivery options starting from 1 hour."
+    }
+  ]
+}
