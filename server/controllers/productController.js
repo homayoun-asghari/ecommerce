@@ -3,7 +3,7 @@ import cloudinary from '../middlewares/cloudinary.js';
 
 // controllers/productController.js
 export const searchProducts = async (req, res) => {
-    const { q } = req.query;
+    const { q, sort = 'relevance' } = req.query;
 
     if (!q) {
         return res.status(400).json({ error: 'Search query is required' });
@@ -13,12 +13,13 @@ export const searchProducts = async (req, res) => {
         // First try exact match, then partial match
         const exactMatchTerm = q.trim();
         const partialMatchTerm = `%${exactMatchTerm}%`;
-        
+
         const result = await db.query(`
             SELECT 
                 p.*, 
                 COALESCE(AVG(r.rating), 0) AS avg_rating,
-                COUNT(r.id) AS review_count,
+                COUNT(DISTINCT r.id) AS review_count,
+                COALESCE(SUM(oi.quantity), 0) AS total_quantity_sold,
                 -- Add a relevance score to prioritize matches
                 CASE 
                     WHEN p.name ILIKE $1 THEN 1  -- Exact match
@@ -28,11 +29,11 @@ export const searchProducts = async (req, res) => {
                 END as relevance
             FROM products p
             LEFT JOIN reviews r ON p.id = r.product_id
+            LEFT JOIN order_items oi ON p.id = oi.product_id
             WHERE p.name ILIKE $3 OR p.description ILIKE $3
             GROUP BY p.id
             ORDER BY 
-                relevance,
-                p.name
+                ${sort === 'best-sellers' ? 'total_quantity_sold DESC' : 'relevance, p.name'}
             LIMIT 10;
         `, [exactMatchTerm, `${exactMatchTerm}%`, partialMatchTerm]);
 
@@ -41,6 +42,7 @@ export const searchProducts = async (req, res) => {
                 ...p,
                 avg_rating: parseFloat(p.avg_rating),
                 review_count: parseInt(p.review_count),
+                total_quantity_sold: parseInt(p.total_quantity_sold) || 0
             }))
         });
     } catch (err) {
@@ -93,16 +95,16 @@ export const getBestSellers = async (req, res) => {
     try {
         const result = await db.query(`
             SELECT 
-                p.*, 
-                SUM(oi.quantity) AS total_quantity_sold,
-                AVG(r.rating) AS avg_rating, 
-                COUNT(r.id) AS review_count
-            FROM products p
-            LEFT JOIN reviews r ON p.id = r.product_id
-            LEFT JOIN order_items oi ON p.id = oi.product_id
-            GROUP BY p.id
-            ORDER BY total_quantity_sold DESC
-            LIMIT 10;
+    p.*, 
+    COALESCE(SUM(oi.quantity), 0) AS total_quantity_sold,
+    COALESCE(AVG(r.rating), 0) AS avg_rating, 
+    COUNT(DISTINCT r.id) AS review_count
+FROM products p
+LEFT JOIN reviews r ON p.id = r.product_id
+LEFT JOIN order_items oi ON p.id = oi.product_id
+GROUP BY p.id, p.name, p.price, p.description, p.image_url, p.category, p.stock, p.created_at, p.updated_at
+ORDER BY total_quantity_sold DESC
+LIMIT 10;
 
           `);
         res.status(200).json(result.rows);
@@ -151,7 +153,7 @@ export const getRelatedProducts = async (req, res) => {
 
 export const getSellersProducts = async (req, res) => {
     const { userId } = req.query;
-    
+
     if (!userId) {
         return res.status(400).json({ error: 'User ID is required' });
     }
@@ -240,7 +242,7 @@ export const updateProduct = async (req, res) => {
         }
 
         let imageUrl = productCheck.rows[0].image_url;
-        
+
         // If a new image was uploaded
         if (req.file) {
             // Upload new image to Cloudinary
@@ -250,7 +252,7 @@ export const updateProduct = async (req, res) => {
                 folder: "products",
             });
             imageUrl = result.secure_url;
-            
+
             // Optionally delete the old image from Cloudinary
             // This requires parsing the public_id from the URL
         }
@@ -263,13 +265,13 @@ export const updateProduct = async (req, res) => {
              WHERE id = $8
              RETURNING *`,
             [
-                name, 
-                description, 
-                price, 
-                category, 
-                stock, 
-                imageUrl, 
-                discount || null, 
+                name,
+                description,
+                price,
+                category,
+                stock,
+                imageUrl,
+                discount || null,
                 id
             ]
         );
@@ -298,10 +300,10 @@ export const deleteProduct = async (req, res) => {
 
         // Delete from database
         await db.query('DELETE FROM products WHERE id = $1', [id]);
-        
+
         // Optionally delete the image from Cloudinary
         // This requires parsing the public_id from the URL
-        
+
         res.status(200).json({ message: "Product deleted successfully" });
     } catch (err) {
         console.error('Delete product error:', err);
@@ -310,11 +312,11 @@ export const deleteProduct = async (req, res) => {
 };
 
 export const getShopProducts = async (req, res) => {
-    const { 
-        category, 
-        minPrice, 
-        maxPrice, 
-        minRating, 
+    const {
+        category,
+        minPrice,
+        maxPrice,
+        minRating,
         sort = 'featured',
         page = 1,
         limit = 12
@@ -334,9 +336,11 @@ export const getShopProducts = async (req, res) => {
                 p.*, 
                 COALESCE(AVG(r.rating), 0) AS avg_rating,
                 COUNT(r.id) AS review_count,
+                COALESCE(SUM(oi.quantity), 0) AS total_quantity_sold,
                 COUNT(*) OVER() AS total_count
             FROM products p
             LEFT JOIN reviews r ON p.id = r.product_id
+            LEFT JOIN order_items oi ON p.id = oi.product_id
         `;
 
         // WHERE conditions
@@ -381,6 +385,10 @@ export const getShopProducts = async (req, res) => {
                 query += ` ORDER BY avg_rating DESC`;
                 break;
             case 'newest':
+            case 'best-sellers':
+            case 'sold':
+                query += ` ORDER BY total_quantity_sold DESC`;
+                break;
             case 'featured': // For now, treat 'featured' same as 'newest' since we don't have a featured column
             default:
                 query += ` ORDER BY p.created_at DESC`;
@@ -393,7 +401,7 @@ export const getShopProducts = async (req, res) => {
 
         console.log('Executing query:', query);
         console.log('With params:', params);
-        
+
         const result = await db.query(query, params);
         console.log('Query result rows:', result.rows.length);
 
@@ -418,7 +426,7 @@ export const getShopProducts = async (req, res) => {
                 per_page: parseInt(limit)
             }
         };
-        
+
         console.log('Sending response with', responseData.products.length, 'products');
         res.status(200).json(responseData);
     } catch (err) {
@@ -429,8 +437,8 @@ export const getShopProducts = async (req, res) => {
             query: query || 'Query not available',
             params: params || []
         });
-        
-        res.status(500).json({ 
+
+        res.status(500).json({
             error: 'Failed to fetch products',
             details: process.env.NODE_ENV === 'development' ? err.message : undefined
         });

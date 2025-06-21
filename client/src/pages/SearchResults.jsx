@@ -75,6 +75,7 @@ const SearchResults = () => {
       // Build query parameters with filters
       const params = new URLSearchParams();
       params.append('q', query); // Don't encode here, let the URLSearchParams handle it
+      params.append('sort', sortBy); // Add sort parameter
       
       if (filters.categories?.length > 0) {
         params.append('category', filters.categories[0]);
@@ -83,8 +84,12 @@ const SearchResults = () => {
         params.append('minRating', filters.minRating);
       }
       if (filters.priceRange) {
-        params.append('minPrice', filters.priceRange.min);
-        params.append('maxPrice', filters.priceRange.max);
+        if (filters.priceRange.min > 0) {
+          params.append('minPrice', filters.priceRange.min);
+        }
+        if (filters.priceRange.max < 1000) {
+          params.append('maxPrice', filters.priceRange.max);
+        }
       }
 
       const response = await fetch(`${API_BASE_URL}/product/search?${params.toString()}`);
@@ -107,7 +112,7 @@ const SearchResults = () => {
     } finally {
       setLoading(false);
     }
-  }, [filters]);
+  }, [filters, sortBy]);
 
   // Fetch search results when query changes or filters update
   useEffect(() => {
@@ -128,6 +133,8 @@ const SearchResults = () => {
   const sortResults = (results, sortBy) => {
     const sortedResults = [...results];
     switch (sortBy) {
+      case 'best-sellers':
+        return sortedResults.sort((a, b) => (b.sold || 0) - (a.sold || 0));
       case 'price_asc':
         return sortedResults.sort((a, b) => a.price - b.price);
       case 'price_desc':
@@ -170,6 +177,7 @@ const SearchResults = () => {
                   onChange={(e) => setSortBy(e.target.value)}
                 >
                   <option value="relevance">Relevance</option>
+                  <option value="best-sellers">Best Sellers</option>
                   <option value="price_asc">Price: Low to High</option>
                   <option value="price_desc">Price: High to Low</option>
                   <option value="rating">Top Rated</option>

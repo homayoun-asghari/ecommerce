@@ -77,7 +77,7 @@ function Shop() {
             const params = new URLSearchParams({
                 page,
                 limit: pagination.limit,
-                sort: sortBy
+                sort: sortBy === 'best-sellers' ? 'sold' : sortBy // Map 'best-sellers' to 'sold' for the backend
             });
 
             // Add filters
@@ -198,9 +198,9 @@ function Shop() {
                                             value={sortBy}
                                             onChange={(e) => setSortBy(e.target.value)}
                                             size="sm"
-                                            className="shadow-sm"
                                         >
                                             <option value="featured">Featured</option>
+                                            <option value="best-sellers">Best Sellers</option>
                                             <option value="price-low">Price: Low to High</option>
                                             <option value="price-high">Price: High to Low</option>
                                             <option value="rating">Top Rated</option>
