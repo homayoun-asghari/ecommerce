@@ -1,17 +1,15 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { 
   Card, 
   Table, 
   Button, 
-  Badge, 
   Form, 
   Modal,
   FormControl,
   InputGroup,
   Spinner,
-  Alert,
-  ButtonGroup,
-  Stack
+  Alert
 } from 'react-bootstrap';
 import { API_BASE_URL } from '../config';
 import { 
@@ -24,6 +22,7 @@ import {
 } from 'react-bootstrap-icons';
 
 const AdminReviews = () => {
+  const { t } = useTranslation('adminReviews');
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -45,38 +44,45 @@ const AdminReviews = () => {
 
   // Fetch reviews from API
   const fetchReviews = useCallback(async (page = 1) => {
+    const currentPage = page;
     try {
       setLoading(true);
       setError(null);
       
+      // Get current limit from state
+      const currentLimit = pagination.limit;
+      
       // Build query parameters
       const params = new URLSearchParams({
-        page,
-        limit: pagination.limit,
+        page: currentPage,
+        limit: currentLimit,
         ...(ratingFilter !== 'all' && { rating: ratingFilter }),
         ...(searchTerm && { search: searchTerm })
       });
 
       const response = await fetch(`${API_BASE_URL}/admin/reviews?${params}`);
       if (!response.ok) {
-        throw new Error('Failed to fetch reviews');
+        throw new Error(t('errors.fetchFailed'));
       }
       
       const data = await response.json();
-      setReviews(data.data);
-      setPagination({
-        ...pagination,
+      
+      // Use functional update for pagination to avoid dependency on pagination object
+      setPagination(prevPagination => ({
+        ...prevPagination,
         page: data.pagination.page,
         total: data.pagination.total,
         totalPages: data.pagination.totalPages
-      });
+      }));
+      
+      setReviews(data.data);
     } catch (err) {
       console.error('Error fetching reviews:', err);
       setError(err.message);
     } finally {
       setLoading(false);
     }
-  }, [pagination.limit, ratingFilter, searchTerm]);
+  }, [pagination.limit, ratingFilter, searchTerm, t]);
 
   // Initial fetch
   useEffect(() => {
@@ -136,13 +142,13 @@ const AdminReviews = () => {
 
   return (
     <div>
-      <h2 className="mb-4">Product Reviews</h2>
+      <h2 className="mb-4">{t('title')}</h2>
       
       {/* Search and Filters */}
       <Card className="mb-4">
         <Card.Body>
           <div className="d-flex justify-content-between align-items-center mb-3">
-            <h5 className="mb-0">Filters</h5>
+            <h5 className="mb-0">{t('filters.title')}</h5>
             <Button 
               variant="outline-secondary" 
               size="sm" 
@@ -150,7 +156,7 @@ const AdminReviews = () => {
               className="d-flex align-items-center gap-1"
             >
               <Funnel size={14} />
-              {filtersVisible ? 'Hide Filters' : 'Show Filters'}
+              {t(filtersVisible ? 'filters.hideFilters' : 'filters.showFilters')}
             </Button>
           </div>
           
@@ -159,13 +165,13 @@ const AdminReviews = () => {
               <div className="row g-3">
                 <div className="col-md-6">
                   <Form.Group>
-                    <Form.Label>Search</Form.Label>
+                    <Form.Label>{t('filters.search.label')}</Form.Label>
                     <InputGroup>
                       <InputGroup.Text>
                         <Search />
                       </InputGroup.Text>
                       <FormControl
-                        placeholder="Search by product or user..."
+                        placeholder={t('filters.search.placeholder')}
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                       />
@@ -183,17 +189,17 @@ const AdminReviews = () => {
                 
                 <div className="col-md-4">
                   <Form.Group>
-                    <Form.Label>Rating</Form.Label>
+                    <Form.Label>{t('filters.rating.label')}</Form.Label>
                     <Form.Select 
                       value={ratingFilter}
                       onChange={(e) => setRatingFilter(e.target.value)}
                     >
-                      <option value="all">All Ratings</option>
-                      <option value="5">5 Stars</option>
-                      <option value="4">4 Stars</option>
-                      <option value="3">3 Stars</option>
-                      <option value="2">2 Stars</option>
-                      <option value="1">1 Star</option>
+                      <option value="all">{t('filters.rating.all')}</option>
+                      <option value="5">{t('filters.rating.stars', { count: 5 })}</option>
+                      <option value="4">{t('filters.rating.stars', { count: 4 })}</option>
+                      <option value="3">{t('filters.rating.stars', { count: 3 })}</option>
+                      <option value="2">{t('filters.rating.stars', { count: 2 })}</option>
+                      <option value="1">{t('filters.rating.stars', { count: 1 })}</option>
                     </Form.Select>
                   </Form.Group>
                 </div>
@@ -204,7 +210,7 @@ const AdminReviews = () => {
                     onClick={clearFilters}
                     className="w-100"
                   >
-                    Clear All
+                    {t('filters.clearAll')}
                   </Button>
                 </div>
               </div>
@@ -226,35 +232,35 @@ const AdminReviews = () => {
           {loading ? (
             <div className="text-center py-5">
               <Spinner animation="border" role="status">
-                <span className="visually-hidden">Loading...</span>
+                <span className="visually-hidden">{t('table.loading')}</span>
               </Spinner>
             </div>
           ) : reviews.length === 0 ? (
             <div className="text-center py-5">
-              <p className="text-muted">No reviews found</p>
+              <p className="text-muted">{t('table.noReviews')}</p>
             </div>
           ) : (
             <div className="table-responsive">
               <Table hover>
                 <thead>
                   <tr>
-                    <th>Product</th>
-                    <th>User</th>
-                    <th>Rating</th>
-                    <th>Comment</th>
-                    <th>Date</th>
-                    <th>Actions</th>
+                    <th>{t('table.headers.product')}</th>
+                    <th>{t('table.headers.user')}</th>
+                    <th>{t('table.headers.rating')}</th>
+                    <th>{t('table.headers.comment')}</th>
+                    <th>{t('table.headers.date')}</th>
+                    <th>{t('table.headers.actions')}</th>
                   </tr>
                 </thead>
                 <tbody>
                   {reviews.map((review) => (
                     <tr key={review.id}>
                       <td>
-                        <div className="fw-semibold">{review.product?.name || 'N/A'}</div>
-                        <small className="text-muted">ID: {review.product_id}</small>
+                        <div className="fw-semibold">{review.product?.name || t('table.product.na')}</div>
+                        <small className="text-muted">{t('table.product.id', { id: review.product_id })}</small>
                       </td>
                       <td>
-                        <div>{review.user?.name || 'Anonymous'}</div>
+                        <div>{review.user?.name || t('table.user.anonymous')}</div>
                         <small className="text-muted">{review.user?.email}</small>
                       </td>
                       <td>
@@ -265,7 +271,7 @@ const AdminReviews = () => {
                       </td>
                       <td>
                         <div className="text-truncate" style={{ maxWidth: '250px' }}>
-                          {review.comment || 'No comment'}
+                          {review.comment || t('table.comment.empty')}
                         </div>
                       </td>
                       <td>
@@ -279,7 +285,7 @@ const AdminReviews = () => {
                             setSelectedReview(review);
                             setShowDeleteModal(true);
                           }}
-                          title="Delete review"
+                          title={t('table.actions.delete')}
                         >
                           <Trash />
                         </Button>
@@ -293,7 +299,7 @@ const AdminReviews = () => {
               {pagination.totalPages > 1 && (
                 <div className="d-flex justify-content-between align-items-center mt-3">
                   <div>
-                    Showing {reviews.length} of {pagination.total} reviews
+                    {t('table.pagination.showing', { count: reviews.length, total: pagination.total })}
                   </div>
                   <div className="d-flex gap-2">
                     <Button
@@ -302,10 +308,10 @@ const AdminReviews = () => {
                       onClick={() => handlePageChange(pagination.page - 1)}
                       disabled={pagination.page === 1}
                     >
-                      Previous
+                      {t('table.pagination.previous')}
                     </Button>
                     <div className="d-flex align-items-center px-3">
-                      Page {pagination.page} of {pagination.totalPages}
+                      {t('table.pagination.page', { current: pagination.page, total: pagination.totalPages })}
                     </div>
                     <Button
                       variant="outline-secondary"
@@ -313,7 +319,7 @@ const AdminReviews = () => {
                       onClick={() => handlePageChange(pagination.page + 1)}
                       disabled={pagination.page === pagination.totalPages}
                     >
-                      Next
+                      {t('table.pagination.next')}
                     </Button>
                   </div>
                 </div>
@@ -326,17 +332,17 @@ const AdminReviews = () => {
       {/* Delete Confirmation Modal */}
       <Modal show={showDeleteModal} onHide={() => setShowDeleteModal(false)}>
         <Modal.Header closeButton>
-          <Modal.Title>Delete Review</Modal.Title>
+          <Modal.Title>{t('deleteModal.title')}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          Are you sure you want to delete this review? This action cannot be undone.
+          {t('deleteModal.message')}
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={() => setShowDeleteModal(false)}>
-            Cancel
+            {t('deleteModal.cancel')}
           </Button>
           <Button variant="danger" onClick={handleDeleteReview}>
-            Delete
+            {t('deleteModal.delete')}
           </Button>
         </Modal.Footer>
       </Modal>

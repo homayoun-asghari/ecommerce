@@ -1,0 +1,54 @@
+{
+  "title": "Bildirimler",
+  "buttons": {
+    "newNotification": "Yeni Bildirim",
+    "cancel": "İptal",
+    "send": "Bildirim Gönder",
+    "sending": "Gönderiliyor...",
+    "delete": "Sil",
+    "deleting": "Siliniyor...",
+    "previous": "Önceki",
+    "next": "Sonraki"
+  },
+  "filters": {
+    "searchPlaceholder": "Bildirimlerde ara...",
+    "all": "Tümü",
+    "unread": "Okunmamış",
+    "read": "Okundu"
+  },
+  "list": {
+    "noNotifications": "Bildirim bulunamadı",
+    "loading": "Yükleniyor...",
+    "showing": "{{total}} bildirimden {{count}} tanesi gösteriliyor",
+    "page": "Sayfa {{current}} / {{total}}",
+    "sentTo": "Alıcı: {{name}}",
+    "email": "{{email}}"
+  },
+  "modals": {
+    "createTitle": "Yeni Bildirim Oluştur",
+    "editTitle": "Bildirimi Düzenle",
+    "deleteTitle": "Bildirimi Sil",
+    "deleteConfirm": "Bu bildirimi silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.",
+    "form": {
+      "title": "Başlık",
+      "titlePlaceholder": "Bildirim başlığını girin",
+      "message": "Mesaj",
+      "messagePlaceholder": "Bildirim mesajını girin",
+      "sendTo": "Gönderilecek Kişiler",
+      "allUsers": "Tüm Kullanıcılar",
+      "specificUsers": "Belirli Kullanıcılar",
+      "userIdsPlaceholder": "Virgülle ayrılmış kullanıcı ID'lerini girin (örn: 1, 2, 3)"
+    }
+  },
+  "status": {
+    "markAsRead": "Okundu olarak işaretle",
+    "markAsUnread": "Okunmadı olarak işaretle",
+    "deleteNotification": "Bildirimi sil"
+  },
+  "errors": {
+    "fetchFailed": "Bildirimler yüklenirken hata oluştu",
+    "createFailed": "Bildirim oluşturulurken hata oluştu",
+    "updateFailed": "Bildirim durumu güncellenirken hata oluştu",
+    "deleteFailed": "Bildirim silinirken hata oluştu"
+  }
+}

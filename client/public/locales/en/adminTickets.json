@@ -1,0 +1,79 @@
+{
+  "title": "Support Tickets",
+  "filters": {
+    "title": "Filters",
+    "search": {
+      "placeholder": "Search tickets...",
+      "label": "Search"
+    },
+    "category": {
+      "label": "Category"
+    },
+    "status": {
+      "label": "Status"
+    },
+    "reset": {
+      "label": "Reset Filters",
+      "tooltip": "Reset all filters"
+    }
+  },
+  "categories": {
+    "all": "All Categories",
+    "order": "Order",
+    "payment": "Payment",
+    "product": "Product",
+    "account": "Account",
+    "other": "Other"
+  },
+  "statuses": {
+    "all": "All Statuses",
+    "open": "Open",
+    "pending": "Pending",
+    "resolved": "Resolved",
+    "closed": "Closed"
+  },
+  "table": {
+    "id": "ID",
+    "subject": "Subject",
+    "user": "User",
+    "category": "Category",
+    "status": "Status",
+    "created": "Created",
+    "actions": "Actions",
+    "orderId": "Order #{orderId}",
+    "noTickets": {
+      "title": "No tickets found",
+      "message": "No tickets have been created yet",
+      "adjustFilters": "Try adjusting your filters or search term"
+    },
+    "showing": "Showing {count} of {total} tickets",
+    "pageInfo": "Page {current} of {total}"
+  },
+  "buttons": {
+    "previous": "Previous",
+    "next": "Next",
+    "respond": "Respond",
+    "updateStatus": "Update Status",
+    "closeTicket": "Close Ticket",
+    "cancel": "Cancel",
+    "sendResponse": "Send Response"
+  },
+  "modal": {
+    "title": "Respond to Ticket #{id}: {subject}",
+    "userInfo": "{name} ({email})",
+    "subject": "Subject: {subject}",
+    "status": "Status: {status}",
+    "response": {
+      "label": "Your Response",
+      "placeholder": "Type your response here..."
+    }
+  },
+  "loading": "Loading...",
+  "errors": {
+    "fetchTickets": "Failed to load tickets. Please try again later.",
+    "fetchTicketDetails": "Failed to load ticket details. Please try again.",
+    "updateStatus": "Failed to update ticket status",
+    "submitResponse": "Failed to submit response",
+    "successResponse": "Response submitted successfully"
+  }
+}

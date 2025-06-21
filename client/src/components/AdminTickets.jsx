@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { 
+import { useTranslation } from 'react-i18next';
+import {
   Card, 
   Table, 
   Button, 
@@ -9,7 +10,6 @@ import {
   FormControl,
   InputGroup,
   Dropdown,
-  DropdownButton,
   Spinner,
   Alert
 } from 'react-bootstrap';
@@ -27,6 +27,7 @@ import {
 } from 'react-bootstrap-icons';
 
 const AdminTickets = () => {
+  const { t } = useTranslation('adminTickets');
   const [tickets, setTickets] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -50,20 +51,20 @@ const AdminTickets = () => {
   
   // Available categories and statuses with labels
   const categories = [
-    { value: 'all', label: 'All Categories' },
-    { value: 'order', label: 'Order' },
-    { value: 'payment', label: 'Payment' },
-    { value: 'product', label: 'Product' },
-    { value: 'account', label: 'Account' },
-    { value: 'other', label: 'Other' }
+    { value: 'all', label: t('categories.all') },
+    { value: 'order', label: t('categories.order') },
+    { value: 'payment', label: t('categories.payment') },
+    { value: 'product', label: t('categories.product') },
+    { value: 'account', label: t('categories.account') },
+    { value: 'other', label: t('categories.other') }
   ];
   
   const statuses = [
-    { value: 'all', label: 'All Statuses' },
-    { value: 'open', label: 'Open' },
-    { value: 'pending', label: 'Pending' },
-    { value: 'resolved', label: 'Resolved' },
-    { value: 'closed', label: 'Closed' }
+    { value: 'all', label: t('statuses.all') },
+    { value: 'open', label: t('statuses.open') },
+    { value: 'pending', label: t('statuses.pending') },
+    { value: 'resolved', label: t('statuses.resolved') },
+    { value: 'closed', label: t('statuses.closed') }
   ];
 
   // Fetch tickets from API
@@ -84,7 +85,7 @@ const AdminTickets = () => {
       const response = await fetch(`${API_BASE_URL}/admin/tickets?${params}`);
       
       if (!response.ok) {
-        throw new Error('Failed to fetch tickets');
+        throw new Error(t('errors.fetchTickets'));
       }
       
       const data = await response.json();
@@ -96,13 +97,13 @@ const AdminTickets = () => {
         page: data.pagination?.page || 1
       }));
     } catch (err) {
-      setError('Failed to load tickets. Please try again later.');
+      setError(t('errors.fetchTickets'));
       console.error('Error fetching tickets:', err);
       setTickets([]);
     } finally {
       setLoading(false);
     }
-  }, [statusFilter, categoryFilter, searchTerm]);
+  }, [statusFilter, categoryFilter, searchTerm, t]);
   
   // Initial fetch and refetch when filters change
   useEffect(() => {
@@ -131,25 +132,7 @@ const AdminTickets = () => {
     }
   };
 
-  // Handle view ticket details
-  const handleViewTicket = async (ticket) => {
-    try {
-      setLoading(true);
-      const response = await fetch(`${API_BASE_URL}/admin/tickets/${ticket.id}`);
-      if (!response.ok) {
-        throw new Error('Failed to fetch ticket details');
-      }
-      const data = await response.json();
-      setSelectedTicket(ticket);
-      setTicketDetails(data);
-      setShowResponseModal(true);
-    } catch (err) {
-      console.error('Error fetching ticket details:', err);
-      setError('Failed to load ticket details. Please try again.');
-    } finally {
-      setLoading(false);
-    }
-  };
+
 
   // Use tickets directly from API (filtering is done server-side)
   const filteredTickets = tickets;
@@ -169,7 +152,7 @@ const AdminTickets = () => {
       
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.error || 'Failed to update ticket status');
+        throw new Error(errorData.error || t('errors.updateStatus'));
       }
       
       // Refresh tickets to get updated data
@@ -187,7 +170,7 @@ const AdminTickets = () => {
       return { success: true };
     } catch (err) {
       console.error('Error updating ticket status:', err);
-      setError(err.message || 'Failed to update ticket status');
+      setError(err.message || t('errors.updateStatus'));
       return { success: false, error: err.message };
     } finally {
       setLoading(false);
@@ -216,7 +199,7 @@ const AdminTickets = () => {
       const result = await apiResponse.json();
       
       if (!apiResponse.ok) {
-        throw new Error(result.error || 'Failed to submit response');
+        throw new Error(result.error || t('errors.submitResponse'));
       }
       
       // Refresh ticket details to show the new response
@@ -232,10 +215,10 @@ const AdminTickets = () => {
       setResponse('');
       
       // Show success message
-      alert('Response submitted successfully');
+      alert(t('errors.successResponse'));
     } catch (err) {
       console.error('Error submitting response:', err);
-      setError(err.message || 'Failed to submit response');
+      setError(err.message || t('errors.submitResponse'));
     } finally {
       setLoading(false);
     }
@@ -248,35 +231,22 @@ const AdminTickets = () => {
   
   // Get status badge component
   const getStatusBadge = (status) => {
+    const statusText = t(`statuses.${status}`, { defaultValue: status });
     switch (status) {
       case 'open':
-        return <Badge bg="primary">Open</Badge>;
+        return <Badge bg="primary">{statusText}</Badge>;
       case 'pending':
-        return <Badge bg="warning" text="dark">Pending</Badge>;
+        return <Badge bg="warning" text="dark">{statusText}</Badge>;
       case 'resolved':
-        return <Badge bg="success">Resolved</Badge>;
+        return <Badge bg="success">{statusText}</Badge>;
       case 'closed':
-        return <Badge bg="secondary">Closed</Badge>;
+        return <Badge bg="secondary">{statusText}</Badge>;
       default:
-        return <Badge bg="light" text="dark">{status}</Badge>;
+        return <Badge bg="light" text="dark">{statusText}</Badge>;
     }
   };
   
-  // Get status color (for non-JSX usage)
-  const getStatusColor = (status) => {
-    switch (status) {
-      case 'open':
-        return 'primary';
-      case 'pending':
-        return 'warning';
-      case 'resolved':
-        return 'success';
-      case 'closed':
-        return 'secondary';
-      default:
-        return 'light';
-    }
-  };
+
 
   // Get status icon
   const getStatusIcon = (status) => {
@@ -298,7 +268,7 @@ const AdminTickets = () => {
   const PaginationControls = () => (
     <div className="d-flex justify-content-between align-items-center mt-3">
       <div>
-        Showing {filteredTickets.length} of {pagination.total} tickets
+        {t('table.showing', { count: filteredTickets.length, total: pagination.total })}
       </div>
       <div className="d-flex gap-2">
         <Button 
@@ -307,10 +277,10 @@ const AdminTickets = () => {
           onClick={() => handlePageChange(pagination.page - 1)}
           disabled={pagination.page === 1}
         >
-          Previous
+          {t('buttons.previous')}
         </Button>
         <span className="px-3 py-1">
-          Page {pagination.page} of {pagination.totalPages || 1}
+          {t('table.pageInfo', { current: pagination.page, total: pagination.totalPages || 1 })}
         </span>
         <Button 
           variant="outline-secondary" 
@@ -318,7 +288,7 @@ const AdminTickets = () => {
           onClick={() => handlePageChange(pagination.page + 1)}
           disabled={pagination.page >= (pagination.totalPages || 1)}
         >
-          Next
+          {t('buttons.next')}
         </Button>
       </div>
     </div>
@@ -328,7 +298,7 @@ const AdminTickets = () => {
     return (
       <div className="d-flex justify-content-center align-items-center" style={{ height: '300px' }}>
         <Spinner animation="border" role="status">
-          <span className="visually-hidden">Loading...</span>
+          <span className="visually-hidden">{t('loading')}</span>
         </Spinner>
       </div>
     );
@@ -346,7 +316,7 @@ const AdminTickets = () => {
     <>
       <div className="mb-4">
         <div className="d-flex justify-content-between align-items-center mb-4">
-          <h2 className="mb-0">Support Tickets</h2>
+          <h2 className="mb-0">{t('title')}</h2>
           <div>
             <Button 
               variant="outline-secondary" 
@@ -356,8 +326,9 @@ const AdminTickets = () => {
                 setStatusFilter('all');
                 setSearchTerm('');
               }}
+              title={t('filters.reset.tooltip')}
             >
-              <ArrowClockwise className="me-1" /> Reset Filters
+              <ArrowClockwise className="me-1" /> {t('filters.reset.label')}
             </Button>
           </div>
         </div>
@@ -366,15 +337,15 @@ const AdminTickets = () => {
         <Card className="mb-4">
           <Card.Body>
             <h5 className="mb-3">
-              <Filter className="me-2" /> Filters
+              <Filter className="me-2" /> {t('filters.title')}
             </h5>
             <div className="d-flex flex-wrap gap-3">
               <div style={{ minWidth: '200px' }}>
-                <Form.Label>Search</Form.Label>
+                <Form.Label>{t('filters.search.label')}</Form.Label>
                 <InputGroup>
                   <InputGroup.Text><Search /></InputGroup.Text>
                   <FormControl
-                    placeholder="Search tickets..."
+                    placeholder={t('filters.search.placeholder')}
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                   />
@@ -382,7 +353,7 @@ const AdminTickets = () => {
               </div>
               
               <div style={{ minWidth: '200px' }}>
-                <Form.Label>Category</Form.Label>
+                <Form.Label>{t('filters.category.label')}</Form.Label>
                 <Form.Select 
                   value={categoryFilter}
                   onChange={(e) => setCategoryFilter(e.target.value)}
@@ -396,7 +367,7 @@ const AdminTickets = () => {
               </div>
               
               <div style={{ minWidth: '200px' }}>
-                <Form.Label>Status</Form.Label>
+                <Form.Label>{t('filters.status.label')}</Form.Label>
                 <Form.Select 
                   value={statusFilter}
                   onChange={(e) => setStatusFilter(e.target.value)}
@@ -418,11 +389,11 @@ const AdminTickets = () => {
             {filteredTickets.length === 0 ? (
               <div className="text-center py-5">
                 <ChatLeftText size={48} className="text-muted mb-3" />
-                <h5>No tickets found</h5>
+                <h5>{t('table.noTickets.title')}</h5>
                 <p className="text-muted">
                   {searchTerm || categoryFilter !== 'all' || statusFilter !== 'all' 
-                    ? 'Try adjusting your filters or search term'
-                    : 'No tickets have been created yet'}
+                    ? t('table.noTickets.adjustFilters')
+                    : t('table.noTickets.message')}
                 </p>
               </div>
             ) : (
@@ -430,13 +401,13 @@ const AdminTickets = () => {
                 <Table hover>
                   <thead>
                     <tr>
-                      <th>ID</th>
-                      <th>Subject</th>
-                      <th>User</th>
-                      <th>Category</th>
-                      <th>Status</th>
-                      <th>Created</th>
-                      <th>Actions</th>
+                      <th>{t('table.id')}</th>
+                      <th>{t('table.subject')}</th>
+                      <th>{t('table.user')}</th>
+                      <th>{t('table.category')}</th>
+                      <th>{t('table.status')}</th>
+                      <th>{t('table.created')}</th>
+                      <th>{t('table.actions')}</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -445,7 +416,7 @@ const AdminTickets = () => {
                         <td>#{ticket.id}</td>
                         <td>
                           <div className="fw-semibold">{ticket.subject}</div>
-                          <small className="text-muted">Order #{ticket.order_id}</small>
+                          <small className="text-muted">{t('table.orderId', { orderId: ticket.order_id })}</small>
                         </td>
                         <td>
                           <div>{ticket.user.name}</div>
@@ -473,7 +444,7 @@ const AdminTickets = () => {
                                 setShowResponseModal(true);
                               }}
                             >
-                              <ChatLeftText /> Respond
+                              <ChatLeftText /> {t('buttons.respond')}
                             </Button>
                             {ticket.status !== 'closed' && (
                               <Dropdown>
@@ -482,7 +453,7 @@ const AdminTickets = () => {
                                   size="sm" 
                                   id={`status-dropdown-${ticket.id}`}
                                 >
-                                  Update Status
+                                  {t('buttons.updateStatus')}
                                 </Dropdown.Toggle>
                                 <Dropdown.Menu>
                                   {statuses
@@ -495,7 +466,7 @@ const AdminTickets = () => {
                                         {status.value === 'closed' ? (
                                           <>
                                             <CheckCircle className="text-success me-2" />
-                                            Close Ticket
+                                            {t('buttons.closeTicket')}
                                           </>
                                         ) : (
                                           <>
@@ -528,7 +499,7 @@ const AdminTickets = () => {
       <Modal show={showResponseModal} onHide={() => setShowResponseModal(false)} size="lg">
         <Modal.Header closeButton>
           <Modal.Title>
-            {selectedTicket && `Respond to Ticket #${selectedTicket.id}: ${selectedTicket.subject}`}
+            {selectedTicket && t('modal.title', { id: selectedTicket.id, subject: selectedTicket.subject })}
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
@@ -536,31 +507,28 @@ const AdminTickets = () => {
             <>
               <div className="mb-3 p-3 bg-light rounded">
                 <div className="d-flex justify-content-between align-items-center mb-2">
-                  <strong>{selectedTicket.user.name} ({selectedTicket.user.email})</strong>
+                  <strong>{t('modal.userInfo', { name: selectedTicket.user.name, email: selectedTicket.user.email })}</strong>
                   <small className="text-muted">
                     {formatDate(selectedTicket.createdAt)}
                   </small>
                 </div>
                 <p className="mb-0">
-                  <strong>Subject:</strong> {selectedTicket.subject}
+                  <strong>{t('modal.subject', { subject: selectedTicket.subject })}</strong>
                 </p>
                 <p className="mb-0">
-                  <strong>Status:</strong>{' '}
-                  <Badge bg={getStatusBadge(selectedTicket.status)}>
-                    {selectedTicket.status.replace('_', ' ').charAt(0).toUpperCase() + 
-                     selectedTicket.status.replace('_', ' ').slice(1)}
-                  </Badge>
+                  <strong>{t('modal.status', { status: '' })}</strong>{' '}
+                  {getStatusBadge(selectedTicket.status)}
                 </p>
               </div>
               
               <Form.Group className="mb-3">
-                <Form.Label>Your Response</Form.Label>
+                <Form.Label>{t('modal.response.label')}</Form.Label>
                 <Form.Control
                   as="textarea"
                   rows={5}
                   value={response}
                   onChange={(e) => setResponse(e.target.value)}
-                  placeholder="Type your response here..."
+                  placeholder={t('modal.response.placeholder')}
                 />
               </Form.Group>
               
@@ -569,14 +537,14 @@ const AdminTickets = () => {
                   variant="outline-secondary" 
                   onClick={() => setShowResponseModal(false)}
                 >
-                  Cancel
+                  {t('buttons.cancel')}
                 </Button>
                 <Button 
                   variant="primary" 
                   onClick={handleSubmitResponse}
                   disabled={!response.trim()}
                 >
-                  Send Response
+                  {t('buttons.sendResponse')}
                 </Button>
               </div>
             </>

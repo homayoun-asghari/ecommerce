@@ -1,24 +1,18 @@
-import React, { useState, useEffect } from 'react';
-import { useTheme } from '../contexts/ThemeContext';
-import { useSideBar } from '../contexts/SideBarContext';
+import React, { useState, useEffect, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
+// Context imports removed as they were unused
 import { API_BASE_URL } from '../config';
 import {
   Card,
   Button,
   Form,
   Modal,
-  Badge,
   ListGroup,
   InputGroup,
   FormControl,
   Spinner,
   Alert,
-  ButtonGroup,
-  Dropdown,
-  Tab,
-  Tabs,
-  OverlayTrigger,
-  Tooltip
+  Dropdown
 } from 'react-bootstrap';
 import { 
   BellFill, 
@@ -26,16 +20,13 @@ import {
   Envelope, 
   EnvelopeOpen, 
   Search, 
-  Funnel, 
   XCircle,
-  Star,
-  StarFill,
   Plus,
-  CheckCircle,
-  ExclamationCircle
+  StarFill
 } from 'react-bootstrap-icons';
 
 const AdminNotifications = () => {
+  const { t } = useTranslation('adminNotifications');
   // State for notifications list
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -63,7 +54,7 @@ const AdminNotifications = () => {
   });
 
   // Fetch notifications
-  const fetchNotifications = async (page = 1) => {
+  const fetchNotifications = useCallback(async (page = 1) => {
     try {
       setLoading(true);
       setError(null);
@@ -77,29 +68,29 @@ const AdminNotifications = () => {
 
       const response = await fetch(`${API_BASE_URL}/admin/notifications?${params}`);
       if (!response.ok) {
-        throw new Error('Failed to fetch notifications');
+        throw new Error(t('errors.fetchFailed'));
       }
       
       const data = await response.json();
       setNotifications(data.data);
-      setPagination({
-        ...pagination,
+      setPagination(prevPagination => ({
+        ...prevPagination,
         page: data.pagination.page,
         total: data.pagination.total,
         totalPages: data.pagination.totalPages
-      });
+      }));
     } catch (err) {
       console.error('Error fetching notifications:', err);
       setError(err.message);
     } finally {
       setLoading(false);
     }
-  };
+  }, [activeTab, searchTerm, pagination.limit, t]);
 
   // Initial fetch
   useEffect(() => {
     fetchNotifications();
-  }, [activeTab, searchTerm]);
+  }, [activeTab, searchTerm, fetchNotifications]);
 
   // Handle form input changes
   const handleInputChange = (e) => {
@@ -134,7 +125,7 @@ const handleCreateNotification = async (e) => {
 
     if (!response.ok) {
       const error = await response.json();
-      throw new Error(error.error || 'Failed to create notification');
+      throw new Error(error.error || t('errors.createFailed'));
     }
 
     // Refresh notifications and reset form
@@ -164,7 +155,7 @@ const handleCreateNotification = async (e) => {
       });
 
       if (!response.ok) {
-        throw new Error('Failed to delete notification');
+        throw new Error(t('errors.deleteFailed'));
       }
 
       // Refresh notifications
@@ -190,7 +181,7 @@ const handleCreateNotification = async (e) => {
       });
 
       if (!response.ok) {
-        throw new Error('Failed to update notification status');
+        throw new Error(t('errors.updateFailed'));
       }
 
       // Update local state
@@ -218,13 +209,13 @@ const handleCreateNotification = async (e) => {
   return (
     <div>
       <div className="d-flex justify-content-between align-items-center mb-4">
-        <h2 className="mb-0">Notifications</h2>
+        <h2 className="mb-0">{t('title')}</h2>
         <Button 
           variant="primary" 
           onClick={() => setShowCreateModal(true)}
           className="d-flex align-items-center gap-2"
         >
-          <Plus /> New Notification
+          <Plus /> {t('buttons.newNotification')}
         </Button>
       </div>
 
@@ -245,7 +236,7 @@ const handleCreateNotification = async (e) => {
                   <Search />
                 </InputGroup.Text>
                 <FormControl
-                  placeholder="Search notifications..."
+                  placeholder={t('filters.searchPlaceholder')}
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
@@ -259,27 +250,24 @@ const handleCreateNotification = async (e) => {
                 )}
               </InputGroup>
             </div>
-            <Tabs
-              activeKey={activeTab}
-              onSelect={(k) => setActiveTab(k)}
-              className="mb-0"
-            >
-              <Tab eventKey="all" title={
-                <span>
-                  <BellFill className="me-1" /> All
-                </span>
-              } />
-              <Tab eventKey="unread" title={
-                <span>
-                  <Envelope className="me-1" /> Unread
-                </span>
-              } />
-              <Tab eventKey="read" title={
-                <span>
-                  <EnvelopeOpen className="me-1" /> Read
-                </span>
-              } />
-            </Tabs>
+            <Dropdown onSelect={(k) => setActiveTab(k)}>
+              <Dropdown.Toggle variant="outline-secondary" id="notifications-filter">
+                {activeTab === 'all' && <><BellFill className="me-1" /> {t('filters.all')}</>}
+                {activeTab === 'unread' && <><Envelope className="me-1" /> {t('filters.unread')}</>}
+                {activeTab === 'read' && <><EnvelopeOpen className="me-1" /> {t('filters.read')}</>}
+              </Dropdown.Toggle>
+              <Dropdown.Menu>
+                <Dropdown.Item eventKey="all" active={activeTab === 'all'}>
+                  <BellFill className="me-2" /> {t('filters.all')}
+                </Dropdown.Item>
+                <Dropdown.Item eventKey="unread" active={activeTab === 'unread'}>
+                  <Envelope className="me-2" /> {t('filters.unread')}
+                </Dropdown.Item>
+                <Dropdown.Item eventKey="read" active={activeTab === 'read'}>
+                  <EnvelopeOpen className="me-2" /> {t('filters.read')}
+                </Dropdown.Item>
+              </Dropdown.Menu>
+            </Dropdown>
           </div>
         </Card.Body>
       </Card>
@@ -290,12 +278,12 @@ const handleCreateNotification = async (e) => {
           {loading && notifications.length === 0 ? (
             <div className="text-center py-5">
               <Spinner animation="border" role="status">
-                <span className="visually-hidden">Loading...</span>
+                <span className="visually-hidden">{t('list.loading')}</span>
               </Spinner>
             </div>
           ) : notifications.length === 0 ? (
             <div className="text-center py-5">
-              <p className="text-muted">No notifications found</p>
+              <p className="text-muted">{t('list.noNotifications')}</p>
             </div>
           ) : (
             <ListGroup variant="flush">
@@ -312,12 +300,12 @@ const handleCreateNotification = async (e) => {
                           variant="link" 
                           className="p-0 me-2"
                           onClick={() => toggleReadStatus(notification)}
-                          title={notification.is_read ? 'Mark as unread' : 'Mark as read'}
+                          title={notification.is_read ? t('status.markAsUnread') : t('status.markAsRead')}
                         >
                           {notification.is_read ? (
                             <EnvelopeOpen className="text-muted" />
                           ) : (
-                            <Envelope className="text-primary" />
+                            <Envelope className="text-muted" />
                           )}
                         </Button>
                       </div>
@@ -338,8 +326,8 @@ const handleCreateNotification = async (e) => {
                         <p className="mb-0 mt-1">{notification.message}</p>
                         {notification.user_name && (
                           <small className="text-muted">
-                            Sent to: {notification.user_name}
-                            {notification.user_email && ` (${notification.user_email})`}
+                            {t('list.sentTo', { name: notification.user_name })}
+                            {notification.user_email && ` (${t('list.email', { email: notification.user_email })})`}
                           </small>
                         )}
                       </div>
@@ -352,7 +340,7 @@ const handleCreateNotification = async (e) => {
                           setSelectedNotification(notification);
                           setShowDeleteModal(true);
                         }}
-                        title="Delete notification"
+                        title={t('status.deleteNotification')}
                       >
                         <Trash size={16} />
                       </Button>
@@ -367,7 +355,7 @@ const handleCreateNotification = async (e) => {
           {pagination.totalPages > 1 && (
             <div className="d-flex justify-content-between align-items-center p-3 border-top">
               <div>
-                Showing {notifications.length} of {pagination.total} notifications
+                {t('list.showing', { count: notifications.length, total: pagination.total })}
               </div>
               <div className="d-flex gap-2">
                 <Button
@@ -376,10 +364,10 @@ const handleCreateNotification = async (e) => {
                   onClick={() => fetchNotifications(pagination.page - 1)}
                   disabled={pagination.page === 1}
                 >
-                  Previous
+                  {t('buttons.previous')}
                 </Button>
                 <div className="d-flex align-items-center px-3">
-                  Page {pagination.page} of {pagination.totalPages}
+                  {t('list.page', { current: pagination.page, total: pagination.totalPages })}
                 </div>
                 <Button
                   variant="outline-secondary"
@@ -387,7 +375,7 @@ const handleCreateNotification = async (e) => {
                   onClick={() => fetchNotifications(pagination.page + 1)}
                   disabled={pagination.page === pagination.totalPages}
                 >
-                  Next
+                  {t('buttons.next')}
                 </Button>
               </div>
             </div>
@@ -399,41 +387,41 @@ const handleCreateNotification = async (e) => {
       <Modal show={showCreateModal} onHide={() => setShowCreateModal(false)} size="lg">
         <Form onSubmit={handleCreateNotification}>
           <Modal.Header closeButton>
-            <Modal.Title>Create New Notification</Modal.Title>
+            <Modal.Title>{t('modals.createTitle')}</Modal.Title>
           </Modal.Header>
           <Modal.Body>
             <Form.Group className="mb-3">
-              <Form.Label>Title</Form.Label>
+              <Form.Label>{t('modals.form.title')}</Form.Label>
               <Form.Control
                 type="text"
                 name="title"
                 value={formData.title}
                 onChange={handleInputChange}
-                placeholder="Enter notification title"
+                placeholder={t('modals.form.titlePlaceholder')}
                 required
               />
             </Form.Group>
             
             <Form.Group className="mb-3">
-              <Form.Label>Message</Form.Label>
+              <Form.Label>{t('modals.form.message')}</Form.Label>
               <Form.Control
                 as="textarea"
                 rows={4}
                 name="message"
                 value={formData.message}
                 onChange={handleInputChange}
-                placeholder="Enter notification message"
+                placeholder={t('modals.form.messagePlaceholder')}
                 required
               />
             </Form.Group>
             
             <Form.Group className="mb-3">
-              <Form.Label>Send to</Form.Label>
+              <Form.Label>{t('modals.form.sendTo')}</Form.Label>
               <div className="d-flex gap-3">
                 <Form.Check
                   type="radio"
                   id="allUsers"
-                  label="All Users"
+                  label={t('modals.form.allUsers')}
                   name="targetUsers"
                   value="all"
                   checked={formData.targetUsers === 'all'}
@@ -442,7 +430,7 @@ const handleCreateNotification = async (e) => {
                 <Form.Check
                   type="radio"
                   id="specificUsers"
-                  label="Specific Users"
+                  label={t('modals.form.specificUsers')}
                   name="targetUsers"
                   value="specific"
                   checked={formData.targetUsers === 'specific'}
@@ -453,7 +441,7 @@ const handleCreateNotification = async (e) => {
               {formData.targetUsers === 'specific' && (
                 <Form.Control
                   type="text"
-                  placeholder="Enter user IDs separated by commas (e.g., 1, 2, 3)"
+                  placeholder={t('modals.form.userIdsPlaceholder')}
                   name="userIds"
                   value={formData.userIds}
                   onChange={handleInputChange}
@@ -464,10 +452,10 @@ const handleCreateNotification = async (e) => {
           </Modal.Body>
           <Modal.Footer>
             <Button variant="secondary" onClick={() => setShowCreateModal(false)}>
-              Cancel
+              {t('buttons.cancel')}
             </Button>
             <Button variant="primary" type="submit" disabled={loading}>
-              {loading ? 'Sending...' : 'Send Notification'}
+              {loading ? t('buttons.sending') : t('buttons.send')}
             </Button>
           </Modal.Footer>
         </Form>
@@ -476,17 +464,17 @@ const handleCreateNotification = async (e) => {
       {/* Delete Confirmation Modal */}
       <Modal show={showDeleteModal} onHide={() => setShowDeleteModal(false)} centered>
         <Modal.Header closeButton>
-          <Modal.Title>Delete Notification</Modal.Title>
+          <Modal.Title>{t('modals.deleteTitle')}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          Are you sure you want to delete this notification? This action cannot be undone.
+          {t('modals.deleteConfirm')}
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={() => setShowDeleteModal(false)}>
             Cancel
           </Button>
           <Button variant="danger" onClick={handleDeleteNotification} disabled={loading}>
-            {loading ? 'Deleting...' : 'Delete'}
+            {loading ? t('buttons.deleting') : t('buttons.delete')}
           </Button>
         </Modal.Footer>
       </Modal>

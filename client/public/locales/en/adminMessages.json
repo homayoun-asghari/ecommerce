@@ -1,0 +1,45 @@
+{
+  "title": "Customer Messages",
+  "loading": "Loading messages...",
+  "noMessages": "No messages found",
+  "table": {
+    "headers": {
+      "number": "#",
+      "name": "Name",
+      "email": "Email",
+      "subject": "Subject",
+      "message": "Message",
+      "date": "Date",
+      "status": "Status",
+      "actions": "Actions"
+    },
+    "subjectDefault": "General Inquiry",
+    "statuses": {
+      "replied": "Replied",
+      "inProgress": "In Progress",
+      "spam": "Spam",
+      "new": "New"
+    }
+  },
+  "modal": {
+    "title": "Reply to {{name}}",
+    "subject": "Subject",
+    "originalMessage": "Message",
+    "replyLabel": "Your Reply",
+    "cancel": "Cancel",
+    "sendReply": "Send Reply"
+  },
+  "alerts": {
+    "replySuccess": "Reply sent successfully!",
+    "deleteSuccess": "Message deleted successfully!"
+  },
+  "confirmations": {
+    "deleteMessage": "Are you sure you want to delete this message?"
+  },
+  "errors": {
+    "fetchFailed": "Failed to fetch messages",
+    "notAuthenticated": "User not authenticated",
+    "replyFailed": "Failed to send reply",
+    "deleteFailed": "Failed to delete message"
+  }
+}

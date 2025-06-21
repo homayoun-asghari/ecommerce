@@ -18,6 +18,8 @@
   "reset": "Sıfırla",
   "clearAllFilters": "Tüm Filtreleri Temizle",
   "retry": "Tekrar Dene",
+  "greeting": "Merhaba",
+  "account": "Hesap",
   "viewDetails": "Detayları Göster",
   "hideDetails": "Detayları Gizle"
 }

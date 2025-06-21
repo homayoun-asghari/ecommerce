@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Table, Button, Modal, Form, Alert, Badge } from 'react-bootstrap';
 import { FaReply, FaTrash, FaCheck, FaTimes } from 'react-icons/fa';
 import {useUser} from "../contexts/UserContext";
 import { API_BASE_URL } from "../config";
 
 const AdminMessages = () => {
+  const { t } = useTranslation('adminMessages');
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -21,7 +23,7 @@ const AdminMessages = () => {
       try {
         const response = await fetch(`${API_BASE_URL}/admin/messages`);
         if (!response.ok) {
-          throw new Error('Failed to fetch messages');
+          throw new Error(t('errors.fetchFailed'));
         }
         const { data } = await response.json();
         // Map the status field to replied boolean for the frontend
@@ -38,7 +40,7 @@ const AdminMessages = () => {
     };
 
     fetchMessages();
-  }, []);
+  }, [t]);
 
   // Handle reply submission
   const handleReplySubmit = async (e) => {
@@ -48,7 +50,7 @@ const AdminMessages = () => {
     try {
       const token = localStorage.getItem('token');
       if (!token) {
-        throw new Error('User not authenticated');
+        throw new Error(t('errors.notAuthenticated'));
       }
 
       const response = await fetch(`${API_BASE_URL}/admin/messages/reply`, {
@@ -64,7 +66,7 @@ const AdminMessages = () => {
       });
 
       if (!response.ok) {
-        throw new Error('Failed to send reply');
+        throw new Error(t('errors.replyFailed'));
       }
 
       // Update the message in the list
@@ -80,7 +82,7 @@ const AdminMessages = () => {
           : msg
       ));
 
-      setSuccess('Reply sent successfully!');
+      setSuccess(t('alerts.replySuccess'));
       setShowReplyModal(false);
       setReplyContent('');
       
@@ -98,19 +100,19 @@ const AdminMessages = () => {
 
   // Handle message deletion
   const handleDelete = async (id) => {
-    if (window.confirm('Are you sure you want to delete this message?')) {
+    if (window.confirm(t('confirmations.deleteMessage'))) {
       try {
         const response = await fetch(`${API_BASE_URL}/admin/messages/${id}`, {
           method: 'DELETE',
         });
 
         if (!response.ok) {
-          throw new Error('Failed to delete message');
+          throw new Error(t('errors.deleteFailed'));
         }
 
         // Remove the message from the list
         setMessages(messages.filter(msg => msg.id !== id));
-        setSuccess('Message deleted successfully!');
+        setSuccess(t('alerts.deleteSuccess'));
         setTimeout(() => setSuccess(''), 3000);
       } catch (err) {
         setError(err.message);
@@ -119,7 +121,7 @@ const AdminMessages = () => {
   };
 
   if (loading) {
-    return <div className="text-center my-5">Loading messages...</div>;
+    return <div className="text-center my-5">{t('loading')}</div>;
   }
 
   if (error) {
@@ -128,7 +130,7 @@ const AdminMessages = () => {
 
   return (
     <div className="p-3">
-      <h2 className="mb-4">Customer Messages</h2>
+      <h2 className="mb-4">{t('title')}</h2>
       
       {success && <Alert variant="success">{success}</Alert>}
       
@@ -136,14 +138,14 @@ const AdminMessages = () => {
         <Table striped bordered hover>
           <thead>
             <tr>
-              <th>#</th>
-              <th>Name</th>
-              <th>Email</th>
-              <th>Subject</th>
-              <th>Message</th>
-              <th>Date</th>
-              <th>Status</th>
-              <th>Actions</th>
+              <th>{t('table.headers.number')}</th>
+              <th>{t('table.headers.name')}</th>
+              <th>{t('table.headers.email')}</th>
+              <th>{t('table.headers.subject')}</th>
+              <th>{t('table.headers.message')}</th>
+              <th>{t('table.headers.date')}</th>
+              <th>{t('table.headers.status')}</th>
+              <th>{t('table.headers.actions')}</th>
             </tr>
           </thead>
           <tbody>
@@ -153,20 +155,20 @@ const AdminMessages = () => {
                   <td>{index + 1}</td>
                   <td>{message.name}</td>
                   <td>{message.email}</td>
-                  <td>{message.subject || 'General Inquiry'}</td>
+                  <td>{message.subject || t('table.subjectDefault')}</td>
                   <td className="text-truncate" style={{ maxWidth: '200px' }} title={message.message}>
                     {message.message}
                   </td>
                   <td>{formatDate(message.created_at)}</td>
                   <td>
                     {message.status === 'resolved' ? (
-                      <Badge bg="success">Replied</Badge>
+                      <Badge bg="success">{t('table.statuses.replied')}</Badge>
                     ) : message.status === 'in-progress' ? (
-                      <Badge bg="info">In Progress</Badge>
+                      <Badge bg="info">{t('table.statuses.inProgress')}</Badge>
                     ) : message.status === 'spam' ? (
-                      <Badge bg="secondary">Spam</Badge>
+                      <Badge bg="secondary">{t('table.statuses.spam')}</Badge>
                     ) : (
-                      <Badge bg="warning" text="dark">New</Badge>
+                      <Badge bg="warning" text="dark">{t('table.statuses.new')}</Badge>
                     )}
                   </td>
                   <td>
@@ -194,7 +196,7 @@ const AdminMessages = () => {
               ))
             ) : (
               <tr>
-                <td colSpan="8" className="text-center">No messages found</td>
+                <td colSpan="8" className="text-center">{t('noMessages')}</td>
               </tr>
             )}
           </tbody>
@@ -204,16 +206,16 @@ const AdminMessages = () => {
       {/* Reply Modal */}
       <Modal show={showReplyModal} onHide={() => setShowReplyModal(false)}>
         <Modal.Header closeButton>
-          <Modal.Title>Reply to {currentMessage?.name}</Modal.Title>
+          <Modal.Title>{t('modal.title', { name: currentMessage?.name })}</Modal.Title>
         </Modal.Header>
         <Form onSubmit={handleReplySubmit}>
           <Modal.Body>
             <div className="mb-3">
-              <p><strong>Subject:</strong> {currentMessage?.subject}</p>
-              <p><strong>Message:</strong> {currentMessage?.message}</p>
+              <p><strong>{t('modal.subject')}:</strong> {currentMessage?.subject}</p>
+              <p><strong>{t('modal.originalMessage')}:</strong> {currentMessage?.message}</p>
             </div>
             <Form.Group className="mb-3">
-              <Form.Label>Your Reply</Form.Label>
+              <Form.Label>{t('modal.replyLabel')}</Form.Label>
               <Form.Control
                 as="textarea"
                 rows={4}
@@ -225,10 +227,10 @@ const AdminMessages = () => {
           </Modal.Body>
           <Modal.Footer>
             <Button variant="secondary" onClick={() => setShowReplyModal(false)}>
-              <FaTimes className="me-1" /> Cancel
+              <FaTimes className="me-1" /> {t('modal.cancel')}
             </Button>
             <Button variant="primary" type="submit">
-              <FaCheck className="me-1" /> Send Reply
+              <FaCheck className="me-1" /> {t('modal.sendReply')}
             </Button>
           </Modal.Footer>
         </Form>

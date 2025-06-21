@@ -1,0 +1,45 @@
+{
+  "title": "Müşteri Mesajları",
+  "loading": "Mesajlar yükleniyor...",
+  "noMessages": "Mesaj bulunamadı",
+  "table": {
+    "headers": {
+      "number": "#",
+      "name": "Ad Soyad",
+      "email": "E-posta",
+      "subject": "Konu",
+      "message": "Mesaj",
+      "date": "Tarih",
+      "status": "Durum",
+      "actions": "İşlemler"
+    },
+    "subjectDefault": "Genel Sorgu",
+    "statuses": {
+      "replied": "Yanıtlandı",
+      "inProgress": "İşlemde",
+      "spam": "İstenmeyen",
+      "new": "Yeni"
+    }
+  },
+  "modal": {
+    "title": "{{name}} kişisine yanıt ver",
+    "subject": "Konu",
+    "originalMessage": "Mesaj",
+    "replyLabel": "Yanıtınız",
+    "cancel": "İptal",
+    "sendReply": "Yanıtı Gönder"
+  },
+  "alerts": {
+    "replySuccess": "Yanıt başarıyla gönderildi!",
+    "deleteSuccess": "Mesaj başarıyla silindi!"
+  },
+  "confirmations": {
+    "deleteMessage": "Bu mesajı silmek istediğinizden emin misiniz?"
+  },
+  "errors": {
+    "fetchFailed": "Mesajlar yüklenirken bir hata oluştu",
+    "notAuthenticated": "Kullanıcı girişi yapılmamış",
+    "replyFailed": "Yanıt gönderilirken bir hata oluştu",
+    "deleteFailed": "Mesaj silinirken bir hata oluştu"
+  }
+}

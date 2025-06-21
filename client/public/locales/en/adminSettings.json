@@ -1,0 +1,71 @@
+{
+  "title": "Settings",
+  "tabs": {
+    "general": "General",
+    "documents": "Documents",
+    "email": "Email Templates"
+  },
+  "general": {
+    "title": "Site Settings",
+    "maintenanceMode": {
+      "label": "Maintenance Mode",
+      "help": "When enabled, only administrators can access the site."
+    },
+    "siteTitle": "Site Title",
+    "contactEmail": "Contact Email",
+    "itemsPerPage": "Items Per Page",
+    "saveButton": "Save Settings"
+  },
+  "documents": {
+    "title": "Legal Documents",
+    "terms": {
+      "title": "Terms and Conditions",
+      "placeholder": "Enter terms and conditions...",
+      "saveButton": "Save"
+    },
+    "privacyPolicy": {
+      "title": "Privacy Policy",
+      "placeholder": "Enter privacy policy...",
+      "saveButton": "Save"
+    }
+  },
+  "emailTemplates": {
+    "title": "Email Templates",
+    "welcome": {
+      "title": "Welcome Email",
+      "subject": "Subject",
+      "content": "Content",
+      "subjectPlaceholder": "Welcome to our platform!",
+      "contentPlaceholder": "Welcome {name}, thank you for joining our platform!",
+      "help": "Use {name} to insert the user's name.",
+      "saveButton": "Save"
+    },
+    "orderConfirmation": {
+      "title": "Order Confirmation",
+      "subjectPlaceholder": "Your Order #{orderNumber}",
+      "contentPlaceholder": "Hello {name}, thank you for your order!",
+      "help": "Available variables: {name}, {orderNumber}, {orderTotal}",
+      "saveButton": "Save"
+    },
+    "passwordReset": {
+      "title": "Password Reset",
+      "subjectPlaceholder": "Reset Your Password",
+      "contentPlaceholder": "Hello {name}, click the link below to reset your password: {resetLink}",
+      "help": "Use {name} for the user's name and {resetLink} for the password reset link.",
+      "saveButton": "Save"
+    }
+  },
+  "common": {
+    "loading": "Loading...",
+    "saving": "Saving...",
+    "save": "Save",
+    "success": "Settings saved successfully",
+    "error": {
+      "default": "An error occurred. Please try again.",
+      "loadFailed": "Failed to load settings. Please try again.",
+      "saveFailed": "Failed to save settings. Please try again.",
+      "documentSaveFailed": "Failed to save document. Please try again.",
+      "templateSaveFailed": "Failed to save template. Please try again."
+    }
+  }
+}

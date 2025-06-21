@@ -1,0 +1,79 @@
+{
+  "title": "Destek Talepleri",
+  "filters": {
+    "title": "Filtreler",
+    "search": {
+      "placeholder": "Taleplerde ara...",
+      "label": "Ara"
+    },
+    "category": {
+      "label": "Kategori"
+    },
+    "status": {
+      "label": "Durum"
+    },
+    "reset": {
+      "label": "Filtreleri Sıfırla",
+      "tooltip": "Tüm filtreleri sıfırla"
+    }
+  },
+  "categories": {
+    "all": "Tüm Kategoriler",
+    "order": "Sipariş",
+    "payment": "Ödeme",
+    "product": "Ürün",
+    "account": "Hesap",
+    "other": "Diğer"
+  },
+  "statuses": {
+    "all": "Tüm Durumlar",
+    "open": "Açık",
+    "pending": "Beklemede",
+    "resolved": "Çözüldü",
+    "closed": "Kapalı"
+  },
+  "table": {
+    "id": "ID",
+    "subject": "Konu",
+    "user": "Kullanıcı",
+    "category": "Kategori",
+    "status": "Durum",
+    "created": "Oluşturulma",
+    "actions": "İşlemler",
+    "orderId": "Sipariş #{orderId}",
+    "noTickets": {
+      "title": "Talep bulunamadı",
+      "message": "Henüz hiç talep oluşturulmamış",
+      "adjustFilters": "Filtrelerinizi veya arama teriminizi değiştirmeyi deneyin"
+    },
+    "showing": "{total} talepten {count} tanesi gösteriliyor",
+    "pageInfo": "Sayfa {current} / {total}"
+  },
+  "buttons": {
+    "previous": "Önceki",
+    "next": "Sonraki",
+    "respond": "Yanıtla",
+    "updateStatus": "Durumu Güncelle",
+    "closeTicket": "Talebi Kapat",
+    "cancel": "İptal",
+    "sendResponse": "Yanıtı Gönder"
+  },
+  "modal": {
+    "title": "Talep #{id} Yanıtla: {subject}",
+    "userInfo": "{name} ({email})",
+    "subject": "Konu: {subject}",
+    "status": "Durum: {status}",
+    "response": {
+      "label": "Yanıtınız",
+      "placeholder": "Yanıtınızı buraya yazın..."
+    }
+  },
+  "loading": "Yükleniyor...",
+  "errors": {
+    "fetchTickets": "Talepler yüklenirken bir hata oluştu. Lütfen daha sonra tekrar deneyin.",
+    "fetchTicketDetails": "Talep detayları yüklenirken bir hata oluştu. Lütfen daha sonra tekrar deneyin.",
+    "updateStatus": "Talep durumu güncellenirken bir hata oluştu",
+    "submitResponse": "Yanıt gönderilirken bir hata oluştu",
+    "successResponse": "Yanıt başarıyla gönderildi"
+  }
+}

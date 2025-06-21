@@ -1,0 +1,62 @@
+{
+  "tabs": {
+    "payments": "Ödemeler",
+    "payouts": "Ödemeler (Satıcı)"
+  },
+  "filters": {
+    "showFilters": "Filtreler",
+    "hideFilters": "Filtreleri Gizle",
+    "seller": "Satıcı",
+    "allSellers": "Tüm Satıcılar",
+    "status": "Durum",
+    "allStatuses": "Tüm Durumlar",
+    "fromDate": "Başlangıç Tarihi",
+    "toDate": "Bitiş Tarihi",
+    "resetFilters": "Filtreleri Sıfırla"
+  },
+  "status": {
+    "completed": "Tamamlandı",
+    "pending": "Beklemede",
+    "refunded": "İade Edildi",
+    "failed": "Başarısız",
+    "paid": "Ödendi"
+  },
+  "payments": {
+    "title": "Ödemeler ve Ödemeler (Satıcı)",
+    "export": "Dışa Aktar",
+    "exporting": "Dışa Aktarılıyor...",
+    "noPayments": "Ödeme bulunamadı",
+    "paymentId": "Ödeme ID",
+    "orderId": "Sipariş ID",
+    "buyer": "Alıcı",
+    "amount": "Tutar",
+    "method": "Yöntem",
+    "date": "Tarih"
+  },
+  "payouts": {
+    "title": "Satıcı Ödemeleri",
+    "payoutId": "Ödeme ID",
+    "seller": "Satıcı",
+    "actions": "İşlemler",
+    "noPayouts": "Ödeme bulunamadı",
+    "markAsPaid": "Ödendi Olarak İşaretle"
+  },
+  "modals": {
+    "confirmPayout": {
+      "title": "Ödemeyi Onayla",
+      "message": "Bu ödemeyi ödendi olarak işaretlemek istediğinizden emin misiniz?",
+      "seller": "Satıcı",
+      "amount": "Tutar",
+      "cannotUndo": "Bu işlem geri alınamaz.",
+      "cancel": "İptal",
+      "confirm": "Ödemeyi Onayla"
+    }
+  },
+  "errors": {
+    "noDataToExport": "Dışa aktarılacak veri yok",
+    "exportFailed": "Veri dışa aktarılamadı",
+    "updateFailed": "Ödeme durumu güncellenemedi"
+  },
+  "loading": "Yükleniyor...",
+  "notAvailable": "Yok"
+}

@@ -8,5 +8,7 @@
   "shop": "Shop",
   "blog": "Blog",
   "contact": "Contact",
-  "about": "About"
+  "about": "About",
+  "greeting": "Hello",
+  "myAccount": "My Account"
 }

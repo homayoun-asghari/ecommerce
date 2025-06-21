@@ -18,6 +18,8 @@
   "reset": "Reset",
   "clearAllFilters": "Clear All Filters",
   "retry": "Retry",
+  "greeting": "Hello",
+  "account": "Account",
   "viewDetails": "View Details",
   "hideDetails": "Hide Details"
 }

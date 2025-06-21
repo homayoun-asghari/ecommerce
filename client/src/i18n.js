@@ -46,7 +46,7 @@ i18n
     supportedLngs: languages.map(lang => lang.code),
     defaultNS: 'common',
     fallbackNS: 'common',
-    ns: ['common', 'products', 'cart', 'navigation', 'footer', 'categories', 'contact', 'about', 'carousel', 'search', 'searchResults', 'filters', 'features', 'account', 'navbar', 'dashboard', 'orders', 'product', 'productPage', 'checkout', 'address', 'tickets', 'notifications', 'sellerDashboard', 'salesChart', 'addProducts', 'sellerOrders', 'sellerPayment', 'adminDashboard', 'adminSalesChart', 'adminUsers', 'adminProducts', 'adminOrders'],
+    ns: ['common', 'products', 'cart', 'navigation', 'footer', 'categories', 'contact', 'about', 'carousel', 'search', 'searchResults', 'filters', 'features', 'account', 'navbar', 'dashboard', 'orders', 'product', 'productPage', 'checkout', 'address', 'tickets', 'notifications', 'sellerDashboard', 'salesChart', 'addProducts', 'sellerOrders', 'sellerPayment', 'adminDashboard', 'adminSalesChart', 'adminUsers', 'adminProducts', 'adminOrders', 'adminPayments', 'adminTickets', 'adminMessages', 'adminReviews', 'adminBlog', 'adminNotifications', 'adminSettings'],
     interpolation: {
       escapeValue: false, // Not needed for React as it escapes by default
     },

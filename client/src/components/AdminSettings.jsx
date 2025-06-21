@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Button, Form, Tabs, Tab, Spinner, Alert, Card } from 'react-bootstrap';
-import { Gear, FileEarmarkText, Save, ExclamationTriangle } from 'react-bootstrap-icons';
+import { Gear } from 'react-bootstrap-icons';
 import { API_BASE_URL } from '../config';
 
 const AdminSettings = () => {
+  const { t } = useTranslation('adminSettings');
   const [activeTab, setActiveTab] = useState('general');
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -67,7 +69,7 @@ const AdminSettings = () => {
         }
 
       } catch (err) {
-        setError('Failed to load settings. Please try again.');
+        setError(t('common.error.loadFailed'));
         console.error('Error fetching settings:', err);
       } finally {
         setLoading(false);
@@ -75,7 +77,7 @@ const AdminSettings = () => {
     };
 
     fetchData();
-  }, []);
+  }, [t]);
 
   // Handle settings change
   const handleSettingChange = (e) => {
@@ -128,15 +130,15 @@ const AdminSettings = () => {
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to save settings');
+        throw new Error(errorData.error || t('common.error.saveFailed'));
       }
       
-      setSuccess('Settings saved successfully');
+      setSuccess(t('common.success'));
       
       // Hide success message after 3 seconds
       setTimeout(() => setSuccess(''), 3000);
     } catch (err) {
-      setError(err.message || 'Failed to save settings. Please try again.');
+      setError(err.message || t('common.error.saveFailed'));
       console.error('Error saving settings:', err);
     } finally {
       setSaving(false);
@@ -163,7 +165,7 @@ const AdminSettings = () => {
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.error || `Failed to save ${type}`);
+        throw new Error(errorData.error || t('common.error.documentSaveFailed'));
       }
       
       const savedDoc = await response.json();
@@ -172,14 +174,12 @@ const AdminSettings = () => {
         [type]: { ...prev[type], id: savedDoc.id }
       }));
       
-      const typeName = type === 'terms' ? 'Terms and Conditions' : 'Privacy Policy';
-      
-      setSuccess(`${typeName} saved successfully`);
+      setSuccess(t(`documents.${type}.title`) + ' ' + t('common.saveSuccess'));
       
       // Hide success message after 3 seconds
       setTimeout(() => setSuccess(''), 3000);
     } catch (err) {
-      setError(err.message || `Failed to save ${type}. Please try again.`);
+      setError(err.message || t('common.error.documentSaveFailed'));
       console.error(`Error saving ${type}:`, err);
     } finally {
       setSaving(false);
@@ -207,19 +207,15 @@ const AdminSettings = () => {
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.error || `Failed to save ${template} template`);
+        throw new Error(errorData.error || t('common.error.templateSaveFailed'));
       }
       
-      const templateName = template === 'welcome' ? 'Welcome email' : 
-                         template === 'orderConfirmation' ? 'Order confirmation email' : 
-                         'Password reset email';
-      
-      setSuccess(`${templateName} template saved successfully`);
+      setSuccess(t(`emailTemplates.${template}.title`) + ' ' + t('common.saveSuccess'));
       
       // Hide success message after 3 seconds
       setTimeout(() => setSuccess(''), 3000);
     } catch (err) {
-      setError(err.message || `Failed to save template. Please try again.`);
+      setError(err.message || t('common.error.templateSaveFailed'));
       console.error(`Error saving ${template} template:`, err);
     } finally {
       setSaving(false);
@@ -231,7 +227,7 @@ const AdminSettings = () => {
     return (
       <div className="d-flex justify-content-center align-items-center" style={{ minHeight: '300px' }}>
         <Spinner animation="border" role="status">
-          <span className="visually-hidden">Loading...</span>
+          <span className="visually-hidden">{t('common.loading')}</span>
         </Spinner>
       </div>
     );
@@ -241,7 +237,7 @@ const AdminSettings = () => {
     <div className="p-3">
       <h2 className="mb-4">
         <Gear className="me-2" />
-        Settings
+        {t('title')}
       </h2>
 
       {error && <Alert variant="danger" onClose={() => setError('')} dismissible>{error}</Alert>}
@@ -252,27 +248,27 @@ const AdminSettings = () => {
         onSelect={(k) => setActiveTab(k)}
         className="mb-4"
       >
-        <Tab eventKey="general" title="General">
+        <Tab eventKey="general" title={t('tabs.general')}>
           <Card className="mb-4">
             <Card.Body>
-              <h5 className="mb-4">Site Settings</h5>
+              <h5 className="mb-4">{t('general.title')}</h5>
               
               <Form.Group className="mb-3">
                 <Form.Check
                   type="switch"
                   id="maintenance-mode"
-                  label="Maintenance Mode"
+                  label={t('general.maintenanceMode.label')}
                   checked={settings.maintenanceMode || false}
                   onChange={handleSettingChange}
                   name="maintenanceMode"
                 />
                 <Form.Text className="text-muted">
-                  When enabled, only administrators can access the site.
+                  {t('general.maintenanceMode.help')}
                 </Form.Text>
               </Form.Group>
 
               <Form.Group className="mb-3">
-                <Form.Label>Site Title</Form.Label>
+                <Form.Label>{t('general.siteTitle')}</Form.Label>
                 <Form.Control
                   type="text"
                   name="siteTitle"
@@ -282,7 +278,7 @@ const AdminSettings = () => {
               </Form.Group>
 
               <Form.Group className="mb-3">
-                <Form.Label>Contact Email</Form.Label>
+                <Form.Label>{t('general.contactEmail')}</Form.Label>
                 <Form.Control
                   type="email"
                   name="contactEmail"
@@ -292,7 +288,7 @@ const AdminSettings = () => {
               </Form.Group>
 
               <Form.Group className="mb-3">
-                <Form.Label>Items Per Page</Form.Label>
+                <Form.Label>{t('general.itemsPerPage')}</Form.Label>
                 <Form.Select
                   name="itemsPerPage"
                   value={settings.itemsPerPage || 10}
@@ -310,7 +306,7 @@ const AdminSettings = () => {
                   onClick={saveSettings}
                   disabled={saving}
                 >
-                  {saving ? 'Saving...' : 'Save Settings'}
+                  {saving ? t('common.saving') : t('general.saveButton')}
                 </Button>
               </div>
             </Card.Body>
@@ -318,14 +314,14 @@ const AdminSettings = () => {
         </Tab>
 
 
-        <Tab eventKey="documents" title="Documents">
+        <Tab eventKey="documents" title={t('tabs.documents')}>
           <Card className="mb-4">
             <Card.Body>
-              <h5 className="mb-4">Legal Documents</h5>
+              <h5 className="mb-4">{t('documents.title')}</h5>
               
               <div className="mb-4">
                 <div className="d-flex justify-content-between align-items-center mb-2">
-                  <h6>Terms and Conditions</h6>
+                  <h6>{t('documents.terms.title')}</h6>
                   <Button
                     variant="outline-primary"
                     size="sm"
@@ -340,13 +336,13 @@ const AdminSettings = () => {
                   rows={10}
                   value={documents.terms?.content || ''}
                   onChange={(e) => handleDocumentChange('terms', e.target.value)}
-                  placeholder="Enter terms and conditions..."
+                  placeholder={t('documents.terms.placeholder')}
                 />
               </div>
 
               <div className="mb-4">
                 <div className="d-flex justify-content-between align-items-center mb-2">
-                  <h6>Privacy Policy</h6>
+                  <h6>{t('documents.privacyPolicy.title')}</h6>
                   <Button
                     variant="outline-primary"
                     size="sm"
@@ -361,21 +357,21 @@ const AdminSettings = () => {
                   rows={10}
                   value={documents.privacy_policy?.content || ''}
                   onChange={(e) => handleDocumentChange('privacy_policy', e.target.value)}
-                  placeholder="Enter privacy policy..."
+                  placeholder={t('documents.privacyPolicy.placeholder')}
                 />
               </div>
             </Card.Body>
           </Card>
         </Tab>
 
-        <Tab eventKey="email" title="Email Templates">
+        <Tab eventKey="email" title={t('tabs.email')}>
           <Card className="mb-4">
             <Card.Body>
-              <h5 className="mb-4">Email Templates</h5>
+              <h5 className="mb-4">{t('emailTemplates.title')}</h5>
               
               <div className="mb-4">
                 <div className="d-flex justify-content-between align-items-center mb-2">
-                  <h6>Welcome Email</h6>
+                  <h6>{t('emailTemplates.welcome.title')}</h6>
                   <Button
                     variant="outline-primary"
                     size="sm"
@@ -391,7 +387,7 @@ const AdminSettings = () => {
                     type="text"
                     value={emailTemplates.welcome.subject || ''}
                     onChange={(e) => handleEmailTemplateChange('welcome', 'subject', e.target.value)}
-                    placeholder="Welcome to our platform!"
+                    placeholder={t('emailTemplates.welcome.subjectPlaceholder')}
                   />
                 </Form.Group>
                 <Form.Group>
@@ -401,82 +397,82 @@ const AdminSettings = () => {
                     rows={8}
                     value={emailTemplates.welcome.content || ''}
                     onChange={(e) => handleEmailTemplateChange('welcome', 'content', e.target.value)}
-                    placeholder="Welcome {name}, thank you for joining our platform!"
+                    placeholder={t('emailTemplates.welcome.contentPlaceholder')}
                   />
                   <Form.Text className="text-muted">
-                    Use {'{name}'} to insert the user's name.
+                    {t('emailTemplates.welcome.help')}
                   </Form.Text>
                 </Form.Group>
               </div>
 
               <div className="mb-4">
                 <div className="d-flex justify-content-between align-items-center mb-2">
-                  <h6>Order Confirmation</h6>
+                  <h6>{t('emailTemplates.orderConfirmation.title')}</h6>
                   <Button
                     variant="outline-primary"
                     size="sm"
                     onClick={() => saveEmailTemplate('orderConfirmation')}
                     disabled={saving}
                   >
-                    {saving ? 'Saving...' : 'Save'}
+                    {saving ? t('common.saving') : t('common.save')}
                   </Button>
                 </div>
                 <Form.Group className="mb-3">
-                  <Form.Label>Subject</Form.Label>
+                  <Form.Label>{t('emailTemplates.welcome.subject')}</Form.Label>
                   <Form.Control
                     type="text"
                     value={emailTemplates.orderConfirmation.subject || ''}
                     onChange={(e) => handleEmailTemplateChange('orderConfirmation', 'subject', e.target.value)}
-                    placeholder="Your Order #{orderNumber}"
+                    placeholder={t('emailTemplates.orderConfirmation.subjectPlaceholder')}
                   />
                 </Form.Group>
                 <Form.Group>
-                  <Form.Label>Content</Form.Label>
+                  <Form.Label>{t('emailTemplates.welcome.content')}</Form.Label>
                   <Form.Control
                     as="textarea"
                     rows={8}
                     value={emailTemplates.orderConfirmation.content || ''}
                     onChange={(e) => handleEmailTemplateChange('orderConfirmation', 'content', e.target.value)}
-                    placeholder="Hello {name}, thank you for your order!"
+                    placeholder={t('emailTemplates.orderConfirmation.contentPlaceholder')}
                   />
                   <Form.Text className="text-muted">
-                    Available variables: {'{name}'}, {'{orderNumber}'}, {'{orderTotal}'}
+                    {t('emailTemplates.orderConfirmation.help')}
                   </Form.Text>
                 </Form.Group>
               </div>
 
               <div className="mb-4">
                 <div className="d-flex justify-content-between align-items-center mb-2">
-                  <h6>Password Reset</h6>
+                  <h6>{t('emailTemplates.passwordReset.title')}</h6>
                   <Button
                     variant="outline-primary"
                     size="sm"
                     onClick={() => saveEmailTemplate('passwordReset')}
                     disabled={saving}
                   >
-                    {saving ? 'Saving...' : 'Save'}
+                    {saving ? t('common.saving') : t('common.save')}
                   </Button>
                 </div>
                 <Form.Group className="mb-3">
-                  <Form.Label>Subject</Form.Label>
+                  <Form.Label>{t('emailTemplates.welcome.subject')}</Form.Label>
                   <Form.Control
                     type="text"
                     value={emailTemplates.passwordReset.subject || ''}
                     onChange={(e) => handleEmailTemplateChange('passwordReset', 'subject', e.target.value)}
-                    placeholder="Reset Your Password"
+                    placeholder={t('emailTemplates.passwordReset.subjectPlaceholder')}
                   />
                 </Form.Group>
                 <Form.Group>
-                  <Form.Label>Content</Form.Label>
+                  <Form.Label>{t('emailTemplates.welcome.content')}</Form.Label>
                   <Form.Control
                     as="textarea"
                     rows={8}
                     value={emailTemplates.passwordReset.content || ''}
                     onChange={(e) => handleEmailTemplateChange('passwordReset', 'content', e.target.value)}
-                    placeholder="Hello {name}, click the link below to reset your password: {resetLink}"
+                    placeholder={t('emailTemplates.passwordReset.contentPlaceholder')}
                   />
                   <Form.Text className="text-muted">
-                    Use {'{name}'} for the user's name and {'{resetLink}'} for the password reset link.
+                    {t('emailTemplates.passwordReset.help')}
                   </Form.Text>
                 </Form.Group>
               </div>

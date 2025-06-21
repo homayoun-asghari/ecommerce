@@ -1,12 +1,13 @@
-import React, { useState, useEffect } from 'react';
-import { Button, Modal, Form, Card, Badge, Spinner, Alert } from 'react-bootstrap';
+import React, { useState, useEffect, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Button, Modal, Form, Card, Spinner, Alert } from 'react-bootstrap';
 import { Pencil, Trash, Plus } from 'react-bootstrap-icons';
 import { API_BASE_URL } from "../config";
-// Format date helper function
-const formatDate = (dateString) => {
+// Format date helper function with i18n support
+const formatDate = (dateString, locale = 'en-US') => {
   if (!dateString) return '';
   const date = new Date(dateString);
-  return date.toLocaleDateString('en-US', { 
+  return date.toLocaleDateString(locale, { 
     year: 'numeric', 
     month: 'short', 
     day: 'numeric' 
@@ -14,11 +15,12 @@ const formatDate = (dateString) => {
 };
 
 const AdminBlog = () => {
+  const { t, i18n } = useTranslation('adminBlog');
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [showModal, setShowModal] = useState(false);
-  const [modalTitle, setModalTitle] = useState('');
+  const [isEditing, setIsEditing] = useState(false);
   const [currentPost, setCurrentPost] = useState(null);
   
   // Form state
@@ -29,24 +31,24 @@ const AdminBlog = () => {
   });
 
   // Fetch all blog posts
-  const fetchPosts = async () => {
+  const fetchPosts = useCallback(async () => {
     try {
       setLoading(true);
       const response = await fetch(`${API_BASE_URL}/admin/blog`);
-      if (!response.ok) throw new Error('Failed to fetch blog posts');
+      if (!response.ok) throw new Error(t('errors.fetchFailed'));
       const data = await response.json();
-      setPosts(data.posts || []); // Set posts from the response data
+      setPosts(data.posts || []);
     } catch (err) {
       setError(err.message);
-      setPosts([]); // Ensure posts is always an array
+      setPosts([]);
     } finally {
       setLoading(false);
     }
-  };
+  }, [t]);
 
   useEffect(() => {
     fetchPosts();
-  }, []);
+  }, [fetchPosts]);
 
   // Handle form input changes
   const handleInputChange = (e) => {
@@ -74,7 +76,7 @@ const AdminBlog = () => {
         body: JSON.stringify(formData)
       });
 
-      if (!response.ok) throw new Error('Failed to save post');
+      if (!response.ok) throw new Error(t('errors.saveFailed'));
       
       setShowModal(false);
       fetchPosts();
@@ -88,7 +90,7 @@ const AdminBlog = () => {
 
   // Handle delete post
   const handleDelete = async (id) => {
-    if (!window.confirm('Are you sure you want to delete this post?')) return;
+    if (!window.confirm(t('modals.deleteConfirm'))) return;
     
     try {
       setLoading(true);
@@ -96,7 +98,7 @@ const AdminBlog = () => {
         method: 'DELETE'
       });
 
-      if (!response.ok) throw new Error('Failed to delete post');
+      if (!response.ok) throw new Error(t('errors.deleteFailed'));
       
       fetchPosts();
     } catch (err) {
@@ -124,14 +126,14 @@ const AdminBlog = () => {
       content: post.content,
       image_url: post.image_url || ''
     });
-    setModalTitle('Edit Blog Post');
+    setIsEditing(true);
     setShowModal(true);
   };
 
   // Open modal for creating a new post
   const handleNewPost = () => {
     resetForm();
-    setModalTitle('New Blog Post');
+    setIsEditing(false);
     setShowModal(true);
   };
 
@@ -139,13 +141,13 @@ const AdminBlog = () => {
   return (
     <div className="p-3">
       <div className="d-flex justify-content-between align-items-center mb-4">
-        <h2>Blog Management</h2>
+        <h2>{t('title')}</h2>
         <Button 
           variant="primary" 
           onClick={handleNewPost}
           disabled={loading}
         >
-          <Plus className="me-1" /> New Post
+          <Plus className="me-1" /> {t('buttons.newPost')}
         </Button>
       </div>
 
@@ -154,7 +156,7 @@ const AdminBlog = () => {
       {loading && !posts.length ? (
         <div className="text-center my-5">
           <Spinner animation="border" role="status">
-            <span className="visually-hidden">Loading...</span>
+            <span className="visually-hidden">{t('loading')}</span>
           </Spinner>
         </div>
       ) : (
@@ -179,6 +181,7 @@ const AdminBlog = () => {
                       className="me-2"
                       onClick={() => handleEdit(post)}
                       disabled={loading}
+                      title={t('buttons.edit')}
                     >
                       <Pencil />
                     </Button>
@@ -187,16 +190,22 @@ const AdminBlog = () => {
                       size="sm"
                       onClick={() => handleDelete(post.id)}
                       disabled={loading}
+                      title={t('buttons.delete')}
                     >
                       <Trash />
                     </Button>
                   </div>
                 </div>
                 <Card.Text className="text-muted small mb-2">
-                  Posted on {formatDate(post.created_at)}
-                  {post.updated_at && ` • Updated ${formatDate(post.updated_at)}`}
+                  {t('post.postedOn', { date: formatDate(post.created_at, i18n.language) })}
+                  {post.updated_at && ` • ${t('post.updatedOn', { date: formatDate(post.updated_at, i18n.language) })}`}
                 </Card.Text>
-                <Card.Text>{post.content.substring(0, 200)}...</Card.Text>
+                <Card.Text>
+                  {post.content.substring(0, 200)}
+                  {post.content.length > 200 && (
+                    <span>{t('post.readMore')}</span>
+                  )}
+                </Card.Text>
               </Card.Body>
             </Card>
           ))}
@@ -206,12 +215,12 @@ const AdminBlog = () => {
       {/* Create/Edit Modal */}
       <Modal show={showModal} onHide={() => setShowModal(false)} size="lg">
         <Modal.Header closeButton>
-          <Modal.Title>{modalTitle}</Modal.Title>
+          <Modal.Title>{isEditing ? t('modals.editPost') : t('modals.newPost')}</Modal.Title>
         </Modal.Header>
         <Form onSubmit={handleSubmit}>
           <Modal.Body>
             <Form.Group className="mb-3">
-              <Form.Label>Title</Form.Label>
+              <Form.Label>{t('modals.form.title')}</Form.Label>
               <Form.Control
                 type="text"
                 name="title"
@@ -222,19 +231,19 @@ const AdminBlog = () => {
             </Form.Group>
             
             <Form.Group className="mb-3">
-              <Form.Label>Image URL (optional)</Form.Label>
+              <Form.Label>{t('modals.form.imageUrl')}</Form.Label>
               <Form.Control
                 type="url"
                 name="image_url"
                 value={formData.image_url}
                 onChange={handleInputChange}
-                placeholder="https://example.com/image.jpg"
+                placeholder={t('modals.form.imagePlaceholder')}
               />
               {formData.image_url && (
                 <div className="mt-2">
                   <img 
                     src={formData.image_url} 
-                    alt="Preview" 
+                    alt={t('modals.previewAlt')} 
                     style={{ maxHeight: '150px', maxWidth: '100%' }}
                     onError={(e) => e.target.style.display = 'none'}
                   />
@@ -243,7 +252,7 @@ const AdminBlog = () => {
             </Form.Group>
             
             <Form.Group className="mb-3">
-              <Form.Label>Content</Form.Label>
+              <Form.Label>{t('modals.form.content')}</Form.Label>
               <Form.Control
                 as="textarea"
                 name="content"
@@ -260,14 +269,14 @@ const AdminBlog = () => {
               onClick={() => setShowModal(false)}
               disabled={loading}
             >
-              Cancel
+              {t('buttons.cancel')}
             </Button>
             <Button 
               variant="primary" 
               type="submit"
               disabled={loading}
             >
-              {loading ? 'Saving...' : 'Save Post'}
+              {loading ? t('buttons.saving') : t('buttons.save')}
             </Button>
           </Modal.Footer>
         </Form>

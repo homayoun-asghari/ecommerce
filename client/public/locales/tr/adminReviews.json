@@ -1,0 +1,60 @@
+{
+  "title": "Ürün Değerlendirmeleri",
+  "filters": {
+    "title": "Filtreler",
+    "showFilters": "Filtreleri Göster",
+    "hideFilters": "Filtreleri Gizle",
+    "search": {
+      "placeholder": "Ürün veya kullanıcı ara...",
+      "label": "Ara"
+    },
+    "rating": {
+      "label": "Değerlendirme",
+      "all": "Tüm Değerlendirmeler",
+      "stars": "{{count}} Yıldız",
+      "stars_plural": "{{count}} Yıldız"
+    },
+    "clearAll": "Tümünü Temizle"
+  },
+  "table": {
+    "loading": "Yükleniyor...",
+    "noReviews": "Değerlendirme bulunamadı",
+    "headers": {
+      "product": "Ürün",
+      "user": "Kullanıcı",
+      "rating": "Puan",
+      "comment": "Yorum",
+      "date": "Tarih",
+      "actions": "İşlemler"
+    },
+    "product": {
+      "na": "Bulunamadı",
+      "id": "ID: {{id}}"
+    },
+    "user": {
+      "anonymous": "Misafir"
+    },
+    "comment": {
+      "empty": "Yorum yok"
+    },
+    "pagination": {
+      "showing": "{{count}} / {{total}} değerlendirme gösteriliyor",
+      "page": "Sayfa {{current}} / {{total}}",
+      "previous": "Önceki",
+      "next": "Sonraki"
+    },
+    "actions": {
+      "delete": "Değerlendirmeyi sil"
+    }
+  },
+  "deleteModal": {
+    "title": "Değerlendirmeyi Sil",
+    "message": "Bu değerlendirmeyi silmek istediğinize emin misiniz? Bu işlem geri alınamaz.",
+    "cancel": "İptal",
+    "delete": "Sil"
+  },
+  "errors": {
+    "fetchFailed": "Değerlendirmeler yüklenirken hata oluştu",
+    "deleteFailed": "Değerlendirme silinirken hata oluştu"
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "title": "Blog Yönetimi",
+  "buttons": {
+    "newPost": "Yeni Gönderi",
+    "edit": "Düzenle",
+    "delete": "Sil",
+    "save": "Gönderiyi Kaydet",
+    "cancel": "İptal",
+    "saving": "Kaydediliyor..."
+  },
+  "modals": {
+    "newPost": "Yeni Blog Gönderisi",
+    "editPost": "Blog Gönderisini Düzenle",
+    "form": {
+      "title": "Başlık",
+      "imageUrl": "Resim URL (isteğe bağlı)",
+      "imagePlaceholder": "https://ornek.com/resim.jpg",
+      "content": "İçerik"
+    },
+    "deleteConfirm": "Bu gönderiyi silmek istediğinizden emin misiniz?",
+    "previewAlt": "Önizleme"
+  },
+  "post": {
+    "postedOn": "{{date}} tarihinde yayınlandı",
+    "updatedOn": "{{date}} tarihinde güncellendi",
+    "readMore": "...Devamını oku"
+  },
+  "loading": "Yükleniyor...",
+  "errors": {
+    "fetchFailed": "Blog gönderileri yüklenirken hata oluştu",
+    "saveFailed": "Gönderi kaydedilirken hata oluştu",
+    "deleteFailed": "Gönderi silinirken hata oluştu"
+  }
+}

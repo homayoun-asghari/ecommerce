@@ -1,0 +1,60 @@
+{
+  "title": "Product Reviews",
+  "filters": {
+    "title": "Filters",
+    "showFilters": "Show Filters",
+    "hideFilters": "Hide Filters",
+    "search": {
+      "placeholder": "Search by product or user...",
+      "label": "Search"
+    },
+    "rating": {
+      "label": "Rating",
+      "all": "All Ratings",
+      "stars": "{{count}} Star",
+      "stars_plural": "{{count}} Stars"
+    },
+    "clearAll": "Clear All"
+  },
+  "table": {
+    "loading": "Loading...",
+    "noReviews": "No reviews found",
+    "headers": {
+      "product": "Product",
+      "user": "User",
+      "rating": "Rating",
+      "comment": "Comment",
+      "date": "Date",
+      "actions": "Actions"
+    },
+    "product": {
+      "na": "N/A",
+      "id": "ID: {{id}}"
+    },
+    "user": {
+      "anonymous": "Anonymous"
+    },
+    "comment": {
+      "empty": "No comment"
+    },
+    "pagination": {
+      "showing": "Showing {{count}} of {{total}} reviews",
+      "page": "Page {{current}} of {{total}}",
+      "previous": "Previous",
+      "next": "Next"
+    },
+    "actions": {
+      "delete": "Delete review"
+    }
+  },
+  "deleteModal": {
+    "title": "Delete Review",
+    "message": "Are you sure you want to delete this review? This action cannot be undone.",
+    "cancel": "Cancel",
+    "delete": "Delete"
+  },
+  "errors": {
+    "fetchFailed": "Failed to fetch reviews",
+    "deleteFailed": "Failed to delete review"
+  }
+}

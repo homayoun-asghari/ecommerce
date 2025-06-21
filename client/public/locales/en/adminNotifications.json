@@ -1,0 +1,54 @@
+{
+  "title": "Notifications",
+  "buttons": {
+    "newNotification": "New Notification",
+    "cancel": "Cancel",
+    "send": "Send Notification",
+    "sending": "Sending...",
+    "delete": "Delete",
+    "deleting": "Deleting...",
+    "previous": "Previous",
+    "next": "Next"
+  },
+  "filters": {
+    "searchPlaceholder": "Search notifications...",
+    "all": "All",
+    "unread": "Unread",
+    "read": "Read"
+  },
+  "list": {
+    "noNotifications": "No notifications found",
+    "loading": "Loading...",
+    "showing": "Showing {{count}} of {{total}} notifications",
+    "page": "Page {{current}} of {{total}}",
+    "sentTo": "Sent to: {{name}}",
+    "email": "{{email}}"
+  },
+  "modals": {
+    "createTitle": "Create New Notification",
+    "editTitle": "Edit Notification",
+    "deleteTitle": "Delete Notification",
+    "deleteConfirm": "Are you sure you want to delete this notification? This action cannot be undone.",
+    "form": {
+      "title": "Title",
+      "titlePlaceholder": "Enter notification title",
+      "message": "Message",
+      "messagePlaceholder": "Enter notification message",
+      "sendTo": "Send to",
+      "allUsers": "All Users",
+      "specificUsers": "Specific Users",
+      "userIdsPlaceholder": "Enter user IDs separated by commas (e.g., 1, 2, 3)"
+    }
+  },
+  "status": {
+    "markAsRead": "Mark as read",
+    "markAsUnread": "Mark as unread",
+    "deleteNotification": "Delete notification"
+  },
+  "errors": {
+    "fetchFailed": "Failed to fetch notifications",
+    "createFailed": "Failed to create notification",
+    "updateFailed": "Failed to update notification status",
+    "deleteFailed": "Failed to delete notification"
+  }
+}

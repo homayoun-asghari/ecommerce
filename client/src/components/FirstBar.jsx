@@ -15,16 +15,14 @@ import FavoriteIcon from '@mui/icons-material/Favorite';
 import { useWishList } from "../contexts/WishListContext";
 import { useNotification } from "../contexts/NotificationContext";
 import NotificationsIcon from '@mui/icons-material/Notifications';
-import { useLanguage } from '../hooks/useLanguage';
-
-
+import { useTranslation } from 'react-i18next';
 
 function FirstBar() {
     const { mode } = useTheme();
     const { cartItems } = useCart();
     const { wishList } = useWishList();
     const { notifications } = useNotification();
-    const { t } = useLanguage();
+    const { t } = useTranslation('navbar');
     
     return (
         <Container fluid className="px-3 px-md-4">
@@ -59,7 +57,7 @@ function FirstBar() {
                 <Col xs="auto" className="d-flex align-items-center justify-content-end gap-2 gap-md-3 ps-2 ps-md-3">
                     {/* Account - Hidden on smallest screens */}
                     <Nav.Link href="/account" className="d-none d-md-flex align-items-center text-nowrap">
-                        <span>Hello<br/><span className="fw-bold">Account</span></span>
+                        <span>{t('greeting')}<br/><span className="fw-bold">{t('myAccount')}</span></span>
                     </Nav.Link>
                     
                     {/* Wishlist */}

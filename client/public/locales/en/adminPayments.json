@@ -1,0 +1,62 @@
+{
+  "tabs": {
+    "payments": "Payments",
+    "payouts": "Payouts"
+  },
+  "filters": {
+    "showFilters": "Filters",
+    "hideFilters": "Hide Filters",
+    "seller": "Seller",
+    "allSellers": "All Sellers",
+    "status": "Status",
+    "allStatuses": "All Statuses",
+    "fromDate": "From Date",
+    "toDate": "To Date",
+    "resetFilters": "Reset Filters"
+  },
+  "status": {
+    "completed": "Completed",
+    "pending": "Pending",
+    "refunded": "Refunded",
+    "failed": "Failed",
+    "paid": "Paid"
+  },
+  "payments": {
+    "title": "Payments & Payouts",
+    "export": "Export",
+    "exporting": "Exporting...",
+    "noPayments": "No payments found",
+    "paymentId": "Payment ID",
+    "orderId": "Order ID",
+    "buyer": "Buyer",
+    "amount": "Amount",
+    "method": "Method",
+    "date": "Date"
+  },
+  "payouts": {
+    "title": "Seller Payouts",
+    "payoutId": "Payout ID",
+    "seller": "Seller",
+    "actions": "Actions",
+    "noPayouts": "No payouts found",
+    "markAsPaid": "Mark as Paid"
+  },
+  "modals": {
+    "confirmPayout": {
+      "title": "Confirm Payout",
+      "message": "Are you sure you want to mark this payout as paid?",
+      "seller": "Seller",
+      "amount": "Amount",
+      "cannotUndo": "This action cannot be undone.",
+      "cancel": "Cancel",
+      "confirm": "Confirm Payout"
+    }
+  },
+  "errors": {
+    "noDataToExport": "No data to export",
+    "exportFailed": "Failed to export data",
+    "updateFailed": "Failed to update payout status"
+  },
+  "loading": "Loading...",
+  "notAvailable": "N/A"
+}

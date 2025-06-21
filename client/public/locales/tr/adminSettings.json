@@ -1,0 +1,71 @@
+{
+  "title": "Ayarlar",
+  "tabs": {
+    "general": "Genel",
+    "documents": "Dokümanlar",
+    "email": "E-posta Şablonları"
+  },
+  "general": {
+    "title": "Site Ayarları",
+    "maintenanceMode": {
+      "label": "Bakım Modu",
+      "help": "Etkinleştirildiğinde, sadece yöneticiler siteye erişebilir."
+    },
+    "siteTitle": "Site Başlığı",
+    "contactEmail": "İletişim E-postası",
+    "itemsPerPage": "Sayfa Başına Öğe",
+    "saveButton": "Ayarları Kaydet"
+  },
+  "documents": {
+    "title": "Yasal Belgeler",
+    "terms": {
+      "title": "Kullanım Koşulları",
+      "placeholder": "Kullanım koşullarını giriniz...",
+      "saveButton": "Kaydet"
+    },
+    "privacyPolicy": {
+      "title": "Gizlilik Politikası",
+      "placeholder": "Gizlilik politikasını giriniz...",
+      "saveButton": "Kaydet"
+    }
+  },
+  "emailTemplates": {
+    "title": "E-posta Şablonları",
+    "welcome": {
+      "title": "Hoş Geldiniz E-postası",
+      "subject": "Konu",
+      "content": "İçerik",
+      "subjectPlaceholder": "Platformumuza hoş geldiniz!",
+      "contentPlaceholder": "Merhaba {name}, platformumuza katıldığınız için teşekkür ederiz!",
+      "help": "Kullanıcı adını eklemek için {name} kullanın.",
+      "saveButton": "Kaydet"
+    },
+    "orderConfirmation": {
+      "title": "Sipariş Onayı",
+      "subjectPlaceholder": "#{orderNumber} Numaralı Siparişiniz",
+      "contentPlaceholder": "Merhaba {name}, siparişiniz için teşekkür ederiz!",
+      "help": "Kullanılabilir değişkenler: {name}, {orderNumber}, {orderTotal}",
+      "saveButton": "Kaydet"
+    },
+    "passwordReset": {
+      "title": "Şifre Sıfırlama",
+      "subjectPlaceholder": "Şifrenizi Sıfırlayın",
+      "contentPlaceholder": "Merhaba {name}, şifrenizi sıfırlamak için aşağıdaki bağlantıya tıklayın: {resetLink}",
+      "help": "Kullanıcı adı için {name} ve şifre sıfırlama bağlantısı için {resetLink} kullanın.",
+      "saveButton": "Kaydet"
+    }
+  },
+  "common": {
+    "loading": "Yükleniyor...",
+    "saving": "Kaydediliyor...",
+    "save": "Kaydet",
+    "success": "Ayarlar başarıyla kaydedildi",
+    "error": {
+      "default": "Bir hata oluştu. Lütfen tekrar deneyin.",
+      "loadFailed": "Ayarlar yüklenirken bir hata oluştu. Lütfen tekrar deneyin.",
+      "saveFailed": "Ayarlar kaydedilirken bir hata oluştu. Lütfen tekrar deneyin.",
+      "documentSaveFailed": "Doküman kaydedilirken bir hata oluştu. Lütfen tekrar deneyin.",
+      "templateSaveFailed": "Şablon kaydedilirken bir hata oluştu. Lütfen tekrar deneyin."
+    }
+  }
+}

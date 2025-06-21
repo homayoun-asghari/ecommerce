@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { 
   Card, 
   Table, 
@@ -23,6 +24,7 @@ const ADMIN_API_URL = `${API_BASE_URL}/admin`;
 
 
 const AdminPayments = () => {
+  const { t } = useTranslation('adminPayments');
   const [payments, setPayments] = useState([]);
   const [payouts, setPayouts] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -58,7 +60,7 @@ const AdminPayments = () => {
   const [selectedPayout, setSelectedPayout] = useState(null);
 
   // Fetch payments from API
-  const fetchPayments = useCallback(async (page = 1, filters = {}) => {
+  const fetchPayments = useCallback(async (page = 1, currentFilters = {}) => {
     try {
       setLoading(true);
       setError(null);
@@ -66,7 +68,7 @@ const AdminPayments = () => {
       const params = new URLSearchParams({
         page,
         limit: pagination.limit,
-        ...filters
+        ...currentFilters
       });
 
       const response = await fetch(`${ADMIN_API_URL}/payments?${params}`);
@@ -90,10 +92,10 @@ const AdminPayments = () => {
     } finally {
       setLoading(false);
     }
-  }, [filters, pagination.limit, setPagination]);
+  }, [pagination.limit]);
 
   // Fetch payouts from API
-  const fetchPayouts = useCallback(async (page = 1, filters = {}) => {
+  const fetchPayouts = useCallback(async (page = 1, currentFilters = {}) => {
     try {
       setLoading(true);
       setError(null);
@@ -101,9 +103,9 @@ const AdminPayments = () => {
       const params = new URLSearchParams({
         page,
         limit: pagination.limit,
-        ...filters
+        ...currentFilters
       });
-
+      
       const response = await fetch(`${ADMIN_API_URL}/payouts?${params}`);
       
       if (!response.ok) {
@@ -125,7 +127,7 @@ const AdminPayments = () => {
     } finally {
       setLoading(false);
     }
-  }, [filters, pagination.limit, setPagination]);
+  }, [pagination.limit]);
 
   // Fetch payments and payouts data
   useEffect(() => {
@@ -214,7 +216,7 @@ const AdminPayments = () => {
     try {
       const dataToExport = activeTab === 'payments' ? payments : payouts;
       if (dataToExport.length === 0) {
-        alert('No data to export');
+        alert(t('errors.noDataToExport'));
         return;
       }
       
@@ -271,7 +273,7 @@ const AdminPayments = () => {
       document.body.removeChild(link);
     } catch (error) {
       console.error('Error exporting data:', error);
-      alert('Failed to export data');
+      alert(t('errors.exportFailed'));
     }
   };
 
@@ -312,7 +314,7 @@ const AdminPayments = () => {
       
     } catch (error) {
       console.error('Error updating payout status:', error);
-      alert(error.message || 'Failed to update payout status');
+      alert(error.message || t('errors.updateFailed'));
     } finally {
       setLoading(false);
     }
@@ -329,7 +331,7 @@ const AdminPayments = () => {
 
     return (
       <Badge bg={variants[status] || 'secondary'} className="text-capitalize">
-        {status}
+        {t(`status.${status}`, { defaultValue: status })}
       </Badge>
     );
   };
@@ -381,20 +383,20 @@ const AdminPayments = () => {
     // Sort alphabetically by name
     options.sort((a, b) => a.label.localeCompare(b.label));
     
-    return [{ value: 'all', label: 'All Sellers' }, ...options];
-  }, [payments, payouts]);
+    return [{ value: 'all', label: t('filters.allSellers') }, ...options];
+  }, [payments, payouts, t]);
 
   return (
     <div className="mb-4">
       <div className="d-flex justify-content-between align-items-center mb-4">
-        <h2 className="mb-0">Payments & Payouts</h2>
+        <h2 className="mb-0">{t('payments.title')}</h2>
         <div>
           <Button 
             variant="outline-secondary" 
             className="me-2"
             onClick={() => setShowFilters(!showFilters)}
           >
-            {showFilters ? 'Hide Filters' : 'Filters'}
+            {showFilters ? t('filters.hideFilters') : t('filters.showFilters')}
           </Button>
           <Button 
             variant="outline-primary" 
@@ -405,10 +407,10 @@ const AdminPayments = () => {
             {loading ? (
               <>
                 <Spinner as="span" size="sm" animation="border" role="status" aria-hidden="true" className="me-1" />
-                Exporting...
+                {t('payments.exporting')}
               </>
             ) : (
-              'Export'
+              t('payments.export')
             )}
           </Button>
         </div>
@@ -419,7 +421,7 @@ const AdminPayments = () => {
         onSelect={(k) => setActiveTab(k)}
         className="mb-3"
       >
-        <Tab eventKey="payments" title="Payments">
+        <Tab eventKey="payments" title={t('tabs.payments')}>
           <Card className="border-0 shadow-sm">
             <Card.Body>
               {showFilters && (
@@ -442,22 +444,22 @@ const AdminPayments = () => {
                     </div>
                     <div className="col-md-3">
                       <Form.Group>
-                        <Form.Label>Status</Form.Label>
+                        <Form.Label>{t('filters.status')}</Form.Label>
                         <Form.Select 
                           value={statusFilter}
                           onChange={(e) => setStatusFilter(e.target.value)}
                         >
-                          <option value="all">All Statuses</option>
-                          <option value="completed">Completed</option>
-                          <option value="pending">Pending</option>
-                          <option value="refunded">Refunded</option>
-                          <option value="failed">Failed</option>
+                          <option value="all">{t('filters.allStatuses')}</option>
+                          <option value="completed">{t('status.completed')}</option>
+                          <option value="pending">{t('status.pending')}</option>
+                          <option value="refunded">{t('status.refunded')}</option>
+                          <option value="failed">{t('status.failed')}</option>
                         </Form.Select>
                       </Form.Group>
                     </div>
                     <div className="col-md-3">
                       <Form.Group>
-                        <Form.Label>From Date</Form.Label>
+                        <Form.Label>{t('filters.fromDate')}</Form.Label>
                         <Form.Control
                           type="date"
                           name="start"
@@ -468,7 +470,7 @@ const AdminPayments = () => {
                     </div>
                     <div className="col-md-3">
                       <Form.Group>
-                        <Form.Label>To Date</Form.Label>
+                        <Form.Label>{t('filters.toDate')}</Form.Label>
                         <Form.Control
                           type="date"
                           name="end"
@@ -495,7 +497,7 @@ const AdminPayments = () => {
               {loading ? (
                 <div className="text-center py-5">
                   <Spinner animation="border" role="status">
-                    <span className="visually-hidden">Loading...</span>
+                    <span className="visually-hidden">{t('loading')}</span>
                   </Spinner>
                 </div>
               ) : (
@@ -503,13 +505,13 @@ const AdminPayments = () => {
                   <Table hover className="align-middle">
                     <thead>
                       <tr>
-                        <th>Payment ID</th>
-                        <th>Order ID</th>
-                        <th>Buyer</th>
-                        <th>Amount</th>
-                        <th>Method</th>
-                        <th>Status</th>
-                        <th>Date</th>
+                        <th>{t('payments.paymentId')}</th>
+                        <th>{t('payments.orderId')}</th>
+                        <th>{t('payments.buyer')}</th>
+                        <th>{t('payments.amount')}</th>
+                        <th>{t('payments.method')}</th>
+                        <th>{t('payments.status')}</th>
+                        <th>{t('payments.date')}</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -518,17 +520,17 @@ const AdminPayments = () => {
                           <tr key={payment.id}>
                             <td className="fw-semibold">{payment.id}</td>
                             <td>{payment.orderId}</td>
-                            <td>{payment.buyer?.name || 'N/A'}</td>
+                            <td>{payment.buyer?.name || t('notAvailable')}</td>
                             <td>${parseFloat(payment.amount).toFixed(2)}</td>
                             <td>{getPaymentMethodIcon(payment.method)}</td>
                             <td>{getStatusBadge(payment.status)}</td>
-                            <td>{payment.paidAt ? new Date(payment.paidAt).toLocaleDateString() : 'N/A'}</td>
+                            <td>{payment.paidAt ? new Date(payment.paidAt).toLocaleDateString() : t('notAvailable')}</td>
                           </tr>
                         ))
                       ) : (
                         <tr>
                           <td colSpan="7" className="text-center py-4">
-                            No payments found
+                            {t('payments.noPayments')}
                           </td>
                         </tr>
                       )}
@@ -540,7 +542,7 @@ const AdminPayments = () => {
           </Card>
         </Tab>
         
-        <Tab eventKey="payouts" title="Payouts">
+        <Tab eventKey="payouts" title={t('tabs.payouts')}>
           <Card className="border-0 shadow-sm">
             <Card.Body>
               {showFilters && (
@@ -610,19 +612,19 @@ const AdminPayments = () => {
                 </div>
               )}
               <div className="mb-4">
-                <h5>Seller Payouts</h5>
+                <h5>{t('payouts.title')}</h5>
               </div>
               
               <div className="table-responsive">
                 <Table hover>
                   <thead>
                     <tr>
-                      <th>Payout ID</th>
-                      <th>Seller</th>
-                      <th>Amount</th>
-                      <th>Status</th>
-                      <th>Date</th>
-                      <th>Actions</th>
+                      <th>{t('payouts.payoutId')}</th>
+                      <th>{t('payouts.seller')}</th>
+                      <th>{t('payments.amount')}</th>
+                      <th>{t('payments.status')}</th>
+                      <th>{t('payments.date')}</th>
+                      <th>{t('payouts.actions')}</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -630,20 +632,20 @@ const AdminPayments = () => {
                       filteredPayouts.map((payout) => (
                         <tr key={payout.id}>
                           <td>PY-{payout.id.toString().padStart(4, '0')}</td>
-                          <td>{payout.seller?.name || 'N/A'}</td>
+                          <td>{payout.seller?.name || t('notAvailable')}</td>
                           <td>${Number(payout.amount).toFixed(2)}</td>
                           <td>
                             {payout.status === 'paid' ? (
                               <span className="text-success">
-                                <CheckCircleFill className="me-1" /> Paid
+                                <CheckCircleFill className="me-1" /> {t('status.paid')}
                               </span>
                             ) : (
                               <span className="text-warning">
-                                <ClockFill className="me-1" /> Pending
+                                <ClockFill className="me-1" /> {t('status.pending')}
                               </span>
                             )}
                           </td>
-                          <td>{payout.createdAt ? new Date(payout.createdAt).toLocaleDateString() : 'N/A'}</td>
+                          <td>{payout.createdAt ? new Date(payout.createdAt).toLocaleDateString() : t('notAvailable')}</td>
                           <td>
                             {payout.status === 'pending' && (
                               <Button 
@@ -651,7 +653,7 @@ const AdminPayments = () => {
                                 size="sm"
                                 onClick={() => handleManualPayout(payout)}
                               >
-                                Mark as Paid
+                                {t('payouts.markAsPaid')}
                               </Button>
                             )}
                           </td>
@@ -660,7 +662,7 @@ const AdminPayments = () => {
                     ) : (
                       <tr>
                         <td colSpan="6" className="text-center py-4">
-                          No payouts found
+                          {t('payouts.noPayouts')}
                         </td>
                       </tr>
                     )}
@@ -679,15 +681,15 @@ const AdminPayments = () => {
         centered
       >
         <Modal.Header closeButton>
-          <Modal.Title>Confirm Payout</Modal.Title>
+          <Modal.Title>{t('modals.confirmPayout.title')}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           {selectedPayout && (
             <div>
-              <p>Are you sure you want to mark this payout as paid?</p>
-              <p><strong>Seller:</strong> {selectedPayout.seller?.name || 'N/A'}</p>
-              <p><strong>Amount:</strong> ${Number(selectedPayout.amount || 0).toFixed(2)}</p>
-              <p className="text-muted">This action cannot be undone.</p>
+              <p>{t('modals.confirmPayout.message')}</p>
+              <p><strong>{t('modals.confirmPayout.seller')}:</strong> {selectedPayout.seller?.name || t('notAvailable')}</p>
+              <p><strong>{t('modals.confirmPayout.amount')}:</strong> ${Number(selectedPayout.amount || 0).toFixed(2)}</p>
+              <p className="text-muted">{t('modals.confirmPayout.cannotUndo')}</p>
             </div>
           )}
         </Modal.Body>
@@ -696,13 +698,13 @@ const AdminPayments = () => {
             variant="secondary" 
             onClick={() => setShowPayoutModal(false)}
           >
-            Cancel
+            {t('modals.confirmPayout.cancel')}
           </Button>
           <Button 
             variant="primary" 
             onClick={confirmPayout}
           >
-            Confirm Payout
+            {t('modals.confirmPayout.confirm')}
           </Button>
         </Modal.Footer>
       </Modal>
