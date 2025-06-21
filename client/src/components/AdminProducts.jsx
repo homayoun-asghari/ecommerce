@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
     Card,
     Table,
@@ -23,6 +24,7 @@ import {
 import { API_BASE_URL } from '../config';
 
 const AdminProducts = () => {
+    const { t, i18n } = useTranslation('adminProducts');
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
@@ -67,7 +69,7 @@ const AdminProducts = () => {
 
                 const response = await fetch(`${API_BASE_URL}/admin/products?${queryParams}`);
                 if (!response.ok) {
-                    throw new Error('Failed to fetch products');
+                    throw new Error(t('errors.fetchProducts'));
                 }
 
                 const data = await response.json();
@@ -97,7 +99,7 @@ const AdminProducts = () => {
         }, 500);
 
         return () => clearTimeout(debounceTimer);
-    }, [searchTerm, filters, currentPage, itemsPerPage]);
+    }, [searchTerm, filters, currentPage, itemsPerPage, t]);
 
     const handleApprove = async (product) => {
         setSelectedProduct(product);
@@ -138,7 +140,7 @@ const AdminProducts = () => {
                 });
 
                 if (!response.ok) {
-                    throw new Error(`Failed to ${action} product`);
+                    throw new Error(t(`errors.${action}Product`));
                 }
 
                 // Update the product status in the list
@@ -159,14 +161,14 @@ const AdminProducts = () => {
         }
     };
 
-    const getStatusBadge = (status) => {
+    const getStatusBadge = useCallback((status) => {
         const variants = {
             pending: 'warning',
             approved: 'success',
             rejected: 'danger'
         };
-        return <Badge bg={variants[status] || 'secondary'}>{status}</Badge>;
-    };
+        return <Badge bg={variants[status] || 'secondary'}>{t(`status.${status}`, status)}</Badge>;
+    }, [t]);
 
     return (
         <div className="p-3">
@@ -179,7 +181,7 @@ const AdminProducts = () => {
                                 <InputGroup.Text><BsSearch /></InputGroup.Text>
                                 <Form.Control
                                     type="text"
-                                    placeholder="Search products..."
+                                    placeholder={t('search.placeholder')}
                                     value={searchTerm}
                                     onChange={(e) => setSearchTerm(e.target.value)}
                                 />
@@ -194,7 +196,7 @@ const AdminProducts = () => {
                                     value={filters.category}
                                     onChange={(e) => setFilters({ ...filters, category: e.target.value })}
                                 >
-                                    <option value="all">All Categories</option>
+                                    <option value="all">{t('search.allCategories')}</option>
                                     {categories.map(category => (
                                         <option key={category} value={category}>{category}</option>
                                     ))}
@@ -207,7 +209,7 @@ const AdminProducts = () => {
                                     value={filters.seller}
                                     onChange={(e) => setFilters({ ...filters, seller: e.target.value })}
                                 >
-                                    <option value="all">All Sellers</option>
+                                    <option value="all">{t('search.allSellers')}</option>
                                     {sellers.map(seller => (
                                         <option key={seller.id} value={seller.id}>{seller.name}</option>
                                     ))}
@@ -221,7 +223,7 @@ const AdminProducts = () => {
                                     value={filters.status}
                                     onChange={(e) => setFilters({ ...filters, status: e.target.value })}
                                 >
-                                    <option value="all">All Statuses</option>
+                                    <option value="all">{t('search.allStatuses')}</option>
                                     {statuses.map(status => (
                                         <option key={status} value={status}>
                                             {status.charAt(0).toUpperCase() + status.slice(1)}
@@ -237,7 +239,7 @@ const AdminProducts = () => {
                     {loading ? (
                         <div className="text-center my-5">
                             <Spinner animation="border" role="status">
-                                <span className="visually-hidden">Loading...</span>
+                                <span className="visually-hidden">{t('table.loading')}</span>
                             </Spinner>
                         </div>
                     ) : (
@@ -246,14 +248,14 @@ const AdminProducts = () => {
                                 <Table hover className="align-middle">
                                     <thead>
                                         <tr>
-                                            <th>Product</th>
-                                            <th>Category</th>
-                                            <th>Seller</th>
-                                            <th>Price</th>
-                                            <th>Stock</th>
-                                            <th>Status</th>
-                                            <th>Date Added</th>
-                                            <th>Actions</th>
+                                            <th>{t('table.columns.product')}</th>
+                                            <th>{t('table.columns.category')}</th>
+                                            <th>{t('table.columns.seller')}</th>
+                                            <th>{t('table.columns.price')}</th>
+                                            <th>{t('table.columns.stock')}</th>
+                                            <th>{t('table.columns.status')}</th>
+                                            <th>{t('table.columns.dateAdded')}</th>
+                                            <th>{t('table.columns.actions')}</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -273,16 +275,16 @@ const AdminProducts = () => {
                                                         </Dropdown.Toggle>
                                                         <Dropdown.Menu>
                                                             <Dropdown.Item onClick={() => handleView(product)}>
-                                                                <BsEye className="me-2" /> View
+                                                                <BsEye className="me-2" /> {t('table.actions.view')}
                                                             </Dropdown.Item>
                                                             {product.status !== 'approved' && (
                                                                 <Dropdown.Item onClick={() => handleApprove(product)}>
-                                                                    <BsCheckCircle className="me-2 text-success" /> Approve
+                                                                    <BsCheckCircle className="me-2 text-success" /> {t('table.actions.approve')}
                                                                 </Dropdown.Item>
                                                             )}
                                                             {product.status !== 'rejected' && (
                                                                 <Dropdown.Item onClick={() => handleReject(product)}>
-                                                                    <BsXCircle className="me-2 text-warning" /> Reject
+                                                                    <BsXCircle className="me-2 text-warning" /> {t('table.actions.reject')}
                                                                 </Dropdown.Item>
                                                             )}
                                                             <Dropdown.Divider />
@@ -290,7 +292,7 @@ const AdminProducts = () => {
                                                                 className="text-danger"
                                                                 onClick={() => handleDelete(product)}
                                                             >
-                                                                <BsTrash className="me-2" /> Delete
+                                                                <BsTrash className="me-2" /> {t('table.actions.delete')}
                                                             </Dropdown.Item>
                                                         </Dropdown.Menu>
                                                     </Dropdown>
@@ -338,17 +340,17 @@ const AdminProducts = () => {
             {/* Approve Confirmation Modal */}
             <Modal show={showApproveModal} onHide={() => setShowApproveModal(false)}>
                 <Modal.Header closeButton>
-                    <Modal.Title>Approve Product</Modal.Title>
+                    <Modal.Title>{t('modals.approve.title')}</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    Are you sure you want to approve <strong>{selectedProduct?.name}</strong>? This will make it visible to all users.
+                    {t('modals.approve.message', { productName: selectedProduct?.name })}
                 </Modal.Body>
                 <Modal.Footer>
                     <Button variant="secondary" onClick={() => setShowApproveModal(false)}>
-                        Cancel
+                        {t('modals.approve.cancel')}
                     </Button>
                     <Button variant="success" onClick={() => confirmAction('approve')}>
-                        Approve
+                        {t('modals.approve.confirm')}
                     </Button>
                 </Modal.Footer>
             </Modal>
@@ -356,17 +358,17 @@ const AdminProducts = () => {
             {/* Reject Confirmation Modal */}
             <Modal show={showRejectModal} onHide={() => setShowRejectModal(false)}>
                 <Modal.Header closeButton>
-                    <Modal.Title>Reject Product</Modal.Title>
+                    <Modal.Title>{t('modals.reject.title')}</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    Are you sure you want to reject <strong>{selectedProduct?.name}</strong>? The seller will be notified.
+                    {t('modals.reject.message', { productName: selectedProduct?.name })}
                 </Modal.Body>
                 <Modal.Footer>
                     <Button variant="secondary" onClick={() => setShowRejectModal(false)}>
-                        Cancel
+                        {t('modals.reject.cancel')}
                     </Button>
                     <Button variant="warning" onClick={() => confirmAction('reject')}>
-                        Reject
+                        {t('modals.reject.confirm')}
                     </Button>
                 </Modal.Footer>
             </Modal>
@@ -374,18 +376,18 @@ const AdminProducts = () => {
             {/* Delete Confirmation Modal */}
             <Modal show={showDeleteModal} onHide={() => setShowDeleteModal(false)}>
                 <Modal.Header closeButton className="bg-danger text-white">
-                    <Modal.Title>Delete Product</Modal.Title>
+                    <Modal.Title>{t('modals.delete.title')}</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    <p>Are you sure you want to delete <strong>{selectedProduct?.name}</strong>? This action cannot be undone.</p>
-                    <p className="text-danger mb-0">All product data including images will be permanently removed.</p>
+                    <p>{t('modals.delete.message', { productName: selectedProduct?.name })}</p>
+                    <p className="text-danger mb-0">{t('modals.delete.warning')}</p>
                 </Modal.Body>
                 <Modal.Footer>
                     <Button variant="secondary" onClick={() => setShowDeleteModal(false)}>
-                        Cancel
+                        {t('modals.delete.cancel')}
                     </Button>
                     <Button variant="danger" onClick={() => confirmAction('delete')}>
-                        Delete Permanently
+                        {t('modals.delete.confirm')}
                     </Button>
                 </Modal.Footer>
             </Modal>
@@ -393,7 +395,7 @@ const AdminProducts = () => {
             {/* View Product Modal */}
             <Modal show={showViewModal} onHide={() => setShowViewModal(false)}>
                 <Modal.Header closeButton>
-                    <Modal.Title>Product Details</Modal.Title>
+                    <Modal.Title>{t('modals.view.title')}</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     {selectedProduct ? (
@@ -405,22 +407,22 @@ const AdminProducts = () => {
                                     style={{ width: '100%', marginBottom: '1rem', borderRadius: '4px' }}
                                 />
                             )}
-                            <p><strong>Name:</strong> {selectedProduct.name}</p>
-                            <p><strong>Category:</strong> {selectedProduct.category}</p>
-                            <p><strong>Seller:</strong> {selectedProduct.seller_name}</p>
-                            <p><strong>Description:</strong> {selectedProduct.description}</p>
-                            <p><strong>Price:</strong> ${selectedProduct.price}</p>
-                            <p><strong>Stock:</strong> {selectedProduct.stock}</p>
-                            <p><strong>Status:</strong> {selectedProduct.status}</p>
-                            <p><strong>Date Added:</strong> {new Date(selectedProduct.created_at).toLocaleDateString()}</p>
+                            <p><strong>{t('modals.view.fields.name')}:</strong> {selectedProduct.name}</p>
+                            <p><strong>{t('modals.view.fields.category')}:</strong> {selectedProduct.category}</p>
+                            <p><strong>{t('modals.view.fields.seller')}:</strong> {selectedProduct.seller_name}</p>
+                            <p><strong>{t('modals.view.fields.description')}:</strong> {selectedProduct.description}</p>
+                            <p><strong>{t('modals.view.fields.price')}:</strong> ${selectedProduct.price}</p>
+                            <p><strong>{t('modals.view.fields.stock')}:</strong> {selectedProduct.stock}</p>
+                            <p><strong>{t('modals.view.fields.status')}:</strong> {t(`status.${selectedProduct.status}`, selectedProduct.status)}</p>
+                            <p><strong>{t('modals.view.fields.dateAdded')}:</strong> {new Date(selectedProduct.created_at).toLocaleDateString(i18n.language)}</p>
                         </>
                     ) : (
-                        <p>No product selected.</p>
+                        <p>{t('modals.view.noProduct')}</p>
                     )}
                 </Modal.Body>
                 <Modal.Footer>
                     <Button variant="secondary" onClick={() => setShowViewModal(false)}>
-                        Close
+                        {t('modals.view.close')}
                     </Button>
                 </Modal.Footer>
             </Modal>

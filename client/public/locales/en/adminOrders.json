@@ -1,0 +1,57 @@
+{
+  "search": {
+    "placeholder": "Search orders...",
+    "allStatuses": "All Statuses"
+  },
+  "status": {
+    "pending": "Pending",
+    "processing": "Processing",
+    "shipped": "Shipped",
+    "delivered": "Delivered",
+    "cancelled": "Cancelled"
+  },
+  "table": {
+    "loading": "Loading orders...",
+    "noOrders": "No orders found",
+    "columns": {
+      "orderNumber": "Order #",
+      "buyer": "Buyer",
+      "seller": "Seller",
+      "items": "Items",
+      "total": "Total",
+      "status": "Status",
+      "date": "Date",
+      "actions": "Actions"
+    },
+    "viewButton": "View",
+    "itemsCount": "{{count}} item",
+    "itemsCount_plural": "{{count}} items"
+  },
+  "modals": {
+    "orderDetails": {
+      "title": "Order Details: {{orderNumber}}",
+      "orderInfo": "Order Information",
+      "date": "Date",
+      "status": "Status",
+      "total": "Total",
+      "buyerInfo": "Buyer Information",
+      "sellerInfo": "Seller Information",
+      "orderItems": "Order Items",
+      "product": "Product",
+      "price": "Price",
+      "quantity": "Qty",
+      "subtotal": "Subtotal",
+      "trackOrder": "Track Order",
+      "refund": "Refund",
+      "updateStatus": "Update Status",
+      "updating": "Updating...",
+      "close": "Close"
+    }
+  },
+  "errors": {
+    "fetchOrders": "Failed to fetch orders",
+    "fetchOrderDetails": "Failed to fetch order details",
+    "updateOrderStatus": "Failed to update order status",
+    "loadOrderDetails": "Failed to load order details"
+  }
+}

@@ -1,0 +1,74 @@
+{
+  "search": {
+    "placeholder": "Search products...",
+    "allCategories": "All Categories",
+    "allSellers": "All Sellers",
+    "allStatuses": "All Statuses"
+  },
+  "table": {
+    "loading": "Loading...",
+    "columns": {
+      "product": "Product",
+      "category": "Category",
+      "seller": "Seller",
+      "price": "Price",
+      "stock": "Stock",
+      "status": "Status",
+      "dateAdded": "Date Added",
+      "actions": "Actions"
+    },
+    "actions": {
+      "view": "View",
+      "approve": "Approve",
+      "reject": "Reject",
+      "delete": "Delete"
+    }
+  },
+  "status": {
+    "pending": "Pending",
+    "approved": "Approved",
+    "rejected": "Rejected"
+  },
+  "modals": {
+    "approve": {
+      "title": "Approve Product",
+      "message": "Are you sure you want to approve {{productName}}? This will make it visible to all users.",
+      "cancel": "Cancel",
+      "confirm": "Approve"
+    },
+    "reject": {
+      "title": "Reject Product",
+      "message": "Are you sure you want to reject {{productName}}? The seller will be notified.",
+      "cancel": "Cancel",
+      "confirm": "Reject"
+    },
+    "delete": {
+      "title": "Delete Product",
+      "message": "Are you sure you want to delete {{productName}}? This action cannot be undone.",
+      "warning": "All product data including images will be permanently removed.",
+      "cancel": "Cancel",
+      "confirm": "Delete Permanently"
+    },
+    "view": {
+      "title": "Product Details",
+      "noProduct": "No product selected.",
+      "fields": {
+        "name": "Name",
+        "category": "Category",
+        "seller": "Seller",
+        "description": "Description",
+        "price": "Price",
+        "stock": "Stock",
+        "status": "Status",
+        "dateAdded": "Date Added"
+      },
+      "close": "Close"
+    }
+  },
+  "errors": {
+    "fetchProducts": "Failed to fetch products",
+    "approveProduct": "Failed to approve product",
+    "rejectProduct": "Failed to reject product",
+    "deleteProduct": "Failed to delete product"
+  }
+}

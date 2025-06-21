@@ -1,0 +1,50 @@
+{
+  "search": {
+    "placeholder": "Kullanıcı ara...",
+    "allRoles": "Tüm Roller"
+  },
+  "table": {
+    "columns": {
+      "name": "Ad Soyad",
+      "email": "E-posta",
+      "role": "Rol",
+      "orders": "Siparişler",
+      "joined": "Katılma Tarihi",
+      "actions": "İşlemler"
+    },
+    "noUsers": "Kullanıcı bulunamadı",
+    "viewButton": "Görüntüle",
+    "loading": "Yükleniyor..."
+  },
+  "pagination": {
+    "first": "İlk",
+    "previous": "Önceki",
+    "next": "Sonraki",
+    "last": "Son",
+    "page": "Sayfa",
+    "of": " / "
+  },
+  "userDetails": {
+    "title": "Kullanıcı Detayları",
+    "basicInfo": "Temel Bilgiler",
+    "statistics": "İstatistikler",
+    "stats": {
+      "totalOrders": "Toplam Sipariş",
+      "totalReviews": "Toplam Yorum",
+      "totalSpent": "Toplam Harcama",
+      "memberSince": "Üyelik Tarihi",
+      "lastLogin": "Son Giriş",
+      "never": "Hiç"
+    },
+    "close": "Kapat"
+  },
+  "roles": {
+    "admin": "Yönetici",
+    "seller": "Satıcı",
+    "buyer": "Alıcı"
+  },
+  "errors": {
+    "fetchUsers": "Kullanıcılar yüklenirken hata oluştu",
+    "fetchUserStats": "Kullanıcı istatistikleri yüklenirken hata oluştu"
+  }
+}

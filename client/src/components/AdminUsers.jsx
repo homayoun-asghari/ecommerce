@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { 
   Card, 
   Form, 
@@ -7,13 +8,13 @@ import {
   Badge, 
   Button, 
   Modal, 
-  Pagination,
-  Spinner
+  Pagination
 } from 'react-bootstrap';
-import { BsSearch, BsEye, BsFilterLeft, BsArrowLeft, BsArrowRight } from 'react-icons/bs';
+import { BsSearch, BsEye, BsFilterLeft } from 'react-icons/bs';
 import { API_BASE_URL } from '../config';
 
 const AdminUsers = () => {
+  const { t, i18n } = useTranslation('adminUsers');
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
@@ -27,7 +28,9 @@ const AdminUsers = () => {
   const [userStats, setUserStats] = useState({
     orders: 0,
     reviews: 0,
-    totalSpent: 0
+    totalSpent: 0,
+    lastLogin: '',
+    createdAt: ''
   });
 
   // Fetch users with pagination and filters
@@ -44,7 +47,7 @@ const AdminUsers = () => {
 
         const response = await fetch(`${API_BASE_URL}/admin/users?${queryParams}`);
         if (!response.ok) {
-          throw new Error('Failed to fetch users');
+          throw new Error(t('errors.fetchUsers'));
         }
         
         const data = await response.json();
@@ -67,31 +70,40 @@ const AdminUsers = () => {
     }, 500);
 
     return () => clearTimeout(debounceTimer);
-  }, [searchTerm, roleFilter, currentPage, itemsPerPage]);
+  }, [searchTerm, roleFilter, currentPage, itemsPerPage, t]);
 
   // Fetch user details
-  const fetchUserDetails = async (userId) => {
+  const fetchUserDetails = useCallback(async (userId) => {
     try {
       const response = await fetch(`${API_BASE_URL}/admin/users/${userId}/stats`);
       if (!response.ok) {
-        throw new Error('Failed to fetch user stats');
+        throw new Error(t('errors.fetchUserStats'));
       }
       const data = await response.json();
-      setUserStats(data);
+      setUserStats({
+        ...data,
+        lastLogin: data.lastLogin ? new Date(data.lastLogin).toLocaleString(i18n.language) : t('userDetails.stats.never'),
+        createdAt: data.createdAt ? new Date(data.createdAt).toLocaleDateString(i18n.language) : ''
+      });
       setShowDetails(true);
     } catch (error) {
       console.error('Error fetching user details:', error);
     }
-  };
+  }, [i18n.language, t]);
 
-  const getRoleBadge = (role) => {
+  const getRoleBadge = useCallback((role) => {
     const variants = {
       admin: 'danger',
       seller: 'primary',
       buyer: 'success'
     };
-    return <Badge bg={variants[role] || 'secondary'}>{role}</Badge>;
-  };
+    const roleTranslations = {
+      admin: t('roles.admin'),
+      seller: t('roles.seller'),
+      buyer: t('roles.buyer')
+    };
+    return <Badge bg={variants[role] || 'secondary'}>{roleTranslations[role] || role}</Badge>;
+  }, [t]);
 
   return (
     <div className="p-3">
@@ -103,7 +115,7 @@ const AdminUsers = () => {
                 <InputGroup.Text><BsSearch /></InputGroup.Text>
                 <Form.Control
                   type="text"
-                  placeholder="Search users..."
+                  placeholder={t('search.placeholder')}
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
@@ -120,7 +132,7 @@ const AdminUsers = () => {
                   setCurrentPage(1); // Reset to first page when filter changes
                 }}
               >
-                <option value="all">All Roles</option>
+                <option value="all">{t('search.allRoles')}</option>
                 {availableRoles.map(role => (
                   <option key={role} value={role}>
                     {role.charAt(0).toUpperCase() + role.slice(1)}
@@ -135,7 +147,7 @@ const AdminUsers = () => {
           {loading ? (
             <div className="text-center my-5">
               <div className="spinner-border" role="status">
-                <span className="visually-hidden">Loading...</span>
+                <span className="visually-hidden">{t('table.loading')}</span>
               </div>
             </div>
           ) : (
@@ -143,12 +155,12 @@ const AdminUsers = () => {
               <Table hover className="align-middle">
                 <thead>
                   <tr>
-                    <th>Name</th>
-                    <th>Email</th>
-                    <th>Role</th>
-                    <th>Orders</th>
-                    <th>Joined</th>
-                    <th>Actions</th>
+                    <th>{t('table.columns.name')}</th>
+                    <th>{t('table.columns.email')}</th>
+                    <th>{t('table.columns.role')}</th>
+                    <th>{t('table.columns.orders')}</th>
+                    <th>{t('table.columns.joined')}</th>
+                    <th>{t('table.columns.actions')}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -159,7 +171,7 @@ const AdminUsers = () => {
                         <td>{user.email}</td>
                         <td>{getRoleBadge(user.role)}</td>
                         <td>{user.order_count || 0}</td>
-                        <td>{new Date(user.createdAt).toLocaleDateString()}</td>
+                        <td>{new Date(user.createdAt).toLocaleDateString(i18n.language)}</td>
                         <td>
                           <Button
                             variant="outline-primary"
@@ -169,7 +181,7 @@ const AdminUsers = () => {
                               fetchUserDetails(user.id);
                             }}
                           >
-                            <BsEye className="me-1" /> View
+                            <BsEye className="me-1" /> {t('table.viewButton')}
                           </Button>
                         </td>
                       </tr>
@@ -177,7 +189,7 @@ const AdminUsers = () => {
                   ) : (
                     <tr>
                       <td colSpan="6" className="text-center py-4">
-                        No users found
+                        {t('table.noUsers')}
                       </td>
                     </tr>
                   )}
@@ -186,14 +198,16 @@ const AdminUsers = () => {
               
               {totalPages > 1 && (
                 <div className="d-flex justify-content-center mt-4">
-                  <Pagination>
+                  <Pagination className="mb-3">
                     <Pagination.First 
                       onClick={() => setCurrentPage(1)} 
-                      disabled={currentPage === 1} 
+                      disabled={currentPage === 1}
+                      title={t('pagination.first')}
                     />
                     <Pagination.Prev 
                       onClick={() => setCurrentPage(p => Math.max(1, p - 1))} 
-                      disabled={currentPage === 1} 
+                      disabled={currentPage === 1}
+                      title={t('pagination.previous')}
                     />
                     {[...Array(Math.min(5, totalPages))].map((_, i) => {
                       const page = Math.max(1, Math.min(totalPages - 4, currentPage - 2)) + i;
@@ -209,11 +223,13 @@ const AdminUsers = () => {
                     })}
                     <Pagination.Next 
                       onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))} 
-                      disabled={currentPage === totalPages} 
+                      disabled={currentPage === totalPages}
+                      title={t('pagination.next')}
                     />
                     <Pagination.Last 
                       onClick={() => setCurrentPage(totalPages)} 
-                      disabled={currentPage === totalPages} 
+                      disabled={currentPage === totalPages}
+                      title={t('pagination.last')}
                     />
                   </Pagination>
                 </div>
@@ -226,30 +242,33 @@ const AdminUsers = () => {
       {/* User Details Modal */}
       <Modal show={showDetails} onHide={() => setShowDetails(false)} size="lg">
         <Modal.Header closeButton>
-          <Modal.Title>User Details: {selectedUser?.name}</Modal.Title>
+          <Modal.Title>{t('userDetails.title')}: {selectedUser?.name}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           {selectedUser && (
             <div className="row">
               <div className="col-md-6">
-                <h5>Basic Information</h5>
-                <p><strong>Name:</strong> {selectedUser.name}</p>
-                <p><strong>Email:</strong> {selectedUser.email}</p>
-                <p><strong>Role:</strong> {getRoleBadge(selectedUser.role)}</p>
-                <p><strong>Joined:</strong> {new Date(selectedUser.createdAt).toLocaleDateString()}</p>
+                <h5>{t('userDetails.basicInfo')}</h5>
+                <p><strong>{t('table.columns.name')}:</strong> {selectedUser.name}</p>
+                <p><strong>{t('table.columns.email')}:</strong> {selectedUser.email}</p>
+                <p><strong>{t('table.columns.role')}:</strong> {getRoleBadge(selectedUser.role)}</p>
+                <p><strong>{t('userDetails.stats.memberSince')}:</strong> {userStats.createdAt}</p>
               </div>
               <div className="col-md-6">
-                <h5>Statistics</h5>
-                <p><strong>Total Orders:</strong> {userStats.orders}</p>
-                <p><strong>Total Reviews:</strong> {userStats.reviews}</p>
-                <p><strong>Total Spent:</strong> ${userStats.totalSpent?.toFixed(2)}</p>
+                <h5>{t('userDetails.statistics')}</h5>
+                <p><strong>{t('userDetails.stats.totalOrders')}:</strong> {userStats.orders || 0}</p>
+                <p><strong>{t('userDetails.stats.totalReviews')}:</strong> {userStats.reviews || 0}</p>
+                <p><strong>{t('userDetails.stats.totalSpent')}:</strong> ${(userStats.totalSpent || 0).toFixed(2)}</p>
+                {userStats.lastLogin && (
+                  <p><strong>{t('userDetails.stats.lastLogin')}:</strong> {userStats.lastLogin}</p>
+                )}
               </div>
             </div>
           )}
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={() => setShowDetails(false)}>
-            Close
+            {t('userDetails.close')}
           </Button>
         </Modal.Footer>
       </Modal>

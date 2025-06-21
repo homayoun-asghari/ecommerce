@@ -1,0 +1,57 @@
+{
+  "search": {
+    "placeholder": "Sipariş ara...",
+    "allStatuses": "Tüm Durumlar"
+  },
+  "status": {
+    "pending": "Beklemede",
+    "processing": "İşleniyor",
+    "shipped": "Kargoda",
+    "delivered": "Teslim Edildi",
+    "cancelled": "İptal Edildi"
+  },
+  "table": {
+    "loading": "Siparişler yükleniyor...",
+    "noOrders": "Sipariş bulunamadı",
+    "columns": {
+      "orderNumber": "Sipariş #",
+      "buyer": "Alıcı",
+      "seller": "Satıcı",
+      "items": "Ürünler",
+      "total": "Toplam",
+      "status": "Durum",
+      "date": "Tarih",
+      "actions": "İşlemler"
+    },
+    "viewButton": "Görüntüle",
+    "itemsCount": "{{count}} ürün",
+    "itemsCount_plural": "{{count}} ürün"
+  },
+  "modals": {
+    "orderDetails": {
+      "title": "Sipariş Detayları: {{orderNumber}}",
+      "orderInfo": "Sipariş Bilgileri",
+      "date": "Tarih",
+      "status": "Durum",
+      "total": "Toplam",
+      "buyerInfo": "Alıcı Bilgileri",
+      "sellerInfo": "Satıcı Bilgileri",
+      "orderItems": "Siparişteki Ürünler",
+      "product": "Ürün",
+      "price": "Fiyat",
+      "quantity": "Adet",
+      "subtotal": "Ara Toplam",
+      "trackOrder": "Kargoyu Takip Et",
+      "refund": "İade",
+      "updateStatus": "Durumu Güncelle",
+      "updating": "Güncelleniyor...",
+      "close": "Kapat"
+    }
+  },
+  "errors": {
+    "fetchOrders": "Siparişler yüklenirken hata oluştu",
+    "fetchOrderDetails": "Sipariş detayları alınırken hata oluştu",
+    "updateOrderStatus": "Sipariş durumu güncellenirken hata oluştu",
+    "loadOrderDetails": "Sipariş detayları yüklenemedi"
+  }
+}

@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
     Card,
     Form,
@@ -24,6 +25,8 @@ import {
 import { API_BASE_URL } from '../config';
 
 const AdminOrders = () => {
+    const { t, i18n } = useTranslation('adminOrders');
+    
     // State for orders data and UI
     const [orders, setOrders] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -44,10 +47,10 @@ const AdminOrders = () => {
 
     // Generate status options for the filter dropdown
     const statuses = [
-        { value: 'all', label: 'All Statuses' },
+        { value: 'all', label: t('search.allStatuses') },
         ...availableStatuses.map(status => ({
             value: status,
-            label: status.charAt(0).toUpperCase() + status.slice(1)
+            label: t(`status.${status}`, status.charAt(0).toUpperCase() + status.slice(1))
         }))
     ];
 
@@ -67,7 +70,7 @@ const AdminOrders = () => {
             const response = await fetch(`${API_BASE_URL}/admin/orders?${params}`);
 
             if (!response.ok) {
-                throw new Error('Failed to fetch orders');
+                throw new Error(t('errors.fetchOrders'));
             }
 
             const data = await response.json();
@@ -82,7 +85,7 @@ const AdminOrders = () => {
 
         } catch (err) {
             console.error('Error fetching orders:', err);
-            setError(err.message || 'Failed to load orders. Please try again.');
+            setError(err.message || t('errors.fetchOrders'));
         } finally {
             setLoading(false);
         }
@@ -101,7 +104,7 @@ const AdminOrders = () => {
             const response = await fetch(`${API_BASE_URL}/admin/orders/${orderId}`);
 
             if (!response.ok) {
-                throw new Error('Failed to fetch order details');
+                throw new Error(t('errors.fetchOrderDetails'));
             }
 
             return await response.json();
@@ -122,7 +125,7 @@ const AdminOrders = () => {
         };
         return (
             <Badge bg={variants[status] || 'secondary'} className="text-capitalize">
-                {status}
+                {t(`status.${status}`, status)}
             </Badge>
         );
     };
@@ -152,7 +155,7 @@ const AdminOrders = () => {
             setSelectedOrder(orderDetails);
             setShowDetails(true);
         } catch (err) {
-            setError('Failed to load order details');
+            setError(t('errors.loadOrderDetails'));
         } finally {
             setLoading(false);
         }
@@ -175,7 +178,7 @@ const AdminOrders = () => {
             });
 
             if (!response.ok) {
-                throw new Error('Failed to update order status');
+                throw new Error(t('errors.updateOrderStatus'));
             }
 
             // Update the selected order with new status
@@ -241,7 +244,7 @@ const AdminOrders = () => {
                                 <InputGroup.Text><BsSearch /></InputGroup.Text>
                                 <Form.Control
                                     type="text"
-                                    placeholder="Search orders..."
+                                    placeholder={t('search.placeholder')}
                                     value={searchTerm}
                                     onChange={handleSearch}
                                     className="me-2"
@@ -279,109 +282,72 @@ const AdminOrders = () => {
                     {loading && orders.length === 0 ? (
                         <div className="text-center my-5">
                             <Spinner animation="border" role="status">
-                                <span className="visually-hidden">Loading orders...</span>
+                                <span className="visually-hidden">{t('table.loading')}</span>
                             </Spinner>
                         </div>
                     ) : (
-                        <>
-                            <div className="table-responsive">
-                                <Table hover className="align-middle">
-                                    <thead>
-                                        <tr>
-                                            <th>Order #</th>
-                                            <th>Buyer</th>
-                                            <th>Seller</th>
-                                            <th>Items</th>
-                                            <th>Total</th>
-                                            <th>Status</th>
-                                            <th>Date</th>
-                                            <th>Actions</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {orders.length > 0 ? (
-                                            orders.map((order) => (
-                                                <tr key={order.id}>
-                                                    <td className="fw-semibold">{order.id}</td>
-                                                    <td>
-                                                        <div className="d-flex flex-column">
-                                                            <span>{order.buyer.name}</span>
-                                                            <small className="text-muted">{order.buyer.email}</small>
-                                                        </div>
-                                                    </td>
-                                                    <td>
-                                                        <div className="d-flex flex-column">
-                                                            <span>{order.seller.name}</span>
-                                                            <small className="text-muted">{order.seller.email}</small>
-                                                        </div>
-                                                    </td>
-                                                    <td>{order.item_count || 0} item{order.item_count !== 1 ? 's' : ''}</td>
-                                                    <td className="fw-semibold">${Number(order.total || 0).toFixed(2)}</td>
-                                                    <td>
-                                                        <div className="d-flex align-items-center">
-                                                            {getStatusIcon(order.status)}
-                                                            {getStatusBadge(order.status)}
-                                                        </div>
-                                                    </td>
-                                                    <td>{order.createdAt ? new Date(order.createdAt).toLocaleDateString() : 'N/A'}</td>
-                                                    <td>
-                                                        <Button
-                                                            variant="outline-primary"
-                                                            size="sm"
-                                                            onClick={() => handleViewOrder(order)}
-                                                            disabled={loading}
-                                                        >
-                                                            <BsEye className="me-1" /> View
-                                                        </Button>
-                                                    </td>
-                                                </tr>
-                                            ))
-                                        ) : (
-                                            <tr>
-                                                <td colSpan="8" className="text-center py-4">
-                                                    No orders found
+                        <div className="table-responsive">
+                            <Table hover className="align-middle">
+                                <thead>
+                                    <tr>
+                                        <th>{t('table.columns.orderNumber')}</th>
+                                        <th>{t('table.columns.buyer')}</th>
+                                        <th>{t('table.columns.seller')}</th>
+                                        <th>{t('table.columns.items')}</th>
+                                        <th>{t('table.columns.total')}</th>
+                                        <th>{t('table.columns.status')}</th>
+                                        <th>{t('table.columns.date')}</th>
+                                        <th>{t('table.columns.actions')}</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {orders.length > 0 ? (
+                                        orders.map((order) => (
+                                            <tr key={order.id}>
+                                                <td className="fw-semibold">{order.id}</td>
+                                                <td>
+                                                    <div className="d-flex flex-column">
+                                                        <span>{order.buyer?.name || 'N/A'}</span>
+                                                        <small className="text-muted">{order.buyer?.email || 'N/A'}</small>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <div className="d-flex flex-column">
+                                                        <span>{order.seller?.name || 'N/A'}</span>
+                                                        <small className="text-muted">{order.seller?.email || 'N/A'}</small>
+                                                    </div>
+                                                </td>
+                                                <td>{t('table.itemsCount', { count: order.item_count || 0 })}</td>
+                                                <td className="fw-semibold">${Number(order.total || 0).toFixed(2)}</td>
+                                                <td>
+                                                    <div className="d-flex align-items-center">
+                                                        {getStatusIcon(order.status)}
+                                                        {getStatusBadge(order.status)}
+                                                    </div>
+                                                </td>
+                                                <td>{order.createdAt ? new Date(order.createdAt).toLocaleDateString() : 'N/A'}</td>
+                                                <td>
+                                                    <Button
+                                                        variant="outline-primary"
+                                                        size="sm"
+                                                        onClick={() => handleViewOrder(order)}
+                                                        disabled={loading}
+                                                    >
+                                                        <BsEye className="me-1" /> {t('table.viewButton')}
+                                                    </Button>
                                                 </td>
                                             </tr>
-                                        )}
-                                    </tbody>
-                                </Table>
-                            </div>
-
-                            {totalPages > 1 && (
-                                <div className="d-flex justify-content-center mt-4">
-                                    <Pagination>
-                                        <Pagination.First
-                                            onClick={() => setCurrentPage(1)}
-                                            disabled={currentPage === 1}
-                                        />
-                                        <Pagination.Prev
-                                            onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
-                                            disabled={currentPage === 1}
-                                        />
-                                        {[...Array(Math.min(5, totalPages))].map((_, i) => {
-                                            const page = Math.max(1, Math.min(totalPages - 4, currentPage - 2)) + i;
-                                            return (
-                                                <Pagination.Item
-                                                    key={page}
-                                                    active={page === currentPage}
-                                                    onClick={() => setCurrentPage(page)}
-                                                >
-                                                    {page}
-                                                </Pagination.Item>
-                                            );
-                                        })}
-                                        <Pagination.Next
-                                            onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
-                                            disabled={currentPage === totalPages}
-                                        />
-                                        <Pagination.Last
-                                            onClick={() => setCurrentPage(totalPages)}
-                                            disabled={currentPage === totalPages}
-                                        />
-                                    </Pagination>
-                                </div>
-                            )}
-                        </>
+                                        ))
+                                    ) : (
+                                        <tr>
+                                            <td colSpan="8" className="text-center py-4">
+                                                {t('table.noOrders')}
+                                            </td>
+                                        </tr>
+                                    )}
+                                </tbody>
+                            </Table>
+                        </div>
                     )}
                 </Card.Body>
             </Card>
@@ -390,7 +356,7 @@ const AdminOrders = () => {
             <Modal show={showDetails} onHide={() => setShowDetails(false)} size="lg">
                 <Modal.Header closeButton>
                     <Modal.Title>
-                        Order Details: {selectedOrder?.order_number}
+                        {t('modals.orderDetails.title', { orderNumber: selectedOrder?.order_number || '' })}
                     </Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
@@ -398,14 +364,14 @@ const AdminOrders = () => {
                         <div>
                             <div className="d-flex justify-content-between mb-4">
                                 <div>
-                                    <h6 className="fw-bold mb-2">Order Information</h6>
+                                    <h6 className="fw-bold mb-2">{t('modals.orderDetails.orderInfo')}</h6>
                                     <p className="mb-1">
-                                        <span className="text-muted">Date: </span>
+                                        <span className="text-muted">{t('modals.orderDetails.date')}: </span>
                                         {formatDate(selectedOrder.created_at)}
                                     </p>
                                     <div className="mb-3">
                                         <div className="d-flex align-items-center">
-                                            <span className="text-muted me-2">Status: </span>
+                                            <span className="text-muted me-2">{t('modals.orderDetails.status')}: </span>
                                             <Form.Select
                                                 size="sm"
                                                 className="w-auto me-2"
@@ -415,26 +381,25 @@ const AdminOrders = () => {
                                             >
                                                 {availableStatuses.map(status => (
                                                     <option key={status} value={status}>
-                                                        {status.charAt(0).toUpperCase() + status.slice(1)}
+                                                        {t(`status.${status}`, status.charAt(0).toUpperCase() + status.slice(1))}
                                                     </option>
                                                 ))}
                                             </Form.Select>
-
                                         </div>
                                     </div>
                                     <p className="mb-1">
-                                        <span className="text-muted">Total: </span>
+                                        <span className="text-muted">{t('modals.orderDetails.total')}: </span>
                                         <strong>${Number(selectedOrder.total || 0).toFixed(2)}</strong>
                                     </p>
                                 </div>
                                 <div className="text-end">
-                                    <h6 className="fw-bold mb-2">Buyer Information</h6>
-                                    <p className="mb-1">{selectedOrder.buyer.name}</p>
-                                    <p className="mb-1 text-muted">{selectedOrder.buyer.email}</p>
+                                    <h6 className="fw-bold mb-2">{t('modals.orderDetails.buyerInfo')}</h6>
+                                    <p className="mb-1">{selectedOrder.buyer?.name || 'N/A'}</p>
+                                    <p className="mb-1 text-muted">{selectedOrder.buyer?.email || 'N/A'}</p>
 
                                     {selectedOrder.items?.[0]?.seller && (
                                         <>
-                                            <h6 className="fw-bold mt-3 mb-2">Seller Information</h6>
+                                            <h6 className="fw-bold mt-3 mb-2">{t('modals.orderDetails.sellerInfo')}</h6>
                                             <p className="mb-1">{selectedOrder.items[0].seller.name}</p>
                                             <p className="mb-1 text-muted">{selectedOrder.items[0].seller.email}</p>
                                         </>
@@ -442,20 +407,20 @@ const AdminOrders = () => {
                                 </div>
                             </div>
 
-                            <h6 className="fw-bold mb-3">Order Items</h6>
+                            <h6 className="fw-bold mb-3">{t('modals.orderDetails.orderItems')}</h6>
                             <Table bordered hover className="mb-4">
                                 <thead>
                                     <tr>
-                                        <th>Product</th>
-                                        <th className="text-end">Price</th>
-                                        <th className="text-end">Qty</th>
-                                        <th className="text-end">Total</th>
+                                        <th>{t('modals.orderDetails.product')}</th>
+                                        <th className="text-end">{t('modals.orderDetails.price')}</th>
+                                        <th className="text-end">{t('modals.orderDetails.quantity')}</th>
+                                        <th className="text-end">{t('modals.orderDetails.subtotal')}</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {selectedOrder.items.map((item, index) => (
+                                    {selectedOrder.items?.map((item, index) => (
                                         <tr key={index}>
-                                            <td>{item.product_name || 'Product'}</td>
+                                            <td>{item.product_name || t('modals.orderDetails.product')}</td>
                                             <td className="text-end">${Number(item.price || 0).toFixed(2)}</td>
                                             <td className="text-end">{item.quantity}</td>
                                             <td className="text-end fw-semibold">
@@ -464,7 +429,7 @@ const AdminOrders = () => {
                                         </tr>
                                     ))}
                                     <tr className="table-light">
-                                        <td colSpan="3" className="text-end fw-bold">Total</td>
+                                        <td colSpan="3" className="text-end fw-bold">{t('modals.orderDetails.total')}</td>
                                         <td className="text-end fw-bold">${Number(selectedOrder.total || 0).toFixed(2)}</td>
                                     </tr>
                                 </tbody>
@@ -473,10 +438,10 @@ const AdminOrders = () => {
                             <div className="d-flex justify-content-between align-items-center mt-4 pt-3 border-top">
                                 <div>
                                     <Button variant="outline-secondary" size="sm" className="me-2">
-                                        <BsTruck className="me-1" /> Track Order
+                                        <BsTruck className="me-1" /> {t('modals.orderDetails.trackOrder')}
                                     </Button>
                                     <Button variant="outline-secondary" size="sm">
-                                        <BsCurrencyDollar className="me-1" /> Refund
+                                        <BsCurrencyDollar className="me-1" /> {t('modals.orderDetails.refund')}
                                     </Button>
                                 </div>
                                 <div>
@@ -486,7 +451,7 @@ const AdminOrders = () => {
                                         onClick={handleStatusUpdateClick}
                                         disabled={loading || !editingStatus || editingStatus === selectedOrder?.status}
                                     >
-                                        {loading ? 'Updating...' : 'Update Status'}
+                                        {loading ? t('modals.orderDetails.updating') : t('modals.orderDetails.updateStatus')}
                                     </Button>
                                 </div>
                             </div>
@@ -495,7 +460,7 @@ const AdminOrders = () => {
                 </Modal.Body>
                 <Modal.Footer>
                     <Button variant="secondary" onClick={() => setShowDetails(false)}>
-                        Close
+                        {t('modals.orderDetails.close')}
                     </Button>
                 </Modal.Footer>
             </Modal>

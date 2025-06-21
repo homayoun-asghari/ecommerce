@@ -1,0 +1,50 @@
+{
+  "search": {
+    "placeholder": "Search users...",
+    "allRoles": "All Roles"
+  },
+  "table": {
+    "columns": {
+      "name": "Name",
+      "email": "Email",
+      "role": "Role",
+      "orders": "Orders",
+      "joined": "Joined",
+      "actions": "Actions"
+    },
+    "noUsers": "No users found",
+    "viewButton": "View",
+    "loading": "Loading..."
+  },
+  "pagination": {
+    "first": "First",
+    "previous": "Previous",
+    "next": "Next",
+    "last": "Last",
+    "page": "Page",
+    "of": "of"
+  },
+  "userDetails": {
+    "title": "User Details",
+    "basicInfo": "Basic Information",
+    "statistics": "Statistics",
+    "stats": {
+      "totalOrders": "Total Orders",
+      "totalReviews": "Total Reviews",
+      "totalSpent": "Total Spent",
+      "memberSince": "Member Since",
+      "lastLogin": "Last Login",
+      "never": "Never"
+    },
+    "close": "Close"
+  },
+  "roles": {
+    "admin": "Admin",
+    "seller": "Seller",
+    "buyer": "Buyer"
+  },
+  "errors": {
+    "fetchUsers": "Failed to fetch users",
+    "fetchUserStats": "Failed to fetch user stats"
+  }
+}

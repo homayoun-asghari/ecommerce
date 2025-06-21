@@ -1,0 +1,74 @@
+{
+  "search": {
+    "placeholder": "Ürün ara...",
+    "allCategories": "Tüm Kategoriler",
+    "allSellers": "Tüm Satıcılar",
+    "allStatuses": "Tüm Durumlar"
+  },
+  "table": {
+    "loading": "Yükleniyor...",
+    "columns": {
+      "product": "Ürün",
+      "category": "Kategori",
+      "seller": "Satıcı",
+      "price": "Fiyat",
+      "stock": "Stok",
+      "status": "Durum",
+      "dateAdded": "Eklenme Tarihi",
+      "actions": "İşlemler"
+    },
+    "actions": {
+      "view": "Görüntüle",
+      "approve": "Onayla",
+      "reject": "Reddet",
+      "delete": "Sil"
+    }
+  },
+  "status": {
+    "pending": "Beklemede",
+    "approved": "Onaylandı",
+    "rejected": "Reddedildi"
+  },
+  "modals": {
+    "approve": {
+      "title": "Ürünü Onayla",
+      "message": "{{productName}} ürününü onaylamak istediğinize emin misiniz? Bu işlem ürünün tüm kullanıcılar tarafından görülebilir olmasını sağlayacaktır.",
+      "cancel": "İptal",
+      "confirm": "Onayla"
+    },
+    "reject": {
+      "title": "Ürünü Reddet",
+      "message": "{{productName}} ürününü reddetmek istediğinize emin misiniz? Satıcı bilgilendirilecektir.",
+      "cancel": "İptal",
+      "confirm": "Reddet"
+    },
+    "delete": {
+      "title": "Ürünü Sil",
+      "message": "{{productName}} ürününü silmek istediğinize emin misiniz? Bu işlem geri alınamaz.",
+      "warning": "Ürün resimleri de dahil olmak üzere tüm veriler kalıcı olarak silinecektir.",
+      "cancel": "İptal",
+      "confirm": "Kalıcı Olarak Sil"
+    },
+    "view": {
+      "title": "Ürün Detayları",
+      "noProduct": "Seçili ürün bulunamadı.",
+      "fields": {
+        "name": "Ürün Adı",
+        "category": "Kategori",
+        "seller": "Satıcı",
+        "description": "Açıklama",
+        "price": "Fiyat",
+        "stock": "Stok",
+        "status": "Durum",
+        "dateAdded": "Eklenme Tarihi"
+      },
+      "close": "Kapat"
+    }
+  },
+  "errors": {
+    "fetchProducts": "Ürünler yüklenirken hata oluştu",
+    "approveProduct": "Ürün onaylanırken hata oluştu",
+    "rejectProduct": "Ürün reddedilirken hata oluştu",
+    "deleteProduct": "Ürün silinirken hata oluştu"
+  }
+}
