@@ -26,10 +26,22 @@ const ContentColumn = styled(Col)`
 function Checkout() {
     const [createAccount, setCreateAccount] = useState(false);
     const [differentShipping, setDifferentShipping] = useState(false);
+    // Using a single state to control the form visibility
+    const [showShippingForm, setShowShippingForm] = useState(false);
     const [addresses, setAddresses] = useState([]);
     const [address, setAddress] = useState({});
     const [delivary, setDelivary] = useState(false);
     const [shipping, setShipping] = useState(null);
+    
+    // Debug log when component mounts and when relevant states change
+    useEffect(() => {
+        console.log('Checkout component state:', {
+            differentShipping,
+            showShippingForm,
+            hasAddresses: addresses?.length > 0
+        });
+    }, [differentShipping, showShippingForm, addresses]);
+
     const { cartItems, removeFromCart } = useCart();
     let totalCost = 0;
     const delivaryCost = 15;
@@ -123,21 +135,50 @@ function Checkout() {
         <ContentColumn $isOpen={isOpen}>
             <Row>
                 <Col lg={8}>
-                {user && <Form id="checkout" onSubmit={handleSubmit}>
-                    <AddresseCard address={address} />
-                    <Form.Check type="checkbox" name="differentShipping" label="Ship to different address?" onChange={(e) => setDifferentShipping(e.target.checked)} />
-                    {differentShipping && addresses.map(item => {
-                        return (
-                            <>
-                                {!item.is_default &&
-                                    <>
-                                        <AddresseCard address={item} />
-                                        <Form.Check type="radio" name="shipping" label="Shipping To?" onChange={e => handleShipping(item.id)} />
-                                    </>}
-                            </>
-                        );
-                    })}
-                </Form>}
+                {user && (
+                    <Form id="checkout" onSubmit={handleSubmit}>
+                        <AddresseCard address={address} />
+                        <div className="mb-3">
+                            <Form.Check 
+                                type="checkbox" 
+                                id="differentShippingCheckbox"
+                                name="differentShipping" 
+                                label="Ship to different address?" 
+                                checked={differentShipping}
+                                onChange={(e) => {
+                                    console.log('Checkbox changed:', e.target.checked);
+                                    const isChecked = e.target.checked;
+                                    setDifferentShipping(isChecked);
+                                    setShowShippingForm(isChecked);
+                                }} 
+                            />
+                        </div>
+                        {showShippingForm && (
+                            <div className="shipping-addresses mt-3">
+                                {addresses.filter(addr => !addr.is_default).length > 0 ? (
+                                    addresses
+                                        .filter(addr => !addr.is_default)
+                                        .map(item => (
+                                            <div key={item.id} className="mb-3 p-3 border rounded">
+                                                <AddresseCard address={item} />
+                                                <Form.Check 
+                                                    type="radio" 
+                                                    name="shipping" 
+                                                    label="Ship to this address" 
+                                                    onChange={e => handleShipping(item.id)}
+                                                    className="mt-2"
+                                                />
+                                            </div>
+                                        ))
+                                ) : (
+                                    <div className="alert alert-info">
+                                        No additional addresses found. Please add a new address in your account.
+                                    </div>
+                                )}
+                            </div>
+                        )}
+                    </Form>
+                )}
                 {!user && <><h4 className="border-bottom py-1">Billing Data</h4>
                     <Form id="checkout" className="d-flex flex-column gap-3" controlId="checkout" onSubmit={handleSubmit}>
                         <Form.Group className="mb-3" controlId="name">
@@ -188,9 +229,23 @@ function Checkout() {
                             </>
                         )}
 
-                        <Form.Check type="checkbox" name="differentShipping" label="Ship to different address?" onChange={(e) => setDifferentShipping(e.target.checked)} />
+                        <div className="mb-3">
+                            <Form.Check 
+                                type="checkbox" 
+                                id="guestDifferentShippingCheckbox"
+                                name="differentShipping" 
+                                label="Ship to different address?" 
+                                checked={differentShipping}
+                                onChange={(e) => {
+                                    console.log('Guest checkbox changed:', e.target.checked);
+                                    const isChecked = e.target.checked;
+                                    setDifferentShipping(isChecked);
+                                    setShowShippingForm(isChecked);
+                                }} 
+                            />
+                        </div>
 
-                        {differentShipping && (
+                        {showShippingForm && (
                             <>
                                 <h4 className="border-bottom py-1">Shipping Data</h4>
                                 <Form.Group className="mb-3" controlId="shippingName">

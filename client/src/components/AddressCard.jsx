@@ -6,7 +6,7 @@ import Button from 'react-bootstrap/Button';
 import { Trash } from "react-bootstrap-icons";
 import { API_BASE_URL } from "../config";
 
-function AddressCard({ address, mode }) {
+function AddressCard({ address = {}, mode = 'card' }) {
     const { user } = useUser();
     const userId = user?.data?.id;
     const setDefaultAddress = async (addressId) => {
@@ -47,12 +47,12 @@ function AddressCard({ address, mode }) {
     return (
         <Card className="m-3">
             <Card.Header>
-                    Deliver to {address.full_name}
+                    Deliver to {address?.full_name || 'Unknown User'}
                 </Card.Header>
             <Card.Body>
-                <Card.Title>Address: {address.street} {address.city} {address.state} {address.country}</Card.Title>
+                <Card.Title>Address: {address?.street || ''} {address?.city || ''} {address?.state || ''} {address?.country || ''}</Card.Title>
                 <Card.Text>
-                    Phone: {address.phone}
+                    Phone: {address?.phone || 'Not provided'}
                 </Card.Text>
                 {mode === "page" && <div className="d-flex justify-content-between align-items-end">
                     <Form.Check
@@ -60,7 +60,7 @@ function AddressCard({ address, mode }) {
                         name="defaultAddress"
                         id={`default-${address.id}`}
                         label="Default"
-                        checked={address.is_default}
+                        checked={address?.is_default || false}
                         onChange={() => setDefaultAddress(address.id)}
                     />
                     <Button variant="danger" onClick={handleDelete}><Trash /></Button>
