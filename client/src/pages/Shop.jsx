@@ -241,23 +241,10 @@ function Shop() {
                     <Card className="border-0 shadow-sm mb-4">
                         <Card.Header className="border-bottom-0 py-3">
                             <div className="d-flex flex-column flex-md-row justify-content-between align-items-center w-100">
-                                <h5 className="mb-3 mb-md-0 text-center text-md-start">
+                                <h5 className="mb-0 text-center text-md-start">
                                     {t('products:productsFound', { count: pagination.total })}
                                 </h5>
                                 <div className="d-flex align-items-center gap-2">
-                                    <Form.Select
-                                        size="sm"
-                                        style={{ minWidth: '180px' }}
-                                        value={sortBy}
-                                        onChange={(e) => setSortBy(e.target.value)}
-                                        aria-label={t('products:sortBy')}
-                                    >
-                                        {sortOptions.map((option) => (
-                                            <option key={option.value} value={option.value}>
-                                                {option.label}
-                                            </option>
-                                        ))}
-                                    </Form.Select>
                                     <Button
                                         variant="outline-secondary"
                                         size="sm"
@@ -271,9 +258,23 @@ function Shop() {
                                         }}
                                         disabled={!filters.categories?.length && !filters.minRating && 
                                                 filters.priceRange?.min === 0 && filters.priceRange?.max === 1000}
+                                        className="text-nowrap"
                                     >
                                         {t('common:clearAllFilters')}
                                     </Button>
+                                    <Form.Select
+                                        size="sm"
+                                        style={{ width: 'auto', minWidth: '180px' }}
+                                        value={sortBy}
+                                        onChange={(e) => setSortBy(e.target.value)}
+                                        aria-label={t('products:sortBy')}
+                                    >
+                                        {sortOptions.map((option) => (
+                                            <option key={option.value} value={option.value}>
+                                                {option.label}
+                                            </option>
+                                        ))}
+                                    </Form.Select>
                                 </div>
                             </div>
                         </Card.Header>
