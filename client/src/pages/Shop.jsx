@@ -115,22 +115,40 @@ function Shop() {
             }
 
             const url = `${API_BASE_URL}/product/shop?${params.toString()}`;
-            console.log('Fetching products from:', url);
+            console.log('Fetching products with params:', {
+                url,
+                category: params.get('category'),
+                minPrice: params.get('minPrice'),
+                maxPrice: params.get('maxPrice'),
+                minRating: params.get('minRating')
+            });
 
             const response = await fetch(url);
             const data = await response.json();
+            
+            console.log('API Response:', {
+                status: response.status,
+                data,
+                productsCount: data.products?.length || 0
+            });
 
             if (!response.ok) {
                 throw new Error(data.message || 'Failed to fetch products');
             }
 
             setProducts(data.products || []);
-            setPagination({
-                page: data.page || 1,
-                limit: data.limit || 12,
-                total: data.total || 0,
-                totalPages: data.totalPages || 1
-            });
+            
+            // Update pagination from the response
+            if (data.pagination) {
+                const paginationData = {
+                    page: data.pagination.page || 1,
+                    limit: data.pagination.limit || 12,
+                    total: data.pagination.total || 0,
+                    totalPages: data.pagination.totalPages || 1
+                };
+                console.log('Setting pagination from response:', paginationData);
+                setPagination(paginationData);
+            }
             setError(null);
         } catch (err) {
             console.error('Error fetching products:', err);

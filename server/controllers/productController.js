@@ -333,7 +333,7 @@ export const getShopProducts = async (req, res) => {
     let paramIndex = 1;
 
     try {
-        // Base query
+        // Build the base query
         query = `
             SELECT 
                 p.*, 
@@ -344,28 +344,24 @@ export const getShopProducts = async (req, res) => {
             FROM products p
             LEFT JOIN reviews r ON p.id = r.product_id
             LEFT JOIN order_items oi ON p.id = oi.product_id
+            WHERE 1=1
         `;
 
         // WHERE conditions
-        const conditions = [];
-
-        if (category) {
-            conditions.push(`p.category = $${paramIndex++}`);
-            params.push(category);
+        // Add conditions to query and params array
+        if (category && category !== 'null' && category !== 'undefined') {
+            query += ` AND p.category = $${paramIndex++}`;
+            params.push(String(category));
         }
 
         if (minPrice) {
-            conditions.push(`p.price >= $${paramIndex++}`);
+            query += ` AND p.price >= $${paramIndex++}`;
             params.push(parseFloat(minPrice));
         }
 
         if (maxPrice) {
-            conditions.push(`p.price <= $${paramIndex++}`);
+            query += ` AND p.price <= $${paramIndex++}`;
             params.push(parseFloat(maxPrice));
-        }
-
-        if (conditions.length > 0) {
-            query += ` WHERE ${conditions.join(' AND ')}`;
         }
         // GROUP BY for aggregate functions
         query += ` GROUP BY p.id`;
@@ -403,9 +399,10 @@ export const getShopProducts = async (req, res) => {
         }
 
         // Add pagination
-        const offset = (page - 1) * limit;
+        const offset = (parseInt(page, 10) - 1) * parseInt(limit, 10);
         query += ` LIMIT $${paramIndex++} OFFSET $${paramIndex++}`;
-        params.push(parseInt(limit), offset);
+        // Ensure limit and offset are numbers
+        params.push(parseInt(limit, 10), Math.max(0, offset));
 
         console.log('Executing query:', query);
         console.log('With params:', params);
@@ -413,25 +410,56 @@ export const getShopProducts = async (req, res) => {
         const result = await db.query(query, params);
         console.log('Query result rows:', result.rows.length);
 
-        // Get total count from the first row (if any)
-        const totalCount = result.rows.length > 0 ? parseInt(result.rows[0].total_count) : 0;
+        // Get total count using a separate query for accuracy
+        let countQuery = `
+            SELECT COUNT(DISTINCT p.id) as total_count
+            FROM products p
+            LEFT JOIN reviews r ON p.id = r.product_id
+            LEFT JOIN order_items oi ON p.id = oi.product_id
+            WHERE 1=1
+        `;
+        
+        // Add the same WHERE conditions as the main query
+        const countParams = [];
+        let countParamIndex = 1;
+        
+        if (category && category !== 'null' && category !== 'undefined') {
+            countQuery += ` AND p.category = $${countParamIndex++}`;
+            countParams.push(String(category));
+        }
+        
+        if (minPrice) {
+            countQuery += ` AND p.price >= $${countParamIndex++}`;
+            countParams.push(parseFloat(minPrice));
+        }
+        
+        if (maxPrice) {
+            countQuery += ` AND p.price <= $${countParamIndex++}`;
+            countParams.push(parseFloat(maxPrice));
+        }
+        
+        // Execute count query
+        console.log('Count query:', countQuery);
+        console.log('Count params:', countParams);
+        const countResult = await db.query(countQuery, countParams);
+        const totalCount = parseInt(countResult.rows[0]?.total_count, 10) || 0;
         const totalPages = Math.ceil(totalCount / limit);
+        
+        // Format products data
+        const products = result.rows.map(p => ({
+            ...p,
+            avg_rating: parseFloat(p.avg_rating) || 0,
+            review_count: parseInt(p.review_count) || 0,
+            total_quantity_sold: parseInt(p.total_quantity_sold) || 0
+        }));
 
         const responseData = {
-            products: result.rows.map(p => {
-                const product = {
-                    ...p,
-                    avg_rating: parseFloat(p.avg_rating),
-                    review_count: parseInt(p.review_count)
-                };
-                delete product.total_count; // Remove the total_count from each product
-                return product;
-            }),
+            products,
             pagination: {
                 total: totalCount,
-                total_pages: totalPages,
-                current_page: parseInt(page),
-                per_page: parseInt(limit)
+                totalPages: totalPages,
+                page: parseInt(page),
+                limit: parseInt(limit)
             }
         };
 
