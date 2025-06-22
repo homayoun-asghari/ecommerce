@@ -6,6 +6,7 @@ import { Link } from 'react-router-dom';
 import { ArrowRight } from "react-bootstrap-icons";
 import { API_BASE_URL } from "../config";
 import styled, { keyframes } from 'styled-components';
+import { useTranslation } from 'react-i18next';
 
 // Animation keyframes
 const fadeIn = keyframes`
@@ -67,6 +68,7 @@ const ReadMoreButton = styled(Link)`
 `;
 
 function HotCards() {
+    const { t, i18n } = useTranslation('hotCards');
     const [blogPosts, setBlogPosts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -152,7 +154,7 @@ function HotCards() {
     }, []);
 
     if (loading) {
-        return <div className="text-center py-4">Loading blog posts...</div>;
+        return <div className="text-center py-4">{t('loading')}</div>;
     }
 
     if (error) {
@@ -160,7 +162,7 @@ function HotCards() {
     }
 
     if (blogPosts.length === 0) {
-        return <div className="text-center py-4">No blog posts found</div>;
+        return <div className="text-center py-4">{t('noPosts')}</div>;
     }
 
     return (
@@ -192,13 +194,13 @@ function HotCards() {
                                     to={`/blog/${post.id || post._id}`} 
                                     className="btn btn-primary btn-sm px-3 py-2"
                                 >
-                                    Read More <ArrowRight size={16} />
+                                    {t('readMore')} <ArrowRight size={16} />
                                 </ReadMoreButton>
                             </div>
                         </Card.Body>
                         <Card.Footer className="bg-transparent border-top-0 pt-0">
                             <small className="text-muted">
-                                Posted on {new Date(post.created_at).toLocaleDateString('en-US', {
+                                {t('postedOn')} {new Date(post.created_at).toLocaleDateString(i18n.language, {
                                     year: 'numeric',
                                     month: 'long',
                                     day: 'numeric'

@@ -6,9 +6,11 @@ import Countdown from "./Countdown";
 import { Link } from "react-router-dom";
 import { useUser } from "../contexts/UserContext";
 import { API_BASE_URL } from "../config";
+import { useTranslation } from "react-i18next";
 
 
 function EspecialOffers() {
+    const { t } = useTranslation('especialOffers');
     const [products, setProducts] = useState([]);
     const { user } = useUser();
     const userId = user?.data?.id;
@@ -32,11 +34,11 @@ function EspecialOffers() {
         <Row >
             <Col lg={4} className="d-flex flex-column justify-content-center align-items-center especial-offers-card gap-2 py-5">
                 <div>
-                    <h2>Special Offers</h2>
+                    <h2>{t('specialOffers')}</h2>
                 </div>
                 <Countdown />
                 <Link to="/shop?sort=discount" className="btn btn-outline-dark text-nowrap">
-                    View All
+                    {t('viewAll')}
                 </Link>
             </Col>
 

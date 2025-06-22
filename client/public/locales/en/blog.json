@@ -1,0 +1,12 @@
+{
+  "fetchError": "Failed to fetch blog posts",
+  "loadError": "Failed to load blog posts. Please try again later.",
+  "loading": "Loading...",
+  "loadingPosts": "Loading blog posts...",
+  "errorTitle": "Error Loading Blog Posts",
+  "retry": "Retry",
+  "noPosts": "No blog posts found",
+  "checkBack": "Check back later for new posts!",
+  "refresh": "Refresh",
+  "loadMore": "Load More"
+}

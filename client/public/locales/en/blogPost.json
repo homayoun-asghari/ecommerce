@@ -1,0 +1,12 @@
+{
+  "postNotFoundInResponse": "Post not found in the response",
+  "loadError": "Failed to load blog post. It may have been removed or does not exist.",
+  "loading": "Loading...",
+  "loadingPost": "Loading post...",
+  "errorTitle": "Error Loading Post",
+  "postNotFound": "Post not found",
+  "backToBlog": "Back to Blog",
+  "backToAllPosts": "Back to all posts",
+  "youMightAlsoLike": "You might also like",
+  "readMore": "Read more"
+}

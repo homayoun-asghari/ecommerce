@@ -2,6 +2,7 @@ import React from 'react';
 import { Card, Button, Badge } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import { format } from 'date-fns';
+import { useTranslation } from 'react-i18next';
 import styled, { keyframes } from 'styled-components';
 
 // Animation keyframes
@@ -79,6 +80,18 @@ const StyledBadge = styled(Badge)`
 `;
 
 const BlogPostCard = ({ post, mode }) => {
+  const { t, i18n } = useTranslation('blogPostCard');
+  
+  // Format date according to current language
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    return new Intl.DateTimeFormat(i18n.language, {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    }).format(date);
+  };
+  
   return (
     <StyledCard>
       <div className="position-relative">
@@ -99,10 +112,10 @@ const BlogPostCard = ({ post, mode }) => {
       <Card.Body>
         <div className="d-flex justify-content-between align-items-center mb-2">
           <small className="text-muted">
-            {format(new Date(post.created_at), 'MMMM d, yyyy')}
+            {formatDate(post.created_at)}
           </small>
           <small className="text-muted">
-            {Math.ceil(post.content.length / 1000)} min read
+            {t('minRead', { minutes: Math.ceil(post.content.length / 1000) })}
           </small>
         </div>
         <Card.Title className="h5">{post.title}</Card.Title>
@@ -115,7 +128,7 @@ const BlogPostCard = ({ post, mode }) => {
           variant={mode === 'dark' ? 'outline-light' : 'outline-primary'}
           className="mt-auto align-self-stretch"
         >
-          Read More
+          {t('readMore')}
         </Button>
       </Card.Body>
     </StyledCard>

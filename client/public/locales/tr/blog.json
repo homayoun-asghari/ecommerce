@@ -1,0 +1,12 @@
+{
+  "fetchError": "Blog yazıları getirilirken hata oluştu",
+  "loadError": "Blog yazıları yüklenirken bir hata oluştu. Lütfen daha sonra tekrar deneyiniz.",
+  "loading": "Yükleniyor...",
+  "loadingPosts": "Blog yazıları yükleniyor...",
+  "errorTitle": "Blog Yazıları Yüklenirken Hata Oluştu",
+  "retry": "Tekrar Dene",
+  "noPosts": "Hiç blog yazısı bulunamadı",
+  "checkBack": "Yeni yazılar için daha sonra tekrar kontrol edin!",
+  "refresh": "Yenile",
+  "loadMore": "Daha Fazla Yükle"
+}

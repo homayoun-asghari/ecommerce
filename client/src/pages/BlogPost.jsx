@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { API_BASE_URL } from '../config';
 import { Row, Col, Card, Spinner, Button, Badge, Container } from 'react-bootstrap';
 import { format } from 'date-fns';
+import { useTranslation } from 'react-i18next';
 import { useTheme } from '../contexts/ThemeContext';
 import styled from 'styled-components';
 import '../styles/Blog.css';
@@ -21,6 +22,7 @@ const ContentColumn = styled(Col)`
 `;
 
 function BlogPost() {
+    const { t, i18n } = useTranslation('blogPost');
     const { id } = useParams();
     const navigate = useNavigate();
     const [post, setPost] = useState(null);
@@ -29,6 +31,16 @@ function BlogPost() {
     const [relatedPosts, setRelatedPosts] = useState([]);
     const { mode } = useTheme();
     const { isOpen } = useSideBar();
+
+    // Format date according to current language
+    const formatDate = (dateString) => {
+        const date = new Date(dateString);
+        return new Intl.DateTimeFormat(i18n.language, {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        }).format(date);
+    };
 
     useEffect(() => {
         const fetchPost = async () => {
@@ -61,7 +73,7 @@ function BlogPost() {
                 
                 if (!post) {
                     console.error('Post not found in response:', postData);
-                    throw new Error('Post not found in the response');
+                    throw new Error(t('postNotFoundInResponse'));
                 }
                 
                 console.log('Setting post:', post);
@@ -78,7 +90,7 @@ function BlogPost() {
                 setError(null);
             } catch (err) {
                 console.error('Error fetching blog post:', err);
-                setError('Failed to load blog post. It may have been removed or does not exist.');
+                setError(t('loadError'));
             } finally {
                 setLoading(false);
             }
@@ -93,9 +105,9 @@ function BlogPost() {
                 <Row className="justify-content-center">
                     <Col xs="auto" className="text-center">
                         <Spinner animation="border" role="status">
-                            <span className="visually-hidden">Loading...</span>
+                            <span className="visually-hidden">{t('loading')}</span>
                         </Spinner>
-                        <p className="mt-2">Loading post...</p>
+                        <p className="mt-2">{t('loadingPost')}</p>
                     </Col>
                 </Row>
             </Container>
@@ -109,14 +121,14 @@ function BlogPost() {
                     <Col md={8} className="text-center">
                         <Card className="border-danger">
                             <Card.Body>
-                                <Card.Title className="text-danger">Error Loading Post</Card.Title>
-                                <Card.Text>{error || 'Post not found'}</Card.Text>
+                                <Card.Title className="text-danger">{t('errorTitle')}</Card.Title>
+                                <Card.Text>{error || t('postNotFound')}</Card.Text>
                                 <Button
                                     variant="outline-danger"
                                     onClick={() => navigate('/blog')}
                                     className="mt-2"
                                 >
-                                    Back to Blog
+                                    {t('backToBlog')}
                                 </Button>
                             </Card.Body>
                         </Card>
@@ -137,7 +149,7 @@ function BlogPost() {
                             className="mb-4"
                             size="sm"
                         >
-                            <i className="bi bi-arrow-left me-2"></i>Back to all posts
+                            <i className="bi bi-arrow-left me-2"></i>{t('backToAllPosts')}
                         </Button>
                     </div>
 
@@ -194,7 +206,7 @@ function BlogPost() {
 
                     {relatedPosts.length > 0 && (
                         <section className="mt-5 pt-5 border-top">
-                            <h3 className="mb-4 pb-2 border-bottom">You might also like</h3>
+                            <h3 className="mb-4 pb-2 border-bottom">{t('youMightAlsoLike')}</h3>
                             <Row xs={1} md={2} lg={3} className="g-4">
                                 {relatedPosts.map((relatedPost) => (
                                     <Col key={relatedPost.id}>
@@ -210,14 +222,14 @@ function BlogPost() {
                                             <Card.Body>
                                                 <Card.Title>{relatedPost.title}</Card.Title>
                                                 <Card.Text className="text-muted small">
-                                                    {format(new Date(relatedPost.created_at), 'MMMM d, yyyy')}
+                                                    {formatDate(relatedPost.created_at)}
                                                 </Card.Text>
                                                 <Button
                                                     variant={mode === 'dark' ? 'outline-light' : 'outline-primary'}
                                                     size="sm"
                                                     onClick={() => navigate(`/blog/${relatedPost.id}`)}
                                                 >
-                                                    Read more
+                                                    {t('readMore')}
                                                 </Button>
                                             </Card.Body>
                                         </Card>

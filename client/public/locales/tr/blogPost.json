@@ -1,0 +1,12 @@
+{
+  "postNotFoundInResponse": "Gönderi yanıtta bulunamadı",
+  "loadError": "Blog gönderisi yüklenemedi. Kaldırılmış veya mevcut olmayabilir.",
+  "loading": "Yükleniyor...",
+  "loadingPost": "Gönderi yükleniyor...",
+  "errorTitle": "Gönderi Yüklenirken Hata Oluştu",
+  "postNotFound": "Gönderi bulunamadı",
+  "backToBlog": "Blog'a Dön",
+  "backToAllPosts": "Tüm Gönderilere Dön",
+  "youMightAlsoLike": "Bunlar da ilginizi çekebilir",
+  "readMore": "Devamını oku"
+}

@@ -4,8 +4,10 @@ import { Link } from "react-router-dom";
 import ProductCard from "./ProductCard";
 import { useUser } from "../contexts/UserContext";
 import { API_BASE_URL } from "../config";
+import { useTranslation } from "react-i18next";
 
-function NewArrivals() {
+function BestSellers() {
+    const { t } = useTranslation('bestSellers');
     const [products, setProducts] = useState([]);
     const { user } = useUser();
     const userId = user?.data?.id;
@@ -28,11 +30,11 @@ function NewArrivals() {
         <Row className="g-1">
             <Row className="d-flex justify-content-between align-items-center mb-3">
                 <Col>
-                    <h5>Best Sellers</h5>
+                    <h5>{t('bestSellers')}</h5>
                 </Col>
                 <Col className="text-end">
                     <Link to="/shop?sort=best-sellers" className="btn btn-outline-primary text-nowrap">
-                        View All
+                        {t('viewAll')}
                     </Link>
                 </Col>
             </Row>
@@ -49,4 +51,4 @@ function NewArrivals() {
     );
 }
 
-export default NewArrivals;
+export default BestSellers;

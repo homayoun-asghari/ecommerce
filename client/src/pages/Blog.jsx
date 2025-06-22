@@ -4,9 +4,11 @@ import { useTheme } from '../contexts/ThemeContext';
 import { useSideBar } from '../contexts/SideBarContext';
 import { API_BASE_URL } from '../config';
 import BlogPostCard from '../components/BlogPostCard';
+import { useTranslation } from 'react-i18next';
 import '../styles/Blog.css';
 
 function Blog() {
+    const { t } = useTranslation('blog');
     const [posts, setPosts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -23,7 +25,7 @@ function Blog() {
                 const response = await fetch(`${API_BASE_URL}/admin/blog?page=${page}&limit=${postsPerPage}`);
 
                 if (!response.ok) {
-                    throw new Error('Failed to fetch blog posts');
+                    throw new Error(t('fetchError'));
                 }
 
                 const data = await response.json();
@@ -38,7 +40,7 @@ function Blog() {
                 setError(null);
             } catch (err) {
                 console.error('Error fetching blog posts:', err);
-                setError('Failed to load blog posts. Please try again later.');
+                setError(t('loadError'));
             } finally {
                 setLoading(false);
             }
@@ -57,9 +59,9 @@ function Blog() {
                 <Row className="justify-content-center">
                     <Col xs="auto" className="text-center">
                         <Spinner animation="border" role="status">
-                            <span className="visually-hidden">Loading...</span>
+                            <span className="visually-hidden">{t('loading')}</span>
                         </Spinner>
-                        <p className="mt-2">Loading blog posts...</p>
+                        <p className="mt-2">{t('loadingPosts')}</p>
                     </Col>
                 </Row>
             </Container>
@@ -73,14 +75,14 @@ function Blog() {
                     <Col md={8} className="text-center">
                         <Card className="border-danger">
                             <Card.Body>
-                                <Card.Title className="text-danger">Error Loading Blog Posts</Card.Title>
+                                <Card.Title className="text-danger">{t('errorTitle')}</Card.Title>
                                 <Card.Text>{error}</Card.Text>
                                 <Button
                                     variant="outline-danger"
                                     onClick={() => window.location.reload()}
                                     className="mt-2"
                                 >
-                                    Retry
+                                    {t('retry')}
                                 </Button>
                             </Card.Body>
                         </Card>
@@ -107,13 +109,13 @@ function Blog() {
                     {posts.length === 0 ? (
                         <div className="text-center py-5 my-5">
                             <i className="bi bi-newspaper" style={{ fontSize: '4rem', opacity: 0.2 }}></i>
-                            <h3 className="mt-3">No blog posts found</h3>
-                            <p className="text-muted mb-4">Check back later for new posts!</p>
+                            <h3 className="mt-3">{t('noPosts')}</h3>
+                            <p className="text-muted mb-4">{t('checkBack')}</p>
                             <Button
                                 variant={mode === 'dark' ? 'outline-light' : 'outline-primary'}
                                 onClick={() => window.location.reload()}
                             >
-                                <i className="bi bi-arrow-clockwise me-2"></i>Refresh
+                                <i className="bi bi-arrow-clockwise me-2"></i>{t('refresh')}
                             </Button>
                         </div>
                     ) : (
@@ -135,10 +137,10 @@ function Blog() {
                                 {loading ? (
                                     <>
                                         <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-                                        Loading...
+                                        {t('loading')}
                                     </>
                                 ) : (
-                                    'Load More'
+                                    t('loadMore')
                                 )}
                             </Button>
                         </div>
