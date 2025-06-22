@@ -3,12 +3,12 @@ import dotenv from "dotenv";
 dotenv.config();
 
 const db = new pg.Client({
-    user: process.env.PG_USER,
-    host: process.env.PG_HOST,
-    password: process.env.PG_PASSWORD,
-    port: process.env.PG_PORT,
-    database: process.env.PG_DATABASE
+    connectionString: process.env.PG_CONNECTION_STRING,
+    ssl: {
+        rejectUnauthorized: false
+    }
 });
+
 db.connect();
 
 export default db;
