@@ -440,6 +440,8 @@ export const getShopProducts = async (req, res) => {
 
         // Add HAVING clause for minRating if it exists
         if (minRating) {
+            // Rebuild the count query with proper parameter indexing
+            let havingClause = '';
             countQuery = `
                 SELECT COUNT(*) as total_count FROM (
                     SELECT p.id
@@ -447,11 +449,26 @@ export const getShopProducts = async (req, res) => {
                     LEFT JOIN reviews r ON p.id = r.product_id
                     LEFT JOIN order_items oi ON p.id = oi.product_id
                     WHERE 1=1
-                    ${category && category !== 'null' && category !== 'undefined' ? `AND p.category = $1` : ''}
-                    ${minPrice ? ` AND p.price >= $${minPrice ? 2 : 1}` : ''}
-                    ${maxPrice ? ` AND p.price <= $${minPrice ? 3 : 2}` : ''}
+            `;
+            
+            // Reset countParamIndex for the subquery
+            let subQueryParamIndex = 1;
+            
+            if (category && category !== 'null' && category !== 'undefined') {
+                countQuery += ` AND p.category = $${subQueryParamIndex++}`;
+            }
+            
+            if (minPrice) {
+                countQuery += ` AND p.price >= $${subQueryParamIndex++}`;
+            }
+            
+            if (maxPrice) {
+                countQuery += ` AND p.price <= $${subQueryParamIndex++}`;
+            }
+            
+            countQuery += `
                     GROUP BY p.id
-                    HAVING COALESCE(AVG(r.rating), 0) >= $${countParams.length + 1}
+                    HAVING COALESCE(AVG(r.rating), 0) >= $${subQueryParamIndex}
                 ) as filtered_products
             `;
             countParams.push(parseFloat(minRating));

@@ -249,15 +249,22 @@ function Shop() {
                                         variant="outline-secondary"
                                         size="sm"
                                         onClick={() => {
+                                            // Reset all filters in the context
                                             updateFilters({
                                                 categories: [],
                                                 priceRange: { min: 0, max: 1000 },
                                                 minRating: 0
                                             });
+                                            // Clear all URL parameters
                                             setSearchParams({});
+                                            // Reset sort to default
+                                            setSortBy('featured');
                                         }}
-                                        disabled={!filters.categories?.length && !filters.minRating && 
-                                                filters.priceRange?.min === 0 && filters.priceRange?.max === 1000}
+                                        disabled={!filters.categories?.length && 
+                                                !filters.minRating && 
+                                                filters.priceRange?.min === 0 && 
+                                                filters.priceRange?.max === 1000 &&
+                                                sortBy === 'featured'}
                                         className="text-nowrap"
                                     >
                                         {t('common:clearAllFilters')}
@@ -360,11 +367,18 @@ function Shop() {
                                     </Card.Text>
                                     <Button
                                         variant="outline-primary"
-                                        onClick={() => updateFilters({
-                                            categories: [],
-                                            minRating: 0,
-                                            priceRange: { min: 0, max: 1000 }
-                                        })}
+                                        onClick={() => {
+                                            // Reset all filters in the context
+                                            updateFilters({
+                                                categories: [],
+                                                minRating: 0,
+                                                priceRange: { min: 0, max: 1000 }
+                                            });
+                                            // Clear all URL parameters
+                                            setSearchParams({});
+                                            // Reset sort to default
+                                            setSortBy('featured');
+                                        }}
                                         className="px-4"
                                     >
                                         {t('common:clearAllFilters')}
