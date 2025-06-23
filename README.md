@@ -13,8 +13,8 @@ A full-featured e-commerce marketplace built with the PERN stack (PostgreSQL, Ex
   <img src="./client/src/assets/Shop.gif" width="45%" alt="Shop Page" />
   <img src="./client/src/assets/Blog.gif" width="45%" alt="Blog Section" />
   <img src="./client/src/assets/Admin.gif" width="45%" alt="Admin Dashboard" />
-  <img src="./client/src/assets/mobile1.png" width="50%" alt="Mobile View" />
-  <img src="./client/src/assets/mobile2.png" width="50%" alt="Mobile View" />
+  <img src="./client/src/assets/mobile1.png" width="25%" alt="Mobile View" />
+  <img src="./client/src/assets/mobile2.png" width="25%" alt="Mobile View" />
 </div>
 
 ## 🚀 Features
