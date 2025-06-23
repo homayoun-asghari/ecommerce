@@ -3,7 +3,7 @@
 [![GitHub repo size](https://img.shields.io/github/repo-size/homayoun-asghari/ecommerce)](https://github.com/homayoun-asghari/ecommerce)
 [![Last Commit](https://img.shields.io/github/last-commit/homayoun-asghari/ecommerce)](https://github.com/homayoun-asghari/ecommerce/commits/main)
 
-A full-featured e-commerce marketplace built with the PERN stack (PostgreSQL, Express.js, React.js, Node.js), featuring user authentication, product management, and a responsive design.
+A full-featured e-commerce marketplace built with the PERN stack (PostgreSQL, Express.js, React.js, Node.js) that supports three distinct user roles: Buyers, Sellers, and Administrators. The platform also features a blog system for content sharing and community engagement.
 
 ## 🎥 Demo
 🔗 [Live Demo – ecommerce.homayoun.me](https://ecommerce.homayoun.me)
@@ -13,16 +13,46 @@ A full-featured e-commerce marketplace built with the PERN stack (PostgreSQL, Ex
   <img src="./client/src/assets/Shop.gif" width="45%" alt="Shop Page" />
   <img src="./client/src/assets/Blog.gif" width="45%" alt="Blog Section" />
   <img src="./client/src/assets/Admin.gif" width="45%" alt="Admin Dashboard" />
+  <img src="./client/src/assets/mobile1.png" width="50%" alt="Mobile View" />
+  <img src="./client/src/assets/mobile2.png" width="50%" alt="Mobile View" />
 </div>
 
 ## 🚀 Features
 
-- **User Authentication**
+### 👥 Multi-Role User System
 
-  - Email/Password registration and login
-  - Google OAuth 2.0 integration
-  - JWT-based session management
-  - Password reset functionality
+#### 🛒 Buyer Features
+- Browse and search products
+- Add items to cart and wishlist
+- Secure checkout process
+- Order tracking and history
+- Product reviews and ratings
+
+#### 🏪 Seller Features
+- Seller dashboard for managing products
+- Add, edit, and remove products
+- View and manage orders
+- Sales analytics and reports
+- Inventory management
+
+#### 👑 Admin Features
+- Full system administration
+- User management (buyers & sellers)
+- Content moderation
+- System analytics and reporting
+- Platform settings and configurations
+
+#### ✍️ Blog System
+- Create and publish blog posts
+- Categorize and tag content
+- Featured posts
+- Search and filter functionality
+
+### 🔐 User Authentication
+- Email/Password registration and login
+- Google OAuth 2.0 integration
+- JWT-based session management
+- Password reset functionality
 
 - **Product Management**
 
@@ -45,6 +75,14 @@ A full-featured e-commerce marketplace built with the PERN stack (PostgreSQL, Ex
   - Order management system
   - Sales analytics and reports
   - Ticket management system
+
+## 🔄 User Roles & Permissions
+
+| Role      | Product Management | Order Management | User Management | Content Management | Blog Access |
+|-----------|-------------------|------------------|-----------------|-------------------|-------------|
+| Buyer     | View Only         | Own Orders       | Personal        | Read Only         | Full Access |
+| Seller    | Full Access       | Own Products     | Personal        | Limited           | Full Access |
+| Admin     | Full Access       | All Orders       | Full Access     | Full Access       | Full Access |
 
 ## 🛠️ Tech Stack
 
