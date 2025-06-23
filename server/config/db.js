@@ -2,16 +2,20 @@ import pg from "pg";
 import dotenv from "dotenv";
 dotenv.config();
 
-const db = new pg.Client({
+const pool = new pg.Pool({
   connectionString: process.env.PG_CONNECTION_STRING,
-  ssl: { rejectUnauthorized: false },
+  ssl: {
+    rejectUnauthorized: false,
+  },
 });
 
-db.connect()
-  .then(() => console.log("Connected to database"))
-  .catch((err) => {
-    console.error("Database connection error:", err);
-    process.exit(1);
-  });
+pool.on('connect', () => {
+  console.log('Connected to PostgreSQL via Pool');
+});
 
-export default db;
+pool.on('error', (err) => {
+  console.error('Unexpected error on idle PostgreSQL client', err);
+  process.exit(-1);
+});
+
+export default pool;
